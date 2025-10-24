@@ -1,48 +1,54 @@
 <?php
 
+// Define el espacio de nombres donde vive este modelo
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+// Importa funcionalidades necesarias para el modelo
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Para generar datos de prueba (factories)
+use Illuminate\Foundation\Auth\User as Authenticatable; // Clase base para modelos de usuario autenticables
+use Illuminate\Notifications\Notifiable; // Permite enviar notificaciones al usuario
+use Illuminate\Database\Eloquent\Casts\Attribute; // Para definir mutadores y accesores personalizados
+use laravel\Sanctum\HasApiTokens; // Permite manejar tokens de autenticación con Laravel Sanctum
 
+// Define el modelo User, que extiende la clase Authenticatable
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    // Usa traits para añadir funcionalidades al modelo
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    /** Nombre explícito de la tabla en la base de datos */
+    protected $table = 'users';
+
+    /** Campos que se pueden asignar masivamente (por ejemplo, en create() o update()) */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'nombre',           // Nombre del usuario
+        'email',            // Correo electrónico
+        'password',         // Contraseña (se espera que esté hasheada)
+        'rol',              // Rol del usuario (Administrador, SST, etc.)
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /** Campos que se ocultan al serializar el modelo (por ejemplo, al convertirlo a JSON) */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password',         // No se debe exponer la contraseña
+        'remember_token',   // Token de "recordarme" en sesiones
+    ];
+
+    /** Conversión automática de tipos de datos */
+    protected $casts = [
+        'email_verified_at' => 'datetime', // Convierte el campo a objeto DateTime
+        'password' => 'hashed',            // Laravel encripta automáticamente este campo al asignarlo
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Mutador y accesor personalizado para el campo "nombre"
+     * - get: capitaliza la primera letra al obtener el valor
+     * - set: convierte todo a minúsculas al guardar el valor
      */
-    protected function casts(): array
+    protected function nombre(): Attribute
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return Attribute::make(
+            get: fn($value) => ucfirst($value),      // Ej: "oscar" → "Oscar"
+            set: fn($value) => strtolower($value),   // Ej: "OSCAR" → "oscar"
+        );
     }
 }
