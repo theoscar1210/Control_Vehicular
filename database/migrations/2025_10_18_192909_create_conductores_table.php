@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('empleados', function (Blueprint $table) {
-            $table->id('id_empleado');
+        Schema::create('conductores', function (Blueprint $table) {
+            //  Clave primaria
+            $table->bigIncrements('id_conductor');
+
+            //  Datos del conductor
             $table->string('nombre', 100);
             $table->string('apellido', 100);
-            $table->string('identificacion', 20)->unique();
-            $table->string('area', 100);
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
+            $table->string('licencia', 50)->unique();
+            $table->string('identificacion', 50)->unique()->nullable();
+
+            //  Timestamps automáticos
             $table->timestamps();
         });
     }
@@ -27,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('empleados');
+        Schema::dropIfExists('conductores');
     }
 };

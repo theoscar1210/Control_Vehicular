@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alertas', function (Blueprint $table) {
-            $table->id('id_alerta');
+            $table->bigIncrements('id_alerta');
 
             //  Llave foránea opcional para documento de vehículo
             $table->unsignedBigInteger('id_documento_vehiculo')->nullable();

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -14,7 +15,7 @@ class UserFactory extends Factory
     /**
      * The current password being used by the factory.
      */
-    protected static ?string $password;
+    protected $model = User::class;
 
     /**
      * Define the model's default state.
@@ -24,10 +25,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->firstName(),
+            'email' => $this->faker->unique()->safeEmail(),
+            // Model cast 'password' => 'hashed' se encargará de hashear la contraseña
+            'password' => 'password',
+            'rol' => $this->faker->randomElement(['SST', 'Seguridad', 'Administrador']),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -35,10 +38,17 @@ class UserFactory extends Factory
     /**
      * Indicate that the model's email address should be unverified.
      */
-    public function unverified(): static
+    public function administrador(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(fn() => ['rol' => 'Administrador']);
+    }
+
+    public function sst(): static
+    {
+        return $this->state(fn() => ['rol' => 'SST']);
+    }
+    public function seguridad(): static
+    {
+        return $this->state(fn() => ['rol' => 'Seguridad']);
     }
 }

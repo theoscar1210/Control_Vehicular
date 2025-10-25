@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory; // Para generar datos de 
 use Illuminate\Foundation\Auth\User as Authenticatable; // Clase base para modelos de usuario autenticables
 use Illuminate\Notifications\Notifiable; // Permite enviar notificaciones al usuario
 use Illuminate\Database\Eloquent\Casts\Attribute; // Para definir mutadores y accesores personalizados
-use laravel\Sanctum\HasApiTokens; // Permite manejar tokens de autenticación con Laravel Sanctum
+use Laravel\Sanctum\HasApiTokens; // Permite manejar tokens de autenticación con Laravel Sanctum
 
 // Define el modelo User, que extiende la clase Authenticatable
 class User extends Authenticatable

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehiculos', function (Blueprint $table) {
-            // Primary key
+            // Clave primaria autoincremental
             $table->bigIncrements('id_vehiculo');
 
             // Datos del vehículo
@@ -20,11 +20,26 @@ return new class extends Migration
             $table->string('modelo', 50);
             $table->string('color', 30)->nullable();
             $table->string('placa', 10)->unique();
+            $table->string('numero_licencia_transito', 255)->nullable();
 
-            $table->foreignId('id_empleado_propietario')->constrained('empleados', 'id_empleado')->onDelete('cascade');
-            $table->unsignedBigInteger('id_conductor_actual')->nullable();
+            // Relaciones
+            $table->unsignedBigInteger('id_propietario'); // FK a propietarios
+            $table->unsignedBigInteger('id_conductor')->nullable(); // FK a conductores
 
+            // Fechas de creación/actualización
             $table->timestamps();
+
+            // Llaves foráneas
+            $table->foreign('id_propietario')
+                ->references('id_propietario')
+                ->on('propietarios')
+                ->onDelete('cascade');
+
+
+            $table->foreign('id_conductor')
+                ->references('id_conductor')
+                ->on('conductores')
+                ->onDelete('set null');
         });
     }
 
