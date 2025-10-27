@@ -17,15 +17,20 @@ class Propietario extends Model
     protected $table = 'propietarios';
 
     /** Clave primaria personalizada (por defecto sería 'id') */
-    protected $primaryKey = 'id_empleado';
+    protected $primaryKey = 'id_propietario';
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
         'nombre',              // Nombre del propietario
         'apellido',            // Apellido del propietario
-        'tipo_documento',      // Tipo de documento (ej. CC, TI, CE)
+        'tipo_doc',      // Tipo de documento (ej. CC, TI, CE)
         'identificacion',      // Número de identificación
-        'id_vehiculo',         // Clave foránea al vehículo (relación uno a uno)
+        'creado_por',          // Usuario que creó el registro
+        'fecha_registro'       // Fecha de registro del propietario
+    ];
+
+    protected $casts = [
+        'fecha_registro' => 'datetime',
     ];
 
     /**
@@ -33,8 +38,8 @@ class Propietario extends Model
      * - Usa la clase 'vehiculo'
      * - Clave foránea en la tabla 'vehiculos': 'id_propietario'
      */
-    public function vehiculo()
+    public function creador()
     {
-        return $this->hasOne(Vehiculo::class, 'id_propietario');
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 }

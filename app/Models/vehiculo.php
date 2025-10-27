@@ -18,18 +18,24 @@ class Vehiculo extends Model
 
     /** Clave primaria personalizada (por defecto sería 'id') */
     protected $primaryKey = 'id_vehiculo';
+    public $timestamps = false;
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
-        'marca',                      // Marca del vehículo (ej. Toyota)
-        'modelo',                     // Modelo del vehículo (ej. Corolla)
-        'color',                      // Color del vehículo
-        'placa',                      // Placa del vehículo
-        'numero_licencia_transito',   // Número de la licencia de tránsito
-        'id_propietario',             // Clave foránea al propietario
-        'id_conductor',                // Clave foránea al conductor
+        'placa',
+        'marca',
+        'modelo',
+        'tipo',
+        'id_propietario',
+        'id_conductor',
+        'estado',
+        'creado_por',
+        'fecha_registro',
     ];
 
+    protected $casts = [
+        'fecha_registro' => 'datetime',
+    ];
     /**
      * Relación: el vehículo pertenece a un propietario
      * - Usa la clase Propietario
@@ -48,6 +54,11 @@ class Vehiculo extends Model
     public function conductor()
     {
         return $this->belongsTo(Conductor::class, 'id_conductor');
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 
     /**

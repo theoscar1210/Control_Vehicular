@@ -15,20 +15,30 @@ class DocumentoVehiculo extends Model
 
     /** Nombre explícito de la tabla en la base de datos */
     protected $table = 'documentos_vehiculo';
+    protected $primaryKey = 'id_doc_vehiculo';
+    public $timestamps = false; // Desactiva las marcas de tiempo automáticas
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
-        'id_vehiculo',         // Clave foránea que relaciona el documento con un vehículo
-        'tipo_documento',      // Tipo de documento (SOAT, Tecnomecánica, etc.)
-        'fecha_expedicion',    // Fecha en que se expidió el documento
-        'fecha_vencimiento',   // Fecha en que vence el documento
-        'estado',              // Estado actual del documento (vigente, vencido, anulado)
+        'id_vehiculo',
+        'tipo_documento',
+        'numero_documento',
+        'entidad_emisora',
+        'fecha_emision',
+        'fecha_vencimiento',
+        'estado',
+        'activo',
+        'creado_por',
+        'fecha_registro',
+
     ];
 
     /** Conversión automática de tipos de datos */
     protected $casts = [
-        'fecha_expedicion' => 'date',     // Convierte a objeto DateTime
-        'fecha_vencimiento' => 'date',    // Convierte a objeto DateTime
+        'activo' => 'boolean', // Convierte el campo 'activo' a booleano
+        'fecha_emision' => 'date',
+        'fecha_vencimiento' => 'date',
+        'fecha_registro' => 'datetime',
     ];
 
     /**
@@ -39,6 +49,11 @@ class DocumentoVehiculo extends Model
     public function vehiculo()
     {
         return $this->belongsTo(Vehiculo::class, 'id_vehiculo');
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 
     /**

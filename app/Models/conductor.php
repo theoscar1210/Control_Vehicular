@@ -12,25 +12,34 @@ class Conductor extends Model
     protected $table = 'conductores';
 
     protected $primaryKey = 'id_conductor';
+    public $timestamps = false;
+
 
     protected $fillable = [
         'nombre',
-        'apellido',
-        'licencia',
-        'identificacion',
+        'apellidos',
+        'tipo_doc',
+        'num_doc',
+        'telefono',
+        'telefono_emergencia',
+        'direccion',
+        'creado_por',
+        'fecha_registro',
+
     ];
+
+    protected $casts = [
+        'fecha_registro' => 'datetime',
+    ];
+
 
     /**
      * Relación: el conductor tiene muchos vehículos
      * - Usa la clase Vehiculo
      * - Clave foránea en la tabla 'vehiculos': 'id_conductor'
      */
-    public function documentos()
+    public function creador()
     {
-        return $this->hasMany(DocumentoConductor::class, 'id_conductor');
-    }
-    public function vehiculos()
-    {
-        return $this->hasMany(Vehiculo::class, 'id_conductor');
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 }

@@ -4,43 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('alertas', function (Blueprint $table) {
-            $table->bigIncrements('id_alerta');
+            $table->id('id_alerta');
+            $table->enum('tipo_alerta', ['VEHICULO', 'CONDUCTOR']);
+            $table->unsignedBigInteger('id_doc_vehiculo')->nullable();
+            $table->unsignedBigInteger('id_doc_conductor')->nullable();
+            $table->enum('tipo_vencimiento', ['VENCIDO', 'PROXIMO_VENCER']);
+            $table->string('mensaje', 255)->nullable();
+            $table->date('fecha_alerta')->nullable();
+            $table->boolean('leida')->default(false);
+            $table->enum('visible_para', ['ADMIN', 'SST', 'PORTERIA', 'TODOS'])->default('TODOS');
+            $table->unsignedBigInteger('creado_por')->nullable();
+            $table->timestamp('fecha_registro')->useCurrent();
 
-            //  Llave foránea opcional para documento de vehículo
-            $table->unsignedBigInteger('id_documento_vehiculo')->nullable();
-            $table->foreign('id_documento_vehiculo')
-                ->references('id')
-                ->on('documentos_vehiculo')
-                ->onDelete('cascade');
-
-            //  Llave foránea opcional para documento de conductor
-            $table->unsignedBigInteger('id_documento_conductor')->nullable();
-            $table->foreign('id_documento_conductor')
-                ->references('id')
-                ->on('documentos_conductor')
-                ->onDelete('cascade');
-
-            //  Tipo de alerta y estado
-            $table->enum('tipo_alerta', ['Proximo a vencer', 'Vencido']);
-            $table->timestamp('fecha_generacion')->useCurrent();
-            $table->enum('estado', ['Pendiente', 'Atendida'])->default('Pendiente');
-
-            //  Timestamps de Laravel
-            $table->timestamps();
+            $table->foreign('id_doc_vehiculo')->references('id_doc_vehiculo')->on('documentos_vehiculo')->onDelete('set null');
+            $table->foreign('id_doc_conductor')->references('id_doc_conductor')->on('documentos_conductor')->onDelete('set null');
+            $table->foreign('creado_por')->references('id_usuario')->on('usuarios')->onDelete('set null');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('alertas');

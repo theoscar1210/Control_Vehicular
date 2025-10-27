@@ -5,24 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Alertas extends Model
+class Alerta extends Model
 {
     use HasFactory;
 
     protected $table = 'alertas';
     protected $primaryKey = 'id_alerta';
+    public $timestamps = false;
 
     protected $fillable = [
-        'id_documento_vehiculo',
-        'id_documento_conductor', // Clave foránea al documento del conductor
-        'tipo_alerta',           // Tipo de alerta (vencimiento, renovación, etc.)
-        'fecha_alerta',          // Fecha en que se generó la alerta
-        'fecha_generacion',      // Fecha en que se envió la alerta
-        'estado',                // Estado de la alerta (pendiente, enviada, resuelta)
+        'tipo_alerta',
+        'id_doc_vehiculo',
+        'id_doc_conductor',
+        'tipo_vencimiento',
+        'mensaje',
+        'fecha_alerta',
+        'leida',
+        'visible_para',
+        'creado_por',
+        'fecha_registro',
+
     ];
 
     protected $casts = [
-        'fecha_alerta' => 'datetime',
+        'leida' => 'boolean',
+        'fecha_alerta' => 'date',
+        'fecha_registro' => 'datetime',
     ];
 
     /**
@@ -32,10 +40,15 @@ class Alertas extends Model
      */
     public function documentoVehiculo()
     {
-        return $this->belongsTo(DocumentoVehiculo::class, 'id_documento_vehiculo');
+        return $this->belongsTo(DocumentoVehiculo::class, 'id_doc_vehiculo');
     }
     public function documentoConductor()
     {
-        return $this->belongsTo(DocumentoConductor::class, 'id_documento_conductor');
+        return $this->belongsTo(DocumentoConductor::class, 'id_doc_conductor');
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
 }
