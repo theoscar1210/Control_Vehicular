@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('identificacion', 50)->unique();
             $table->unsignedBigInteger('creado_por')->nullable();
             $table->timestamp('fecha_registro')->useCurrent();
+            $table->timestamps();
             $table->foreign('creado_por')->references('id_usuario')->on('usuarios')->onDelete('set null');
         });
     }

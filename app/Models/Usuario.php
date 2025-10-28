@@ -12,17 +12,12 @@ class Usuario extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /** Nombre explícito de la tabla */
     protected $table = 'usuarios';
-
-    /** Clave primaria personalizada */
     protected $primaryKey = 'id_usuario';
-
-    /** Laravel espera que la clave primaria sea autoincremental y de tipo entero */
     public $incrementing = true;
     protected $keyType = 'int';
+    public $timestamps = true;
 
-    /** Campos que se pueden asignar masivamente */
     protected $fillable = [
         'nombre',
         'apellido',
@@ -33,33 +28,26 @@ class Usuario extends Authenticatable
         'activo',
     ];
 
-    /** Campos ocultos al serializar */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    /** Conversión automática de tipos */
     protected $casts = [
         'activo' => 'boolean',
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'create_at' => 'datetime',
+        'update_at' => 'datetime',
     ];
 
-    /**
-     * Mutador y accesor para el campo "nombre"
-     */
+    /** Mutadores */
     protected function nombre(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => ucfirst($value),
-            set: fn($value) => strtolower($value),
+            get: fn($value) => $value ? ucfirst($value) : null,
+            set: fn($value) => $value ? strtolower($value) : null,
         );
     }
 
-    /**
-     * Mutador y accesor para el campo "apellido"
-     */
     protected function apellido(): Attribute
     {
         return Attribute::make(
@@ -67,12 +55,10 @@ class Usuario extends Authenticatable
             set: fn($value) => strtolower($value),
         );
     }
-
-    /**
-     * Relación con la tabla de sesiones (si usas driver database)
-     */
-    public function sesiones()
+    // ejemplo de relación: usuarios pueden crear registros 
+    public function creados()
     {
-        return $this->hasMany(Session::class, 'user_id', 'id_usuario');
+        // relación polimórfica/ genérica
+        return $this->hasMany(Propietario::class, 'creado_por', 'id_usuario');
     }
 }

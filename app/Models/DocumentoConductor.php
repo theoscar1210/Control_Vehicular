@@ -17,7 +17,10 @@ class DocumentoConductor extends Model
     protected $table = 'documentos_conductor';
     protected $primaryKey = 'id_doc_conductor';
     public $timestamps = false; // Desactiva las marcas de tiempo automáticas
-
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public const TIPOS = ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro'];
+    public const ESTADOS = ['VIGENTE', 'POR_VENCER', 'VENCIDO', 'REEMPLAZADO'];
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
         'id_conductor',
@@ -63,5 +66,14 @@ class DocumentoConductor extends Model
     public function alertas()
     {
         return $this->hasMany(Alerta::class, 'id_doc_conductor');
+    }
+
+    public function setEstadoAttribute($value)
+    {
+        $value = strtoupper(str_replace(' ', '_', (string) $value));
+        if (!in_array($value, self::ESTADOS)) {
+            $value = 'VIGENTE';
+        }
+        $this->attributes['estado'] = $value;
     }
 }

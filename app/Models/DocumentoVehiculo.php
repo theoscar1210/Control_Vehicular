@@ -17,6 +17,10 @@ class DocumentoVehiculo extends Model
     protected $table = 'documentos_vehiculo';
     protected $primaryKey = 'id_doc_vehiculo';
     public $timestamps = false; // Desactiva las marcas de tiempo automáticas
+    public $incrementing = true;
+    protected $keyType = 'int';
+    // constantes útiles para factories/validaciones
+    public const TIPOS = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
@@ -64,5 +68,15 @@ class DocumentoVehiculo extends Model
     public function alertas()
     {
         return $this->hasMany(Alerta::class, 'id_documento_vehiculo');
+    }
+
+    public const ESTADOS = ['VIGENTE', 'VENCIDO', 'POR VENCER'];
+    public function setEstadoAttribute($value)
+    {
+        $value = strtoupper(str_replace(' ', '_', (string) $value));
+        if (!in_array($value, self::ESTADOS)) {
+            $value = 'VIGENTE';
+        }
+        $this->attributes['estado'] = $value;
     }
 }

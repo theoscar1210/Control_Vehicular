@@ -12,14 +12,16 @@ class PropietarioFactory extends Factory
 {
     protected $model = Propietario::class;
 
-    public function definition(): array
+    public function definition()
     {
+        $tipos = ['CC', 'NIT'];
         return [
             'nombre' => $this->faker->firstName(),
             'apellido' => $this->faker->lastName(),
-            'tipo_documento' => $this->faker->randomElement(['CC', 'CE', 'NIT']),
+            'tipo_doc' => $this->faker->randomElement($tipos),
             'identificacion' => $this->faker->unique()->numerify('##########'),
-            'id_vehiculo' => null,
+            'creado_por' => null,
+            'fecha_registro' => now(),
         ];
     }
 }

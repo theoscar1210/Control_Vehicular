@@ -19,12 +19,15 @@ class Vehiculo extends Model
     /** Clave primaria personalizada (por defecto sería 'id') */
     protected $primaryKey = 'id_vehiculo';
     public $timestamps = false;
+    protected $keyType = 'int';
+    public $incrementing = true;
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
         'placa',
         'marca',
         'modelo',
+        'color',
         'tipo',
         'id_propietario',
         'id_conductor',
@@ -41,33 +44,38 @@ class Vehiculo extends Model
      * - Usa la clase Propietario
      * - Clave foránea: 'id_propietario'
      */
-    public function propietario()
-    {
-        return $this->belongsTo(Propietario::class, 'id_propietario');
-    }
+
 
     /**
      * Relación: el vehículo pertenece a un conductor
      * - Usa la clase Conductor
      * - Clave foránea: 'id_conductor'
      */
+    // Propietario (belongsTo)
+    public function propietario()
+    {
+        return $this->belongsTo(Propietario::class, 'id_propietario', 'id_propietario');
+    }
+    // Conductor asignado 
     public function conductor()
     {
-        return $this->belongsTo(Conductor::class, 'id_conductor');
+        return $this->belongsTo(Conductor::class, 'id_conductor', 'id_conductor');
     }
-
+    // creador (usuario que lo creó)
     public function creador()
     {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
+    // Documentos del vehículo (hasMany) -> método EXACTO que debes llamar en with()
+    public function documentosVehiculo()
+    {
+        return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
+
 
     /**
      * Relación: el vehículo tiene muchos documentos
      * - Usa la clase DocumentoVehiculo
      * - Clave foránea en la tabla relacionada: 'id_vehiculo'
      */
-    public function documentos()
-    {
-        return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo');
-    }
 }

@@ -12,6 +12,8 @@ class Alerta extends Model
     protected $table = 'alertas';
     protected $primaryKey = 'id_alerta';
     public $timestamps = false;
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'tipo_alerta',

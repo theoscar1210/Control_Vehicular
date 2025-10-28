@@ -1,0 +1,30 @@
+[90m= [39m[34;4mApp\Models\Conductor[39;24m {#5780
+    [34mid_conductor[39m: [35m1[39m,
+    [34mnombre[39m: "[32mEmil[39m",
+    [34mapellido[39m: "[32mRunte[39m",
+    [34mtipo_doc[39m: "[32mCC[39m",
+    [34midentificacion[39m: "[32m52141618608[39m",
+    [34mtelefono[39m: [36mnull[39m,
+    [34mtelefono_emergencia[39m: "[32m+1 (626) 733-3983[39m",
+    [34mactivo[39m: [35m1[39m,
+    [34mcreado_por[39m: [35m1[39m,
+    [34mfecha_registro[39m: "[32m2025-10-28 02:37:42[39m",
+    [34mdocumentosConductor[39m: [34;4mIlluminate\Database\Eloquent\Collection[39;24m {#5820
+      [34mall[39m: [
+        [34;4mApp\Models\DocumentoConductor[39;24m {#5794
+          [34mid_doc_conductor[39m: [35m1[39m,
+          [34mid_conductor[39m: [35m1[39m,
+          [34mtipo_documento[39m: "[32mLicencia Conducción[39m",
+          [34mnumero_documento[39m: "[32mDOCC-665268[39m",
+          [34mentidad_emisora[39m: "[32mFrami-Marvin[39m",
+          [34mfecha_emision[39m: "[32m2017-12-30[39m",
+          [34mfecha_vencimiento[39m: "[32m2028-03-14[39m",
+          [34mestado[39m: "[32mVIGENTE[39m",
+          [34mactivo[39m: [35m1[39m,
+          [34mcreado_por[39m: [36mnull[39m,
+          [34mfecha_registro[39m: "[32m2025-10-28 02:37:42[39m",
+        },
+      ],
+    },
+  }
+

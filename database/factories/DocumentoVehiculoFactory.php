@@ -3,55 +3,64 @@
 namespace Database\Factories;
 
 use App\Models\DocumentoVehiculo;
+use App\Models\Vehiculo;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
-/** @extends Factory<DocumentoVehiculo> */
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DocumentoVehiculo> */
 class DocumentoVehiculoFactory extends Factory
 {
     protected $model = DocumentoVehiculo::class;
 
     public function definition(): array
     {
-        $tipo = $this->faker->randomElement(['SOAT', 'TECNOMECANICA']);
-        // Generar fecha_expedicion entre -2 años y hoy
-        $exp = $this->faker->dateTimeBetween('-2 years', 'now');
-        // fecha_vencimiento entre hoy -1y y +1y
-        $venc = $this->faker->dateTimeBetween('-1 years', '+1 years');
+        // Valores alineados con el ENUM definido en la DB
+        $tipos = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
+        $tipo = $this->faker->randomElement($tipos);
 
-        $estado = (Carbon::parse($venc)->isPast()) ? 'vencido' : 'vigente';
+        // Generar fecha_emision entre hace 3 años y hoy; vencimiento entre -30 días y +365 días
+        $fecha_emision = $this->faker->dateTimeBetween('-3 years', 'now')->format('Y-m-d');
+        $fecha_vencimiento = $this->faker->dateTimeBetween('-30 days', '+365 days')->format('Y-m-d');
+
+        // Determinar estado exclusivamente con los tokens válidos del ENUM
+        $fv = Carbon::createFromFormat('Y-m-d', $fecha_vencimiento);
+        $hoy = Carbon::now();
+
+        if ($fv->lt($hoy)) {
+            $estado = 'VENCIDO';
+        } elseif ($fv->lte($hoy->copy()->addDays(30))) {
+            $estado = 'POR_VENCER';
+        } else {
+            $estado = 'VIGENTE';
+        }
 
         return [
-            'id_vehiculo' => null, // set in seeder
+            'id_vehiculo' => Vehiculo::factory(),
             'tipo_documento' => $tipo,
             'numero_documento' => strtoupper($this->faker->bothify('DOC-######')),
-            'fecha_expedicion' => Carbon::parse($exp)->toDateString(),
-            'fecha_vencimiento' => Carbon::parse($venc)->toDateString(),
+            'entidad_emisora' => $this->faker->company(),
+            'fecha_emision' => $fecha_emision,
+            'fecha_vencimiento' => $fecha_vencimiento,
             'estado' => $estado,
+            'activo' => 1,
+            'creado_por' => null,
+            'fecha_registro' => now(),
         ];
     }
 
-    public function vigente(): static
+    public function expired(): \Illuminate\Database\Eloquent\Factories\Factory
     {
         return $this->state(fn() => [
-            'fecha_vencimiento' => Carbon::now()->addMonths(6)->toDateString(),
-            'estado' => 'vigente',
+            'fecha_vencimiento' => $this->faker->dateTimeBetween('-2 years', '-1 day')->format('Y-m-d'),
+            'estado' => 'VENCIDO',
         ]);
     }
 
-    public function proximoAVencer(int $days = 20): static
+    public function nearExpiry(): \Illuminate\Database\Eloquent\Factories\Factory
     {
         return $this->state(fn() => [
-            'fecha_vencimiento' => Carbon::now()->addDays($days)->toDateString(),
-            'estado' => 'vigente',
-        ]);
-    }
-
-    public function vencido(): static
-    {
-        return $this->state(fn() => [
-            'fecha_vencimiento' => Carbon::now()->subDays(10)->toDateString(),
-            'estado' => 'vencido',
+            'fecha_vencimiento' => $this->faker->dateTimeBetween('now', '+20 days')->format('Y-m-d'),
+            'estado' => 'POR_VENCER',
         ]);
     }
 }

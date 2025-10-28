@@ -10,13 +10,19 @@ class ConductorFactory extends Factory
 {
     protected $model = Conductor::class;
 
-    public function definition(): array
+    public function definition()
     {
+        $tipos = ['CC', 'CE'];
         return [
             'nombre' => $this->faker->firstName(),
             'apellido' => $this->faker->lastName(),
-            'licencia' => $this->faker->unique()->bothify('LIC-####-??'),
+            'tipo_doc' => $this->faker->randomElement($tipos),
             'identificacion' => $this->faker->unique()->numerify('###########'),
+            'telefono' => $this->faker->optional()->phoneNumber,
+            'telefono_emergencia' => $this->faker->optional()->phoneNumber,
+            'activo' => 1,
+            'creado_por' => null,
+            'fecha_registro' => now(),
         ];
     }
 }

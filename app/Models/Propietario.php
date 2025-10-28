@@ -18,6 +18,10 @@ class Propietario extends Model
 
     /** Clave primaria personalizada (por defecto sería 'id') */
     protected $primaryKey = 'id_propietario';
+    public $incrementing = true;
+
+    public $timestamps = false;
+
 
     /** Campos que se pueden asignar masivamente */
     protected $fillable = [
@@ -32,6 +36,12 @@ class Propietario extends Model
     protected $casts = [
         'fecha_registro' => 'datetime',
     ];
+
+    // relaciones
+    public function vehiculos()
+    {
+        return $this->hasMany(Vehiculo::class, 'id_propietario', 'id_propietario');
+    }
 
     /**
      * Relación: el propietario tiene un vehículo
