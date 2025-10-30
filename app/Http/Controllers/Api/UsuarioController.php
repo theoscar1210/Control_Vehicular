@@ -3,63 +3,64 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Usuario::paginate(20));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'usuario' => 'required|string|max:50|unique:usuarios,usuario',
+            'email' => 'required|email|max:255|unique:usuarios,email',
+            'password' => 'required|string|min:6',
+            'rol' => 'required|in:ADMIN,SST,PORTERIA',
+            'activo' => 'nullable|boolean',
+        ]);
+
+        $data['password'] = bcrypt($data['password']);
+        $user = Usuario::create($data + ['activo' => $data['activo'] ?? 1]);
+
+        return response()->json($user, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Usuario $usuario)
     {
-        //
+        return response()->json($usuario);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Usuario $usuario)
     {
-        //
+        $data = $request->validate([
+            'nombre' => 'sometimes|required|string|max:100',
+            'apellido' => 'sometimes|required|string|max:100',
+            'usuario' => "sometimes|required|string|max:50|unique:usuarios,usuario,{$usuario->id_usuario},id_usuario",
+            'email' => "sometimes|required|email|max:255|unique:usuarios,email,{$usuario->id_usuario},id_usuario",
+            'password' => 'nullable|string|min:6',
+            'rol' => 'nullable|in:ADMIN,SST,PORTERIA',
+            'activo' => 'nullable|boolean',
+        ]);
+
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $usuario->update($data);
+        return response()->json($usuario);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Usuario $usuario)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $usuario->delete();
+        return response()->json(null, 204);
     }
 }
