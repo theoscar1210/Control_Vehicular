@@ -1,0 +1,127 @@
+/* ============================
+   Estilos Globales
+============================ */
+:root {
+    --color-principal: #5b8238; /* Verde Bootstrap */
+    --color-secundario: #ffffff;
+    --color-fondo: #f8f9fa;
+    --color-texto: #212529;
+    --fuente-principal: "Roboto", sans-serif;
+}
+
+body {
+    font-family: var(--fuente-principal);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+/* ============================
+   Botones
+============================ */
+.btn-principal {
+    background-color: var(--color-principal);
+    color: var(--color-secundario);
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-principal:hover {
+    background-color: #8fafa0;
+}
+
+/* ============================
+   Login
+============================ */
+.login-container {
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+}
+
+.login-card h3 {
+    color: #5b8238;
+    font-weight: 700;
+    text-align: center;
+}
+
+.footer-text {
+    text-align: center;
+    color: #333;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+/*logo del login*/
+
+.brand-logo {
+    max-width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto 1rem auto;
+}
+/* ============================
+   Responsive Login
+============================ */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 1rem;
+    }
+
+    .login-card {
+        padding: 1.2rem;
+        border-radius: 0.75rem;
+        max-width: 100%;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+    }
+    .brand-logo {
+        max-width: 100px;
+        margin-bottom: 0.8rem;
+    }
+
+    .login-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    .login-card h4 {
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
+    }
+    .login-card h5 {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-control-lg {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.75rem 0.6rem 2.2rem;
+    }
+
+    .btn-principal {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.4rem;
+    }
+    .footer-text {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        line-height: 1.2;
+    }
+}
+/* ============================
+   Utilidades
+============================ */
+.text-verde {
+    color: var(--color-principal);
+}
