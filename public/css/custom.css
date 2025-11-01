@@ -4,7 +4,9 @@
 :root {
     --color-principal: #5b8238; /* Verde Bootstrap */
     --color-secundario: #ffffff;
+    --color-terciario: #333;
     --color-fondo: #f8f9fa;
+    --color-fondo2: #f5f5f5;
     --color-texto: #212529;
     --fuente-principal: "Roboto", sans-serif;
 }
@@ -58,7 +60,7 @@ body {
 
 .footer-text {
     text-align: center;
-    color: #333;
+    color: var(--color-terciario);
     margin-top: 15px;
     font-size: 0.9rem;
 }
@@ -124,4 +126,53 @@ body {
 ============================ */
 .text-verde {
     color: var(--color-principal);
+}
+
+/*=============================
+Navbar personalizada*/
+
+.custom-navbar {
+    background-color: #ffffff;
+    font-family: Roboto, sans-serif;
+}
+
+.navbar-logo {
+    height: 60px;
+    width: auto;
+}
+.titulo {
+    color: var(--color-principal);
+}
+
+.navbar .nav-link {
+    color: var(--color-terciario);
+    font-weight: 500;
+}
+
+/*Estilo del imput de busqueda */
+
+.navbar .form-control {
+    color: var(--color-terciario);
+    border-radius: 20px;
+    border: none;
+    padding: 0.4rem 0.8rem;
+}
+
+/*notificaciones campana*/
+
+.navbar .badge {
+    font-size: 0.6rem;
+    padding: 0.3em 0.45em;
+}
+
+/* Responsive */
+
+@media (max-width: 576px) {
+    .navbar-logo {
+        height: 32px;
+    }
+
+    .navbar .form-control {
+        width: 120px;
+    }
 }
