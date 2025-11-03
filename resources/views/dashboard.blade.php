@@ -8,84 +8,156 @@ $user = $user ?? auth()->user();
 // Asumimos que el controlador/middleware ya validó que $user existe y tiene rol válido.
 $rol = $user->rol;
 @endphp
-<style>
-    body {
-        background: color #7a4f4fff;
-        height: auto;
-    }
-</style>
+
+{{--Encabezdo--}}
 <br><br>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Bienvenido a la página principal</h3>
+<div class="mb-4">
+    <h4 class="fw-bold">Bienvenido a la página principal</h4>
+    <p class="text-muted mb-0">
+        Resumen del estado del cumplimiento documental y actividad del sistema <br>
+        <small>Última actualización: 25 e agosto, 19:31</small>
+    </p>
     <div>
         <span class="badge bg-secondary">Rol: {{ $rol }}</span>
     </div>
 </div>
 
-<!-- Contenido común -->
-<div class="row">
-    <div class="col-md-8">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Resumen general</h5>
-                <p class="card-text">Resumen del estado de cumplimiento documental y actividad del sistema</p>
-            </div>
-        </div>
 
-        <!-- Sección: administración (solo ADMIN) -->
-        @if($rol === 'ADMIN')
-        <div class="card mb-3 border-primary">
-            <div class="card-body">
-                <h5 class="card-title">Panel de Administración</h5>
-                <p class="card-text">Enlaces para gestionar usuarios, configuración global, logs, etc.</p>
-                <a href="#" class="btn btn-outline-primary btn-sm">Usuarios</a>
-                <a href="#" class="btn btn-outline-primary btn-sm">Configuración</a>
-            </div>
-        </div>
-        @endif
 
-        <!-- Sección: SST (SST y ADMIN ven la misma info relevante para SST) -->
-        @if(in_array($rol, ['SST', 'ADMIN']))
-        <div class="card mb-3 border-success">
-            <div class="card-body">
-                <h5 class="card-title">Panel SST</h5>
-                <p class="card-text">Controles y reportes SST, incidentes, protocolos, etc.</p>
-                <a href="#" class="btn btn-outline-success btn-sm">Reportar incidente</a>
-                <a href="#" class="btn btn-outline-success btn-sm">Ver estadísticas</a>
-            </div>
-        </div>
-        @endif
-
-        <!-- Sección visible para otros roles -->
-        @if(!in_array($rol, ['SST','ADMIN']))
-        <div class="card mb-3 border-secondary">
-            <div class="card-body">
-                <h5 class="card-title">Acciones</h5>
-                <p class="card-text">Acciones disponibles para tu rol.</p>
-            </div>
-        </div>
-        @endif
-    </div>
-
-    <div class="col-md-4">
-        <!-- Widgets laterales -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h6 class="card-title">Alertas</h6>
-                <p class="mb-0">0 alertas por vencer (ejemplo). Aquí listar alertas desde la tabla `alertas`.</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h6 class="card-title">Accesos rápidos</h6>
-                <ul class="list-unstyled mb-0">
-                    <li><a href="#">Propietarios</a></li>
-                    <li><a href="#">Conductores</a></li>
-                    <li><a href="#">Vehículos</a></li>
-                </ul>
+<!-- Tarjetas de resumen -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card border-0 shadow-lg h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Total Vehículos</h6>
+                <h3 class="fw-bold text-success">1.247</h3>
+                <small class="text-success">+12% este mes <i class="fa-solid fa-arrow-up"></i></small>
             </div>
         </div>
     </div>
+
+
+    <div class="col-md-3">
+        <div class="card stat-card border-0 shadow-lg h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Conductores Activos</h6>
+                <h3 class="fw-bold text-success">892</h3>
+                <small class="text-succes">+12% este mes <i class="fa-solid fa-arrow-up"></i></small>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card stat-card border-0 shadow-lg h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Documentos por Vencer</h6>
+                <h3 class="fw-bold text-warning">2</h3>
+                <small class="text-warning">Próximos 30 días</small>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card stat-card border-0 shadow-lg h-100">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Vencidos</h6>
+                <h3 class="fw-bold text-danger">1,2</h3>
+                <small class="text-danger">+12% este mes</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secciones Actividad reciente y alertas -->
+
+    <div class="row g4 mb-4 mt-5">
+        <div class="col-lg-8">
+            <div class="stat-card shadow-lg border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3 ">
+                        <h6 class="fw-bold mb-0">Actividad Reciente</h6>
+                        <a href="#" class="text-success small">Ver todo</a>
+                    </div>
+
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item border-0 bg-success-subtle rounded mb-2">
+                            <i class="fa-solid fa-circle-check text-success me-2"></i>
+                            Vehículo <strong>ABC123</strong> Registrado exitosamente
+                            <small class="text-muted float-end">Hace 15 minutos</small>
+                        </div>
+
+
+                        <div class="list-group-item border-0 bg-warning-subtle rounded mb-2">
+                            <i class="fa-solid fa-id-card text-warning me-2"></i>
+                            Conductor <strong>Carlos Rodríguez</strong>Licencia Actualizada
+                            <small class="text-muted float-end">Hace 5 minutos</small>
+                        </div>
+
+                        <div class="list-group-item border-0 bg-success-subtle rounded ">
+                            <i class="fa-solid fa-file-circle-check text-success me-2"></i>
+                            Reporte generado correctamente
+                            <small class="text-muted float-end">Hace 20 minutos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--alertas urgentes -->
+
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3 text-danger">Alertas Urgentes</h6>
+
+                    <div class="alert alert-danger py-2 mb-2">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Licencia de conducción vencida - <strong> Maria Gonzalez</strong>
+                        <small>Vencida hace 3 dias - <a href="#" class="text-danger fw-semibold">Revisar</a></small>
+                    </div>
+
+
+                    <div class="alert alert-warning py-2 mb-2">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Tecnomecánica próxima a vencer — <strong>Vehículo AJV45F</strong><br>
+                        <small>Vence en 3 días</small>
+                    </div>
+
+
+                    <div class="alert alert-warning py-2">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        SOAT próximo a vencer — <strong>5 vehículos</strong><br>
+                        <small><a href="#" class="text-warning fw-semibold">Ver lista</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--aciones Rapidas-->
+    <div class="text-center mt-4">
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
+                <i class="fa-solid fa-car me-2"></i> Registrar Vehículo
+            </a>
+            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
+                <i class="fa-solid fa-user me-2"></i> Registrar Conductor
+            </a>
+            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
+                <i class="fa-solid fa-file-alt me-2"></i> Generar Reporte
+            </a>
+        </div>
+    </div>
+
+    {{-- Footer --}}
+    <footer class="text-center mt-5 mb-3 text-muted small">
+        © 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
+    </footer>
+
 </div>
 @endsection
