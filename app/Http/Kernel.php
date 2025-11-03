@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         // ... otras entradas ...
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'is.admin' => \App\Http\Middleware\IsAdmin::class,
         // Añadir aquí:
         //'role.exists' => \App\Http\Middleware\EnsureRoleExists::class,
     ];

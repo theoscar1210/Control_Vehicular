@@ -10,7 +10,6 @@
         height: auto;
     }
 </style>
-
 <div class="login-container">
     <div class="login-card">
         {{-- Logo --}}
@@ -52,11 +51,6 @@
                     <i class="fas fa-lock text-muted"></i>
                 </span>
 
-            </div>
-
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Recordarme</label>
             </div>
 
             <div class="d-grid">

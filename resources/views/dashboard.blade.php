@@ -11,7 +11,7 @@ $rol = $user->rol;
 
 {{--Encabezdo--}}
 <br><br>
-<div class="mb-4">
+<div class="contentor mb-4">
     <h4 class="fw-bold">Bienvenido a la página principal</h4>
     <p class="text-muted mb-0">
         Resumen del estado del cumplimiento documental y actividad del sistema <br>
