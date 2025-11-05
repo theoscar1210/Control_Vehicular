@@ -1,28 +1,29 @@
-
 <?php
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\UsuarioController;
 
-// Rutas públicas
+//  Rutas públicas
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rutas protegidas con autenticación y rol válido
-Route::middleware(['auth',])->group(function () {
-    Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
-    //panel principal sst y admin
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard.home');
-    //gestion de usuarios solo admin
+//  Rutas protegidas
+Route::middleware(['auth'])->group(function () {
 
-    Route::middleware('is.Admin')->group(function () {
-        Route::resource('usuarios', UsuarioController::class)->except(['show']);
+    // Dashboard
+    Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard.home');
+
+    //  Gestión de usuarios (solo ADMIN)
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('usuarios', UserController::class)->except(['show']);
     });
 
-    // Perfil
+
+    // Perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

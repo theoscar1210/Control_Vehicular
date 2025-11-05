@@ -95,7 +95,7 @@
                 </li>
                 {{-- Funcionalidad exclusiva para admin --}}
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-users me-2"></i>Gestión de Usuarios</a>
+                    <a class="nav-link" href="{{ route('usuarios.index') }}"><i class="fas fa-users me-2"></i>Gestión de Usuarios</a>
                 </li>
 
                 <hr>

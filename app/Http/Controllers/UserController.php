@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,7 +12,7 @@ class UserController extends Controller
     public function index()
     {
         // Ajusta el campo de orden según tu PK
-        $usuarios = User::orderBy('id_usuario', 'desc')->paginate(12);
+        $usuarios = Usuario::orderBy('id_usuario', 'desc')->paginate(12);
         return view('usuarios.index', compact('usuarios'));
     }
 
@@ -35,20 +36,20 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['activo'] = $request->has('activo') ? 1 : 0;
 
-        User::create($validated);
+        Usuario::create($validated);
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
 
     public function edit($id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = Usuario::findOrFail($id);
         return view('usuarios.edit', compact('usuario'));
     }
 
     public function update(Request $request, $id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = Usuario::findOrFail($id);
 
         $validated = $request->validate([
             'nombre'   => 'required|string|max:100',
@@ -75,7 +76,7 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = Usuario::findOrFail($id);
         $usuario->delete();
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado.');
     }

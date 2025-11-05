@@ -9,18 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-
         if (! Auth::check() || Auth::user()->rol !== 'ADMIN') {
-            //REDIRIGIS AL DASHBOARD O LOGIN CON MENSAJE
-            return redirect()->route('dashboard')->withErrors(['auth' => 'Acceso denegado. Sólo ADMIN.']);
+            return redirect()->route('dashboard.home')->withErrors(['auth' => 'Acceso denegado. Sólo ADMIN.']);
         }
+
         return $next($request);
     }
 }
