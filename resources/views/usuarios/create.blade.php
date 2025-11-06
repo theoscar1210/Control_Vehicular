@@ -54,12 +54,14 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-semibold text-secondary">Contraseña</label>
-                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" required>
+                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" minlength="6" maxlength="10" title="La contraseña debe tener entre 6 y 10 caracteres" required>
+                        <small class="text-muted">Debe tener entre 6 y 10 caracteres.</small>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-semibold text-secondary">Confirmar contraseña</label>
-                        <input name="password_confirmation" type="password" class="form-control rounded-3 border-success-subtle" required>
+                        <input name="password_confirmation" type="password" class="form-control rounded-3 border-success-subtle" minlength="6" maxlength="10" title="Debe coincidir con la contraseña anterior" required>
+
                     </div>
                 </div>
 
@@ -74,12 +76,18 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6 d-flex align-items-end">
-                        <div class="form-check">
-                            <input type="checkbox" name="activo" id="activo" class="form-check-input" checked>
-                            <label class="form-check-label fw-semibold" for="activo">Usuario activo</label>
-                        </div>
+                    <div class="form-check mb-3">
+                        <input type="hidden" name="activo" value="0"> {{-- Valor por defecto si el checkbox no se marca --}}
+                        <input
+                            type="checkbox"
+                            name="activo"
+                            id="activo"
+                            value="1"
+                            class="form-check-input"
+                            {{ old('activo', true) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="activo">Activo</label>
                     </div>
+
                 </div>
 
                 <hr class="my-4">
