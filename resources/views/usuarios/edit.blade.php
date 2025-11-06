@@ -182,5 +182,10 @@ a@extends('layouts.app')
             </form>
         </div>
     </div>
+
+    {{-- Footer --}}
+    <footer class="text-center mt-5 mb-3 text-muted small">
+        © 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
+    </footer>
 </div>
 @endsection

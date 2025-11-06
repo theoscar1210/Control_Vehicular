@@ -139,20 +139,7 @@ $rol = $user->rol;
     </div>
 
 
-    <!--aciones Rapidas-->
-    <div class="text-center mt-4">
-        <div class="d-flex justify-content-center flex-wrap gap-3">
-            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
-                <i class="fa-solid fa-car me-2"></i> Registrar Vehículo
-            </a>
-            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
-                <i class="fa-solid fa-user me-2"></i> Registrar Conductor
-            </a>
-            <a href="#" class="btn btn-success px-4 py-2 rounded-3 shadow-sm">
-                <i class="fa-solid fa-file-alt me-2"></i> Generar Reporte
-            </a>
-        </div>
-    </div>
+
 
     {{-- Footer --}}
     <footer class="text-center mt-5 mb-3 text-muted small">
