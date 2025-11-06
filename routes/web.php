@@ -42,6 +42,13 @@ Route::middleware(['auth'])->group(function () {
     // Guardar documentos del vehículo
     Route::post('vehculos/{id}/documentos', [DocumentoVehiculoController::class, 'store'])->name('documentos.store');
 
+    //editar vehiculo
+    Route::get('vehiculos/{id}/edit', [VehiculoController::class, 'edit'])->name('vehiculos.edit');
+    Route::put('vehiculos/{id}', [VehiculoController::class, 'update'])->name('vehiculos.update');
+
+    // Eliminar vehículo
+    Route::delete('vehiculos/{id}', [VehiculoController::class, 'destroy'])->name('vehiculos.destroy');
+
 
     // ================================
     //  Perfil de usuario
