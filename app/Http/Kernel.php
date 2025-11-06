@@ -33,6 +33,9 @@ class Kernel extends HttpKernel
         // ... otras entradas ...
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'is.admin' => \App\Http\Middleware\IsAdmin::class,
+
+
+        'role.sst.admin' => \App\Http\Middleware\SstOrAdmin::class,
         // Añadir aquí:
         //'role.exists' => \App\Http\Middleware\EnsureRoleExists::class,
     ];

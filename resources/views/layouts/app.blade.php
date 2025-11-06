@@ -85,13 +85,13 @@
                     <a class="nav-link active" href="{{ route('dashboard') }}"><i class="fas fa-home me-2"></i>Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-car me-2"></i>Registro de Vehículos</a>
+                    <a class="nav-link" href="{{ route('vehiculos.index') }}"><i class="fas fa-car me-2"></i>Registro de Vehículos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-id-card me-2"></i>Registro de Conductores</a>
+                    <a class="nav-link" href=""><i class="fas fa-id-card me-2"></i>Registro de Conductores</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i>Verificación Documentos</a>
+                    <a class="nav-link" href=""><i class="fas fa-file-alt me-2"></i>Verificación Documentos</a>
                 </li>
                 {{-- Funcionalidad exclusiva para admin --}}
                 <li class="nav-item">

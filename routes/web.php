@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehiculoController;
+use App\Models\Vehiculo;
 use Illuminate\Support\Facades\Route;
 
 //  Rutas públicas
@@ -20,6 +22,12 @@ Route::middleware(['auth'])->group(function () {
     //  Gestión de usuarios (solo ADMIN)
     Route::middleware(['auth'])->group(function () {
         Route::resource('usuarios', UserController::class)->except(['show']);
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        // Rutas protegidas para roles SST o ADMIN
+        Route::resource('vehiculos', VehiculoController::class)->except(['show']);
+        // Otras rutas específicas para SST o ADMIN pueden ir aquí
     });
 
 
