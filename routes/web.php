@@ -4,7 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehiculoController;
-use App\Models\Vehiculo;
+use App\Http\Controllers\DocumentoVehiculoController;
+use App\Http\Controllers\PropietarioController;
 use Illuminate\Support\Facades\Route;
 
 //  Rutas públicas
@@ -24,14 +25,27 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('usuarios', UserController::class)->except(['show']);
     });
 
-    Route::middleware(['auth'])->group(function () {
-        // Rutas protegidas para roles SST o ADMIN
-        Route::resource('vehiculos', VehiculoController::class)->except(['show']);
-        // Otras rutas específicas para SST o ADMIN pueden ir aquí
-    });
+    // ================================
+    // Módulo de Vehículos
+    // ================================
+
+    // Vista principal de gestión de vehículos
+    Route::get('vehiculos', [VehiculoController::class, 'index'])->name('vehiculos.index');
+
+    //formulario de creacion vehiculos - propietarios - documentos
+    Route::get('vehiculos/create', [VehiculoController::class, 'create'])->name('vehiculos.create');
+    // Guardar vehículo
+    Route::post('vehiculos', [VehiculoController::class, 'store'])->name('vehiculos.store');
+
+    // Guardar propietario (cuando se registre desde el flujo del vehículo)
+    Route::post('propietarios', [PropietarioController::class, 'store'])->name('propietarios.store');
+    // Guardar documentos del vehículo
+    Route::post('vehculos/{id}/documentos', [DocumentoVehiculoController::class, 'store'])->name('documentos.store');
 
 
-    // Perfil de usuario
+    // ================================
+    //  Perfil de usuario
+    // ================================
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

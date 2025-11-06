@@ -2,30 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Vehiculo;
+use App\Models\Propietario;
+use App\Models\DocumentoVehiculo;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class VehiculoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $vehiculos = Vehiculo::orderBy('id_vehiculo', 'desc')->paginate(12);
+        $vehiculos = Vehiculo::with('propietario')->orderBy('id_vehiculo', 'desc')->paginate(15);
         return view('vehiculos.index', compact('vehiculos'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar la vista de create.
+     * Si viene ?propietario=ID, cargamos ese propietario para habilitar el formulario de vehículo.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('vehiculos.create');
+        $propietario = null;
+        $propId = $request->query('propietario') ?? session('created_propietario_id');
+
+        if ($propId) {
+            $propietario = Propietario::find($propId);
+        }
+
+        return view('vehiculos.create', compact('propietario'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guardar vehículo (requiere id_propietario)
      */
     public function store(Request $request)
     {
@@ -33,62 +42,37 @@ class VehiculoController extends Controller
             'placa' => 'required|string|max:10|unique:vehiculos,placa',
             'marca' => 'required|string|max:50',
             'modelo' => 'nullable|string|max:50',
-            'color' => 'nullable|string|max:30',
+            'color' => 'nullable|string|max:50',
             'tipo' => 'required|in:Carro,Moto,Camion,Otro',
+            'anio' => 'required|integer|min:1900|max:2099',
             'id_propietario' => 'required|integer|exists:propietarios,id_propietario',
-            'id_conductor' => 'nullable|integer|exists:conductores,id_conductor',
-            'estado' => 'required|in:Activo,Inactivo',
+        ], [
+            'id_propietario.required' => 'Debe existir un propietario asociado. Crea primero el propietario.',
+            'id_propietario.exists' => 'Propietario no válido.',
         ]);
 
-        Vehiculo::create($validated);
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo creado exitosamente.');
-    }
+        DB::beginTransaction();
+        try {
+            $veh = Vehiculo::create([
+                'placa' => strtoupper($validated['placa']),
+                'marca' => $validated['marca'],
+                'modelo' => $validated['modelo'] ?? null,
+                'color' => $validated['color'] ?? null,
+                'tipo' => $validated['tipo'],
+                'anio' => $validated['anio'],
+                'id_propietario' => $validated['id_propietario'],
+                'id_conductor' => null,
+                'estado' => 'Activo',
+                'creado_por' => auth()->id() ?? null,
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+            DB::commit();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $vehiculo = Vehiculo::findOrFail($id);
-        return view('vehiculos.edit', compact('vehiculo'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $vehiculo = Vehiculo::findOrFail($id);
-        $validated = $request->validate([
-            'placa' => 'required|string|max:20|unique:vehiculos,placa,' . $id . ',id_vehiculo',
-            'marca' => 'required|string|max:50',
-            'modelo' => 'nullable|string|max:50',
-            'color' => 'nullable|string|max:30',
-            'tipo' => 'required|in:Carro,Moto,Camion,Otro',
-            'id_propietario' => 'required|integer|exists:propietarios,id_propietario',
-            'id_conductor' => 'nullable|integer|exists:conductores,id_conductor',
-            'estado' => 'required|in:Activo,Inactivo',
-        ]);
-
-        $vehiculo->update($validated);
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado exitosamente.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $vehiculo = Vehiculo::findOrFail($id);
-        $vehiculo->delete();
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado exitosamente.');
+            return redirect()->route('vehiculos.create', ['propietario' => $veh->id_propietario, 'vehiculo' => $veh->id_vehiculo])->with('success', 'Vehículo creado. Ahora puede agregar los documentos.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error('Error creando vehículo: ' . $e->getMessage());
+            return back()->withInput()->withErrors(['general' => 'Error al crear vehículo.']);
+        }
     }
 }
