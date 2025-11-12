@@ -75,4 +75,31 @@ class VehiculoController extends Controller
             return back()->withInput()->withErrors(['general' => 'Error al crear vehículo.']);
         }
     }
+
+    //editar un vehiculo
+    public function edit(Vehiculo $vehiculo)
+    {
+        return view('vehiculos.edit', compact('vehiculo'));
+    }
+
+
+    //eliminar un vehiculo
+    public function destroy(Vehiculo $vehiculo)
+    {
+        DB::beginTransaction();
+        try {
+            // Eliminar documentos asociados
+            DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)->delete();
+
+            // Eliminar vehículo
+            $vehiculo->delete();
+
+            DB::commit();
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo y documentos asociados eliminados correctamente.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error('Error eliminando vehículo: ' . $e->getMessage());
+            return back()->withErrors(['general' => 'Error al eliminar vehículo.']);
+        }
+    }
 }

@@ -18,7 +18,7 @@
         </ol>
     </nav>
 
-    <h3><i class="fa-solid fa-circle-plus text-primary"></i> Registro de Vehículo</h3>
+    <h3> Registro de Vehículo</h3>
 
     {{-- Mensajes --}}
     @if(session('success'))
