@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/conductores', [ConductorController::class, 'store'])->name('conductores.store');
     Route::get('/conductores/{conductor}/edit', [ConductorController::class, 'edit'])->name('conductores.edit');
     Route::put('/conductores/{conductor}', [ConductorController::class, 'update'])->name('conductores.update');
+    Route::resource('documentos_conductor', DocumentoConductorController::class)->only(['store', 'update', 'destroy']);
 
     // ================================
     //  Perfil de usuario

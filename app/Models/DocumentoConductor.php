@@ -51,7 +51,7 @@ class DocumentoConductor extends Model
      */
     public function conductor()
     {
-        return $this->belongsTo(Conductor::class, 'id_conductor');
+        return $this->belongsTo(Conductor::class, 'id_conductor', 'id_conductor');
     }
     public function creador()
     {

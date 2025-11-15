@@ -59,7 +59,7 @@ class Vehiculo extends Model
     // Conductor asignado 
     public function conductor()
     {
-        return $this->belongsTo(Conductor::class, 'id_conductor',);
+        return $this->belongsTo(Conductor::class, 'id_conductor', 'id_conductor');
     }
     // creador (usuario que lo creó)
     public function creador()
@@ -78,4 +78,9 @@ class Vehiculo extends Model
      * - Usa la clase DocumentoVehiculo
      * - Clave foránea en la tabla relacionada: 'id_vehiculo'
      */
+
+    public function documentosVehiculo()
+    {
+        return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
 }

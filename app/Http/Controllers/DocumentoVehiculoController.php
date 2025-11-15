@@ -39,7 +39,7 @@ class DocumentoVehiculoController extends Controller
      */
     public function edit($id)
     {
-        $vehiculo = Vehiculo::with(['documentosConductor', 'conductor.documentosConductor', 'propietario'])->findOrFail($id);
+        $vehiculo = Vehiculo::with(['documentosVehiculo', 'conductor.documentosConductor', 'propietario'])->findOrFail($id);
         return view('vehiculos.edit', compact('vehiculo'));
     }
 

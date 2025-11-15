@@ -50,13 +50,13 @@
             <h5 class="mb-3 text-secondary">Documentos del Vehículo</h5>
 
             {{-- Mensaje si no hay documentos registrados --}}
-            @if($vehiculo->documentos->isEmpty())
+            @if($vehiculo->documentosVehiculo->isEmpty())
             <div class="alert alert-warning">No hay documentos registrados para este vehículo.</div>
             @endif
 
             <div class="row">
                 {{-- Iteración por cada documento del vehículo --}}
-                @foreach($vehiculo->documentos as $doc)
+                @foreach($vehiculo->documentosVehiculo as $doc)
                 @php
                 // Asignación de color según estado del documento
                 $color = match($doc->estado) {
@@ -97,11 +97,11 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label">F. Emisión</label>
-                                        <input type="date" name="fecha_emision" value="{{ old('fecha_emision', $doc->fecha_emision) }}" class="form-control">
+                                        <input type="date" name="fecha_emision" value="{{ old('fecha_emision', optional($doc->fecha_emision)->format('Y-m-d') ?? $doc->fecha_emision) }}" class="form-control">
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label">F. Vencimiento</label>
-                                        <input type="date" name="fecha_vencimiento" value="{{ old('fecha_vencimiento', $doc->fecha_vencimiento) }}" class="form-control">
+                                        <input type="date" name="fecha_vencimiento" value="{{ old('fecha_vencimiento', optional($doc->fecha_vencimiento)->format('Y-m-d') ?? $doc->fecha_vencimiento) }}" class="form-control">
                                     </div>
                                 </div>
 
@@ -122,12 +122,12 @@
 
         {{-- Sección de documentos del conductor (si existen) --}}
 
-        @if($vehiculo->conductor && $vehiculo->conductor->documentos && $vehiculo->conductor->documentos->isNotEmpty())
+        @if($vehiculo->conductor && $vehiculo->conductor->documentosConductor->isNotEmpty())
 
         <div class="col-md-12 mt-5">
             <h5 class="mb-3 text-secondary">Documentos del Conductor</h5>
             <div class="row">
-                @foreach($vehiculo->conductor->documentos as $doc)
+                @foreach($vehiculo->conductor->documentosConductor as $doc)
                 @php
                 // Asignación de color según estado del documento
                 $color = match($doc->estado) {
@@ -160,11 +160,11 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label">F. Emisión</label>
-                                        <input type="date" name="fecha_emision" value="{{ old('fecha_emision', $doc->fecha_emision) }}" class="form-control">
+                                        <input type="date" name="fecha_emision" value="{{ old('fecha_emision', optional($doc->fecha_emision)->format('Y-m-d') ?? $doc->fecha_emision) }}" class="form-control">
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         <label class="form-label">F. Vencimiento</label>
-                                        <input type="date" name="fecha_vencimiento" value="{{ old('fecha_vencimiento', $doc->fecha_vencimiento) }}" class="form-control">
+                                        <input type="date" name="fecha_vencimiento" value="{{ old('fecha_vencimiento', optional($doc->fecha_vencimiento)->format('Y-m-d') ?? $doc->fecha_vencimiento) }}" class="form-control">
                                     </div>
                                 </div>
 
