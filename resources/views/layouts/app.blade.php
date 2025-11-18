@@ -15,16 +15,28 @@
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
-    <!-- Fuente moderna (opcional) -->
+    <!-- Fuente moderna -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    {{-- Navbar superior --}}
-    @if(empty($ocultarNavbar))
+
+    {{-- ========================================================
+        1) Navbar especial (solo si la vista lo activa)
+    ========================================================= --}}
+    @if(isset($navbarEspecial) && $navbarEspecial === true)
+    @include('profile.partials.navbar-especial')
+    <div class="content p-4 mt-5"> @yield('content')</div>
+
+    {{-- ========================================================
+        2) Layout completo normal (navbar principal + sidebar)
+           Solo si NO está oculto y NO es navbar especial
+    ========================================================= --}}
+    @elseif(empty($ocultarNavbar))
+
+    {{-- Navbar principal --}}
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container-fluid px-4">
-            {{-- Logo + nombre --}}
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
                 <img src="{{ asset('imagenes/Logo_solo.png') }}" alt="Logo" class="navbar-logo me-2">
                 <div class="d-flex flex-column lh-sm">
@@ -33,7 +45,6 @@
                 </div>
             </a>
 
-            {{-- Barra de búsqueda --}}
             <form class="d-none d-md-flex mx-auto w-50">
                 <div class="input-group">
                     <span class="input-group-text bg-light border-0">
@@ -43,7 +54,6 @@
                 </div>
             </form>
 
-            {{-- Iconos de notificaciones y usuario --}}
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item me-3 position-relative">
                     <a href="#" class="nav-link text-dark">
@@ -51,15 +61,15 @@
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
                     </a>
                 </li>
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        {{-- Iniciales dentro de círculo verde --}}
+                    <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                         <div class="circulo-redondo">
                             {{ strtoupper(substr(auth()->user()->nombre ?? 'U', 0, 2)) }}
                         </div>
                         {{ auth()->user()->nombre ?? 'Usuario' }}
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#">Perfil</a></li>
                         <li>
@@ -73,29 +83,37 @@
             </ul>
         </div>
     </nav>
-    @endif
 
-    {{-- Contenedor general --}}
-    @if(empty($ocultarNavbar))
+    {{-- Contenedor --}}
     <div class="d-flex">
         {{-- Sidebar --}}
         <div class="sidebar bg-white shadow-sm border-end pt-3">
             <ul class="nav flex-column mt-4">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('dashboard') }}"><i class="fas fa-home me-2"></i>Inicio</a>
+                    <a class="nav-link active" href="{{ route('dashboard') }}">
+                        <i class="fas fa-home me-2"></i>Inicio
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('vehiculos.index') }}"><i class="fas fa-car me-2"></i>Registro de Vehículos</a>
+                    <a class="nav-link" href="{{ route('vehiculos.index') }}">
+                        <i class="fas fa-car me-2"></i>Registro de Vehículos
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('conductores.create') }}"><i class="fas fa-id-card me-2"></i>Registro de Conductores</a>
+                    <a class="nav-link" href="{{ route('conductores.create') }}">
+                        <i class="fas fa-id-card me-2"></i>Registro de Conductores
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href=""><i class="fas fa-file-alt me-2"></i>Verificación Documentos</a>
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-file-alt me-2"></i>Verificación Documentos
+                    </a>
                 </li>
-                {{-- Funcionalidad exclusiva para admin --}}
+
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('usuarios.index') }}"><i class="fas fa-users me-2"></i>Gestión de Usuarios</a>
+                    <a class="nav-link" href="{{ route('usuarios.index') }}">
+                        <i class="fas fa-users me-2"></i>Gestión de Usuarios
+                    </a>
                 </li>
 
                 <hr>
@@ -110,20 +128,24 @@
             </ul>
         </div>
 
-        {{-- Contenido principal --}}
-        <div class="content flex-grow-1 p-4 mt-5 {{ empty($ocultarNavbar) ? 'con-sidebar' : ''}}">
+        {{-- Contenido --}}
+        <div class="content flex-grow-1 p-4 mt-5 con-sidebar">
             @yield('content')
         </div>
     </div>
+
+    {{-- ========================================================
+        3) Vista sin navbar ni sidebar (login, etc.)
+    ========================================================= --}}
     @else
-    {{-- Solo contenido sin navbar ni sidebar (ej. login) --}}
-    <div class=" content p-4 mt-5 ">
+    <div class="content p-4 mt-5">
         @yield('content')
     </div>
     @endif
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
