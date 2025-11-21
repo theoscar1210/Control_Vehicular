@@ -9,6 +9,7 @@ use App\Http\Controllers\DocumentoVehiculoController;
 use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\AlertaController;
 use Illuminate\Support\Facades\Route;
 
 //  Rutas públicas
@@ -95,4 +96,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('alertas', [AlertaController::class, 'index'])->name('alertas.index');
+        Route::get('alertas/{alerta}', [AlertaController::class, 'show'])->name('alertas.show');
+        Route::post('alertas', [AlertaController::class, 'store'])->name('alertas.store'); // para crear manual
+        Route::delete('alertas/{alerta}', [AlertaController::class, 'destroy'])->name('alertas.destroy');
+
+        // acciones AJAX / helpers
+        Route::post('alertas/{alerta}/read', [AlertaController::class, 'markAsRead'])->name('alertas.read');
+        Route::post('alertas/mark-all-read', [AlertaController::class, 'markAllRead'])->name('alertas.mark_all_read');
+        Route::get('alertas/unread-count', [AlertaController::class, 'unreadCount'])->name('alertas.unread_count');
+    });
 });

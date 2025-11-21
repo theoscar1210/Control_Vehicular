@@ -1,22 +1,19 @@
 <?php
 
-// Define el espacio de nombres del modelo
 namespace App\Models;
 
-// Importa clases necesarias para el modelo
-use Illuminate\Database\Eloquent\Model; // Clase base para modelos Eloquent
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Permite usar factories para pruebas
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-// Define el modelo 'vehiculo' que extiende Eloquent
 class Vehiculo extends Model
 {
-    // Habilita el uso de factories para generar datos de prueba
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /** Nombre explícito de la tabla en la base de datos */
     protected $table = 'vehiculos';
 
-    /** Clave primaria personalizada (por defecto sería 'id') */
+    /** Clave primaria personalizada */
     protected $primaryKey = 'id_vehiculo';
     public $timestamps = false;
     protected $keyType = 'int';
@@ -39,46 +36,66 @@ class Vehiculo extends Model
     protected $casts = [
         'fecha_registro' => 'datetime',
     ];
+
+    /**
+     * Hook de Eloquent: al eliminar un vehículo
+     * - Si es soft delete, se eliminan (soft) documentos y propietario asociado
+     * - Si es force delete, se eliminan físicamente
+     */
+    protected static function booted()
+    {
+        static::deleting(function ($veh) {
+            if (!$veh->isForceDeleting()) {
+                // Soft delete documentos del vehículo
+                $veh->documentos()->delete();
+
+                //  En vez de borrar propietario, desasignar
+                if ($veh->propietario) {
+                    $veh->id_propietario = null;
+                    $veh->save();
+                }
+            } else {
+                // Force delete documentos y propietario
+                $veh->documentos()->withTrashed()->forceDelete();
+            }
+        });
+    }
+
     /**
      * Relación: el vehículo pertenece a un propietario
-     * - Usa la clase Propietario
-     * - Clave foránea: 'id_propietario'
      */
-
-
-    /**
-     * Relación: el vehículo pertenece a un conductor
-     * - Usa la clase Conductor
-     * - Clave foránea: 'id_conductor
-     */
-    // Propietario (belongsTo)
     public function propietario()
     {
         return $this->belongsTo(Propietario::class, 'id_propietario', 'id_propietario');
     }
-    // Conductor asignado 
+
+    /**
+     * Relación: el vehículo pertenece a un conductor
+     */
     public function conductor()
     {
         return $this->belongsTo(Conductor::class, 'id_conductor', 'id_conductor');
     }
-    // creador (usuario que lo creó)
+
+    /**
+     * Relación: el vehículo fue creado por un usuario
+     */
     public function creador()
     {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
-    // Documentos del vehículo (hasMany) -> método EXACTO que debes llamar en with()
-    public function documentos()
-    {
-        return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo',);
-    }
-
 
     /**
-     * Relación: el vehículo tiene muchos documentos
-     * - Usa la clase DocumentoVehiculo
-     * - Clave foránea en la tabla relacionada: 'id_vehiculo'
+     * Relación: documentos del vehículo
      */
+    public function documentos()
+    {
+        return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
 
+    /**
+     * Relación alternativa: documentos del vehículo
+     */
     public function documentosVehiculo()
     {
         return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo', 'id_vehiculo');
