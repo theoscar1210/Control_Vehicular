@@ -472,3 +472,124 @@ Estilos para la vista de Registro de Vehículos SST y ADMIN
 .alert-warning {
     border-left: 6px solid var(--azul-contorno);
 }
+
+/*===== vista reportes y consultas=====*/
+
+/*pagina de reportes y consultas*/
+/* Contenedor principal */
+
+/* ======== TITULO PRINCIPAL ======== */
+h2 {
+    font-weight: 700;
+    color: #003b73;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* ======== CARD DEL FORMULARIO ======== */
+.card-body {
+    background: #ffffff;
+}
+
+form.card {
+    border-left: 5px solid #003b73;
+    border-radius: 10px;
+}
+
+form.card label {
+    font-weight: 600;
+    color: #003b73;
+}
+
+.form-check-label {
+    font-weight: 500;
+}
+
+/* ======== BOTONES CORPORATIVOS ======== */
+.btn-primary {
+    background-color: #003b73;
+    border-color: #003b73;
+}
+
+.btn-primary:hover {
+    background-color: #002f5a;
+    border-color: #002f5a;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #003b73;
+    color: #fff;
+}
+
+/* Botones export */
+.btn-success {
+    background-color: #198754 !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+}
+
+/* ======== TABLA ======== */
+.table thead {
+    background: #003b73;
+    color: #fff;
+}
+
+.table tbody tr:hover {
+    background-color: #f4f9ff;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+/* ======== CARD RESULTADOS ======== */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table-responsive {
+    border-radius: 10px;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+    form.card {
+        padding: 1rem !important;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    form .row > div {
+        margin-bottom: 0.7rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}

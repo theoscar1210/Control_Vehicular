@@ -25,7 +25,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Consultas y Reportes</a>
+                    <a class="nav-link" href="{{ route('documentos.consultar') }}">Consultas y Reportes</a>
                 </li>
             </ul>
         </div>

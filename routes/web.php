@@ -8,6 +8,7 @@ use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\DocumentoVehiculoController;
 use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\DocumentoController;
 use Illuminate\Support\Facades\Route;
 
 //  Rutas públicas
@@ -69,7 +70,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/conductores/{conductor}/edit', [ConductorController::class, 'edit'])->name('conductores.edit');
     Route::put('/conductores/{conductor}', [ConductorController::class, 'update'])->name('conductores.update');
     Route::resource('documentos_conductor', DocumentoConductorController::class)->only(['store', 'update', 'destroy']);
+    //=====================================
+    //Consultas y reporter
+    //=====================================
 
+    // Vista de consulta (única vista central)
+
+    Route::get('/consultar-documentos', [DocumentoController::class, 'index'])
+        ->name('documentos.consultar');
+
+    // Exports (mismos filtros que index, devuelven archivo)
+    Route::get('/consultar-documentos/export/excel', [DocumentoController::class, 'exportExcel'])
+        ->name('documentos.consultar.export.excel');
+
+    Route::get('/consultar-documentos/export/pdf', [DocumentoController::class, 'exportPdf'])
+        ->name('documentos.consultar.export.pdf');
+
+    // Descargar archivo asociado a un documento (si existe ruta_archivo)
+    Route::get('/documentos_conductor/{documento}/download', [DocumentoController::class, 'download'])
+        ->name('documentos_conductor.download');
     // ================================
     //  Perfil de usuario
     // ================================

@@ -54,7 +54,7 @@ class Vehiculo extends Model
     // Propietario (belongsTo)
     public function propietario()
     {
-        return $this->belongsTo(Propietario::class, 'id_propietario');
+        return $this->belongsTo(Propietario::class, 'id_propietario', 'id_propietario');
     }
     // Conductor asignado 
     public function conductor()
