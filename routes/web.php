@@ -10,6 +10,7 @@ use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\AlertaController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
@@ -20,9 +21,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Rutas protegidas
 Route::middleware(['auth'])->group(function () {
 
+
     // Dashboard
-    Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard.home');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.home');
+
 
     // Gestión de usuarios (solo ADMIN)
     Route::middleware(['auth'])->group(function () {

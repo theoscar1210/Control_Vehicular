@@ -6,13 +6,7 @@
 @php
 $user = $user ?? auth()->user();
 $rol = $user->rol ?? 'N/A';
-// Valores dinámicos: el controlador debe pasar estos datos opcionalmente.
-$totalVehiculos = $totalVehiculos ?? 1247;
-$conductoresActivos = $conductoresActivos ?? 892;
-$porVencerCount = $porVencerCount ?? 2;
-$vencidosCount = $vencidosCount ?? 12; // número entero, no "1,2"
-// Alertas: el controlador debe pasar $alertas (LengthAwarePaginator o Collection paginada)
-$alertas = $alertas ?? collect();
+
 @endphp
 
 <br><br>
@@ -34,7 +28,7 @@ $alertas = $alertas ?? collect();
             <div class="card-body text-center">
                 <h6 class="text-muted mb-2">Total Vehículos</h6>
                 <h3 class="fw-bold text-success">{{ number_format($totalVehiculos) }}</h3>
-                <small class="text-success">+12% este mes <i class="fa-solid fa-arrow-up"></i></small>
+
             </div>
         </div>
     </div>
@@ -44,7 +38,7 @@ $alertas = $alertas ?? collect();
             <div class="card-body text-center">
                 <h6 class="text-muted mb-2">Conductores Activos</h6>
                 <h3 class="fw-bold text-success">{{ number_format($conductoresActivos) }}</h3>
-                <small class="text-success">+12% este mes <i class="fa-solid fa-arrow-up"></i></small>
+
             </div>
         </div>
     </div>

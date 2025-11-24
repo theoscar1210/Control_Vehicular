@@ -4,38 +4,75 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Alerta;
+use Carbon\Carbon;
+use App\Models\Vehiculo;
 use App\Models\Conductor;
 use App\Models\DocumentoConductor;
 use App\Models\DocumentoVehiculo;
-use App\Models\Vehiculo;
+use App\Models\Alerta;
 
 class DashboardController extends Controller
 {
     /**
-     * Constructor. Establece la autenticación obligatoria para ver el dashboard.
+     * Constructor. Requiere auth middleware.
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Mostrar dashboard con variables exactas que la vista espera.
      */
-
-
     public function index(Request $request)
     {
-        // valores resumen
-        $totalVehiculos = Vehiculo::count();
+        $hoy = Carbon::today();
+        $proximo = $hoy->copy()->addDays(30);
+
+        // Total vehículos: contar solo los activos (evita valores irreales)
+        $totalVehiculos = Vehiculo::where('estado', 'Activo')->count();
+
+        // Conductores activos
         $conductoresActivos = Conductor::where('activo', 1)->count();
 
-        // contadores por estado (documentos conductor + vehiculo)
-        $porVencerCount = DocumentoConductor::where('estado', 'POR_VENCER')->count()
-            + DocumentoVehiculo::where('estado', 'POR_VENCER')->count();
+        // Documentos por vencer: documentos (vehículo + conductor) con fecha_vencimiento entre hoy y +30,
+        // y que no estén marcados como REEMPLAZADO (historiales antiguos).
+        $porVencerVeh = DocumentoVehiculo::whereNotNull('fecha_vencimiento')
+            ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
+            ->where('estado', '!=', 'REEMPLAZADO')
+            ->count();
 
-        $vencidosCount = DocumentoConductor::where('estado', 'VENCIDO')->count()
-            + DocumentoVehiculo::where('estado', 'VENCIDO')->count();
+        $porVencerCond = DocumentoConductor::whereNotNull('fecha_vencimiento')
+            ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
+            ->where('estado', '!=', 'REEMPLAZADO')
+            ->count();
 
-        // obtener rol del usuario autenticado (si existe)
+        $porVencerCount = $porVencerVeh + $porVencerCond;
+
+        // Documentos vencidos: fecha_vencimiento < hoy OR estado = 'VENCIDO'
+        // Excluimos los que están como REEMPLAZADO
+        $vencidosVeh = DocumentoVehiculo::where('estado', '!=', 'REEMPLAZADO')
+            ->where(function ($q) use ($hoy) {
+                $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
+                    ->orWhere('estado', 'VENCIDO');
+            })->count();
+
+        $vencidosCond = DocumentoConductor::where('estado', '!=', 'REEMPLAZADO')
+            ->where(function ($q) use ($hoy) {
+                $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
+                    ->orWhere('estado', 'VENCIDO');
+            })->count();
+
+        $vencidosCount = $vencidosVeh + $vencidosCond;
+
+        // Última actualización: fecha y hora completas
+        $ultima_actualizacion = Carbon::now()->format('d M Y, H:i:s');
+
+        // Alertas: visibles para el rol del usuario o para TODOS, no borradas (softDelete),
+        // ordenamos por no leídas primero y luego por fecha.
         $user = Auth::user();
         $role = $user ? $user->rol : null;
 
-        // consultas de alertas visibles para el rol (si no hay usuario devolvemos none)
-        $alertasQuery = Alerta::query();
+        $alertasQuery = Alerta::query()->whereNull('deleted_at');
 
         if ($role) {
             $alertasQuery->where(function ($q) use ($role) {
@@ -43,18 +80,19 @@ class DashboardController extends Controller
                     ->orWhere('visible_para', $role);
             });
         } else {
-            // si no hay usuario autenticado, solo mostrar las visibles para TODOS
             $alertasQuery->where('visible_para', 'TODOS');
         }
 
-        $alertas = $alertasQuery->orderByDesc('fecha_alerta')->paginate(10);
+        // ordenar: primero no leídas, luego por fecha desc
+        $alertas = $alertasQuery->orderBy('leida', 'asc')->orderByDesc('fecha_alerta')->paginate(10);
 
         return view('dashboard', compact(
             'totalVehiculos',
             'conductoresActivos',
             'porVencerCount',
             'vencidosCount',
-            'alertas'
+            'alertas',
+            'ultima_actualizacion'
         ));
     }
 }
