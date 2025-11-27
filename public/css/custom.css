@@ -391,12 +391,6 @@ Estilos para la vista gestion de vehiculos sst y admin
 
 ============================================*/
 
-/*
-Estilos para la vista de Registro de Vehículos SST y ADMIN
-*/
-
-/* ======= COLORES INSTITUCIONALES ======= */
-
 /* ======= GENERAL ======= */
 .breadcrumb a {
     color: var(--azul-contorno);
@@ -450,12 +444,13 @@ Estilos para la vista de Registro de Vehículos SST y ADMIN
 }
 
 .btn-primary {
+    background-color: var(--color-principal);
     background: var(--color-principal);
     border: none;
 }
 
 .btn-primary:hover {
-    background: #145ba3;
+    background: var(--color-principal);
 }
 
 .btn-outline-primary {
@@ -474,9 +469,6 @@ Estilos para la vista de Registro de Vehículos SST y ADMIN
 }
 
 /*===== vista reportes y consultas=====*/
-
-/*pagina de reportes y consultas*/
-/* Contenedor principal */
 
 /* ======== TITULO PRINCIPAL ======== */
 h2 {
@@ -592,4 +584,44 @@ form.card label {
     .table td {
         padding: 0.5rem;
     }
+}
+
+/*==============================================================
+estylos para la vista de crar prpietarios vehiculos y documentos 
+
+=================================================================*/
+
+/* Reduce tamaño de tarjetas en móvil */
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+    }
+
+    .card-header {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+}
+.btn-universal {
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
+    color: #fff;
+}
+
+.btn-universal:hover {
+    background-color: var(--colo-hover);
+    border-color: var(--colo-hover);
 }

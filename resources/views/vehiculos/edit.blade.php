@@ -31,6 +31,8 @@
                 <div class="col-md-3"><strong>Placa:</strong> {{ $vehiculo->placa }}</div>
                 <div class="col-md-3"><strong>Marca:</strong> {{ $vehiculo->marca }}</div>
                 <div class="col-md-3"><strong>Tipo:</strong> {{ $vehiculo->tipo }}</div>
+                <div class="col-md-3"><strong>Modelo:</strong> {{ $vehiculo->modelo }}</div>
+                <div class="col-md-3"><strong>Color:</strong> {{ $vehiculo->color }}</div>
                 <div class="col-md-3"><strong>Estado:</strong> {{ $vehiculo->estado }}</div>
                 {{-- Datos del propietario --}}
                 <div class="col-md-4 mt-2"><strong>Propietario:</strong>
@@ -146,7 +148,9 @@
                             <strong>{{ $doc->tipo_documento }}</strong>
                             <span class="badge bg-{{ $color }}">{{ $doc->estado }}</span>
                         </div>
+
                         <div class="card-body">
+
                             {{-- Formulario para actualizar documento del conductor --}}
                             <form action="{{ route('documentos_conductor.update', $doc->id_doc_conductor) }}" method="POST" enctype="multipart/form-data">
                                 @csrf

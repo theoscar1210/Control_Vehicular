@@ -44,7 +44,6 @@ class VehiculoController extends Controller
             'modelo' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'tipo' => 'required|in:Carro,Moto,Camion,Otro',
-            'anio' => 'required|integer|min:1900|max:2099',
             'id_propietario' => 'required|integer|exists:propietarios,id_propietario',
         ], [
             'id_propietario.required' => 'Debe existir un propietario asociado. Crea primero el propietario.',
@@ -59,7 +58,6 @@ class VehiculoController extends Controller
                 'modelo' => $validated['modelo'] ?? null,
                 'color' => $validated['color'] ?? null,
                 'tipo' => $validated['tipo'],
-                'anio' => $validated['anio'],
                 'id_propietario' => $validated['id_propietario'],
                 'id_conductor' => null,
                 'estado' => 'Activo',
