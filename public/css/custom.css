@@ -625,3 +625,66 @@ estylos para la vista de crar prpietarios vehiculos y documentos
     background-color: var(--colo-hover);
     border-color: var(--colo-hover);
 }
+
+.bg-header {
+    background-color: var(--color-principal);
+    color: #fff;
+}
+
+.alert-custom {
+    border-left: 6px solid var(--color-menu);
+    background-color: var(--color-tablas);
+    color: var(--color-texto);
+}
+
+/* Contenedor moderno */
+.progress-wrapper {
+    background: #ffffff;
+    border-left: 5px solid #4e73df;
+    transition: 0.3s ease;
+}
+
+.progress-wrapper:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Icono moderno */
+.icon-modern {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+}
+
+/* Barra de progreso */
+.modern-progress {
+    background: #eef2f6 !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.modern-progress-bar {
+    background: linear-gradient(90deg, #4e73df, #1cc88a);
+    background-size: 200% 200%;
+    animation: gradientFlow 4s ease infinite;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Animación suave */
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

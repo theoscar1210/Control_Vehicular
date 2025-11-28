@@ -96,7 +96,7 @@
                     <a href="{{ route('usuarios.index') }}" class="btn btn-outline-danger sm">
                         Cancelar
                     </a>
-                    <button class="btn btn-principal btn-sm">
+                    <button class="btn btn-universal">
                         <i class="bi bi-person-plus"></i> Crear Usuario
                     </button>
                 </div>

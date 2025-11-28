@@ -101,7 +101,7 @@ a@extends('layouts.app')
                     <a href="{{ route('usuarios.index') }}" class="btn btn-outline-danger">
                         <i class="fas fa-times me-1"></i> Cancelar
                     </a>
-                    <button class="btn btn-principal btn-sm">
+                    <button class="btn btn-universal">
                         <i class="fas fa-save me-1"></i> Actualizar Usuario
                     </button>
                 </div>

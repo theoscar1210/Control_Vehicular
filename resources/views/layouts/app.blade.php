@@ -52,6 +52,7 @@
                 </div>
             </a>
 
+            <!-- se deja desactivado el buscador central
             {{-- Buscador central (visible solo en pantallas medianas en adelante) --}}
             <form class="d-none d-md-flex mx-auto w-50">
                 <div class="input-group">
@@ -61,6 +62,7 @@
                     <input type="text" class="form-control border-0 shadow-none" placeholder="Buscar vehículo o conductor">
                 </div>
             </form>
+    -->
 
             {{-- Menú de notificaciones y usuario --}}
             <ul class="navbar-nav ms-auto align-items-center">
@@ -106,7 +108,7 @@
             <ul class="nav flex-column mt-4">
                 {{-- Enlaces principales --}}
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('dashboard') }}">
+                    <a class="nav-link " href="{{ route('dashboard') }}">
                         <i class="fas fa-home me-2"></i>Inicio
                     </a>
                 </li>
@@ -163,6 +165,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // Función para marcar una alerta como leída
         function markAlertRead(id) {
             fetch('/alertas/' + id + '/read', {
                 method: 'POST',

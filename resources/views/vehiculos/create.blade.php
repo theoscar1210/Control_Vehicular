@@ -65,14 +65,14 @@
         </nav>
 
         @if($propietario || request()->query('vehiculo'))
-        <a href="{{ route('vehiculos.create') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('vehiculos.create') }}" class="btn btn-universal">
             <i class="fa-solid fa-rotate-left me-2"></i>Nuevo Registro
         </a>
         @endif
     </div>
 
-    <h3><i class="fa-solid fa-plus-circle me-2"></i>Registro de Vehículo</h3>
-
+    <h4>Registro de Vehículo</h4>
+    <p>Complete la información del vehículo y de los documentos requeridos.</p>
     {{-- Mensajes de éxito --}}
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -104,60 +104,70 @@
 
     {{-- Indicador de progreso --}}
     @if($propietario || request()->query('vehiculo'))
-    <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
-        <i class="fa-solid fa-list-check me-3 fs-4"></i>
-        <div class="flex-grow-1">
-            <strong>Progreso del registro:</strong>
-            <div class="progress mt-2" style="height: 25px;">
-                @php
-                $vehiculoId = request()->query('vehiculo');
-                $progreso = 0;
+    <div class="progress-wrapper shadow-sm p-3 mb-4 rounded-3 border">
 
-                if ($propietario) {
-                $progreso = 33;
-                }
-
-                if ($vehiculoId) {
-                $progreso = 66;
-
-                $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
-
-                if ($vehiculo
-                && $vehiculo->documentos()
-                ->activos()
-                ->whereIn('tipo_documento', ['SOAT', 'Tecnomecanica'])
-                ->count() === 2) {
-                $progreso = 100;
-                }
-                }
-                @endphp
-                <div class="progress-bar progress-bar-striped progress-bar-animated"
-                    role="progressbar"
-                    style="width: {{ $progreso }}%">
-                    {{ $progreso }}%
-                </div>
+        <div class="d-flex align-items-center mb-2">
+            <div class="icon-modern me-3">
+                <i class="fa-solid fa-list-check"></i>
             </div>
-            <small class="text-muted mt-1 d-block">
-                @if($progreso === 100)
-                ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos (SOAT y Tecnomecánica) registrados
-                @elseif($vehiculoId)
-                ✓ Propietario creado | ✓ Vehículo creado | Registra documentos
-                @elseif($propietario)
-                ✓ Propietario creado | Registra vehículo
-                @else
-                Inicia creando un propietario
-                @endif
-            </small>
+
+            <div>
+                <strong class="fs-6">Progreso del registro</strong>
+            </div>
         </div>
+
+        {{-- Barra de progreso mejorada --}}
+        <div class="progress modern-progress mb-2" style="height: 20px;">
+            @php
+            $vehiculoId = request()->query('vehiculo');
+            $progreso = 0;
+
+            if ($propietario) { $progreso = 33; }
+
+            if ($vehiculoId) {
+            $progreso = 66;
+            $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
+
+            if ($vehiculo
+            && $vehiculo->documentos()
+            ->activos()
+            ->whereIn('tipo_documento', ['SOAT','Tecnomecanica'])
+            ->count() === 2) {
+            $progreso = 100;
+            }
+            }
+            @endphp
+
+            <div class="progress-bar modern-progress-bar"
+                role="progressbar"
+                style="width: {{ $progreso }}%">
+                {{ $progreso }}%
+            </div>
+        </div>
+
+        <small class="text-muted">
+            @if($progreso === 100)
+            ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos registrados
+            @elseif($vehiculoId)
+            ✓ Propietario creado | ✓ Vehículo creado | Registra documentos
+            @elseif($propietario)
+            ✓ Propietario creado | Registra vehículo
+            @else
+            Inicia creando un propietario
+            @endif
+        </small>
+
     </div>
     @endif
+
+
 
     <div class="row gy-4 mt-3">
 
         {{-- 1. FORMULARIO PROPIETARIO --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm {{ $propietario ? 'border-success-thick' : '' }}">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-header text-white d-flex justify-content-between align-items-center">
                     <span><i class="fa-solid fa-user me-2"></i>1. Registrar Propietario</span>
                     @if($propietario)
                     <span class="badge bg-light text-success">
@@ -235,9 +245,8 @@
                                 Al crear el propietario, se habilitará el formulario del vehículo.
                             </p>
                             @else
-                            <a href="{{ route('vehiculos.create') }}" class="btn btn-outline-primary">
-                                <i class="fa-solid fa-user-plus me-2"></i>Crear Otro Propietario
-                            </a>
+                            {{-- Aquí estaba el botón de "Crear Otro Propietario"
+                                pero se ha eliminado sin afectar la estructura ni la lógica --}}
                             @endif
                         </div>
                     </form>
@@ -248,7 +257,7 @@
         {{-- 2. FORMULARIO VEHÍCULO --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm {{ request()->query('vehiculo') ? 'border-success-thick' : '' }}">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <div class="card-header bg-header text-white d-flex justify-content-between align-items-center">
                     <span><i class="fa-solid fa-car me-2"></i>2. Registrar Vehículo</span>
                     @if(request()->query('vehiculo'))
                     <span class="badge bg-light text-success">
@@ -258,7 +267,7 @@
                 </div>
                 <div class="card-body">
                     @if(!$propietario)
-                    <div class="alert alert-warning" role="alert">
+                    <div class="alert alert-custom" role="alert">
                         <i class="fa-solid fa-lock me-2"></i>
                         Debes crear primero el propietario para poder registrar el vehículo.
                     </div>
@@ -353,14 +362,14 @@
         {{-- 3. FORMULARIO DOCUMENTO SOAT --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
-                <div class="card-header bg-info text-white">
+                <div class="card-header bg-header text-white">
                     <i class="fa-solid fa-shield-halved me-2"></i>3. Documento SOAT
                 </div>
                 <div class="card-body">
                     @php $vehiculoId = request()->query('vehiculo') ?? null; @endphp
 
                     @if(!$vehiculoId)
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-custom" role="alert">
                         <i class="fa-solid fa-info-circle me-2"></i>
                         Registra primero el vehículo para agregar documentos.
                     </div>
@@ -434,12 +443,12 @@
         {{-- 4. FORMULARIO DOCUMENTO TECNOMECÁNICA --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
-                <div class="card-header bg-warning text-dark">
+                <div class="card-header bg-header ">
                     <i class="fa-solid fa-screwdriver-wrench me-2"></i>4. Documento Tecnomecánica
                 </div>
                 <div class="card-body">
                     @if(!$vehiculoId)
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-custom " role="alert">
                         <i class="fa-solid fa-info-circle me-2"></i>
                         Registra primero el vehículo para agregar documentos.
                     </div>
@@ -511,18 +520,21 @@
 
     </div>
 </div>
-
+<br>
 {{-- Botón flotante para reiniciar (solo visible después de crear propietario) --}}
 @if($propietario || request()->query('vehiculo'))
 <a href="{{ route('vehiculos.create') }}"
-    class="btn btn-primary btn-lg btn-reset-flow"
+    class="btn btn-universal  btn-reset-flow"
     data-bs-toggle="tooltip"
     data-bs-placement="left"
     title="Reiniciar y crear nuevo registro completo">
     <i class="fa-solid fa-plus me-2"></i>Nuevo Registro
 </a>
 @endif
-
+{{-- Footer --}}
+<footer class="text-center mt-5 mb-3 text-muted small">
+    © 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
+</footer>
 @endsection
 @if(session('success'))
 <div data-flash-success="{{ session('success') }}" style="display:none"></div>
