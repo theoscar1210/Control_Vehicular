@@ -22,6 +22,9 @@ body {
     background-color: var(--color-fondo);
     color: var(--color-texto);
 }
+/* ===========================
+elementos comunes
+============================ */
 
 /* ============================
    Botones
@@ -850,4 +853,82 @@ estylos para la vista de crar prpietarios vehiculos y documentos
     100% {
         background-position: 0% 50%;
     }
+}
+/*=========================================
+ESTYLOS PARA LA VISTA CONSULTAS Y REPORTES SST Y ADMIN
+==========================================*/
+
+/* Estilos adicionales para mejorar la apariencia */
+
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+.btn-excel {
+    background-color: var(--color-principal);
+    color: white;
+}
+.btn-excel:hover {
+    background-color: var(--colo-hover);
+}
+
+.btn-pdf {
+    background-color: #d32f2f;
+    color: white;
+}
+.btn-pdf:hover {
+    background-color: #e76969;
+}
+.btn-limpiar {
+    background-color: var(--color-menu);
+}
+.btn-limpiar:hover {
+    background-color: #eeca98;
+}
+.icono-filtro {
+    color: white !important;
+    background-color: var(--color-principal) !important;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Animación para las filas */
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+/* Mejora visual de inputs */
+.form-control-lg {
+    border-radius: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+    }
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table td,
+.table th {
+    white-space: nowrap !important;
 }
