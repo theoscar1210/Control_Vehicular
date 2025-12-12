@@ -1,6 +1,7 @@
-@php $navbarEspecial = true; @endphp
+@php ($navbarEspecial = true)
 
-
+@php($ocultarNavbar = true)
+@php($sinPadding = true)
 
 
 
@@ -10,7 +11,7 @@
 @section('title', 'Gestión de Vehículos')
 
 @section('content')
-<br><br>
+<br><br><br>
 <div class="container-fluid py-4">
 
     {{-- ENCABEZADO --}}

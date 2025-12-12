@@ -1,4 +1,5 @@
 @php($ocultarNavbar = true)
+@php($sinPadding = true)
 @extends('layouts.app')
 
 @section('title', 'Iniciar sesión')
@@ -10,6 +11,7 @@
         height: auto;
     }
 </style>
+
 <div class="login-container">
     <div class="login-card">
         {{-- Logo --}}
@@ -50,7 +52,6 @@
                 <span class="position-absolute top-50 start-0 translate-middle-y ps-3">
                     <i class="fas fa-lock text-muted"></i>
                 </span>
-
             </div>
 
             <div class="d-grid">
@@ -60,5 +61,7 @@
     </div>
 </div>
 
-<p class="footer-text text-center">© {{ date('Y') }} Sistema de Control Vehicular — Club Campestre Altos del Chicalá. Todos los derechos reservados.</p>
+<p class="footer-text text-center">
+    © {{ date('Y') }} Sistema de Control Vehicular — Club Campestre Altos del Chicalá. Todos los derechos reservados.
+</p>
 @endsection

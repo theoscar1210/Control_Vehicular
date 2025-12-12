@@ -7,6 +7,7 @@
     --color-terciario: #333;
     --color-fondo: #f8f9fa;
     --color-fondo2: #f5f5f5;
+    --color-card: #d3d3d3;
     --color-texto: #212529;
     --color-menu: #ed8d05;
     --color-tablas: #ffd37a;
@@ -185,77 +186,222 @@ Navbar personalizado superior
 Sidebar lateral
 =============================*/
 
+/* Navbar Superior */
+.navbar {
+    height: 70px;
+    z-index: 1030;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+}
+
+.text-titulo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-texto);
+}
+
+.circulo-redondo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5b8238 30%, #ed8d05 70%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-right: 8px;
+}
+
+/* Sidebar - Desktop */
 .sidebar {
-    width: 200px;
-    min-height: 100vh;
-    background: var(--color-fondo);
-    border-right: 1px solid #dee2e6;
     position: fixed;
-    top: 56px;
+    top: 70px;
     left: 0;
-    padding-bottom: 2rem;
+    width: 240px;
+    height: calc(100vh - 70px);
+    background: var(--color-fondo2);
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1020;
+    padding-top: 1rem;
 }
+
 .sidebar .nav-link {
-    color: var(--color-terciario);
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    transition: all 0.3 ease;
-    border-radius: 0.5rem;
-    margin: 0.25rem 0.5rem;
+    color: var(--color-texto);
+    padding: 0.85rem 1.5rem;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+    border-radius: 10px;
 }
 
-.sidebar .nav-link:hover,
+.sidebar .nav-link:hover {
+    background-color: var(--color-principal);
+    color: white;
+    border-left-color: var(--color-menu);
+}
+
 .sidebar .nav-link.active {
-    background-color: var(--colo-hover);
-    color: var(--color-secundario);
+    background-color: rgba(52, 152, 219, 0.2);
+    color: white;
+    border-left-color: #3498db;
 }
 
-/*contenido*/
-
-.con-sidebar {
-    margin-left: 240px;
-    background-color: #f8f9f8;
+.sidebar .text-muted {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 1.5rem 0.5rem;
+    margin-top: 1rem;
 }
 
-/*
+/* Contenido Principal - Desktop */
 .content {
-    
-}
-*/
-/*notificaciones campana*/
-
-.navbar .badge {
-    font-size: 0.6rem;
-    padding: 0.3em 0.45em;
+    margin-left: 240px;
+    margin-top: 70px;
+    padding: 2rem;
+    min-height: calc(100vh - 70px);
+    background-color: #f8f9fa;
 }
 
-/* Responsive */
+/* Topbar (opcional) */
+.topbar {
+    position: fixed;
+    top: 70px;
+    left: 240px;
+    right: 0;
+    height: 50px;
+    background: var(--color-fondo);
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 1010;
+    transition: left 0.3s ease-in-out;
+}
 
-@media (max-width: 992px) {
-    .sedebar {
-        left: -230px;
+.content.con-sidebar {
+    margin-top: 120px;
+    /* 70px navbar + 50px topbar */
+}
+
+.btn-toggle-menu {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    margin-right: 1rem;
+    display: none;
+}
+
+/* Overlay para móvil */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1015;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* RESPONSIVE - Tablet y Mobile */
+@media (max-width: 991px) {
+    /* Sidebar oculto por defecto en móvil */
+    .sidebar {
+        transform: translateX(-100%);
     }
 
-    .sidebar.active {
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Contenido ocupa todo el ancho */
+    .content {
+        margin-left: 0;
+    }
+
+    /* Topbar también ocupa todo el ancho */
+    .topbar {
         left: 0;
     }
 
-    #page-cpntent {
-        margin-left: 0;
-    }
-    #toggleSidebar {
-        cursor: pointer;
+    /* Mostrar botón hamburguesa en topbar */
+    .btn-toggle-menu {
+        display: block;
     }
 }
 
-@media (max-width: 576px) {
-    .navbar-logo {
-        height: 32px;
+@media (max-width: 768px) {
+    /* Ajustes para móviles pequeños */
+    .navbar {
+        height: 60px;
     }
 
-    .navbar .form-control {
-        width: 120px;
+    .sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
+        width: 280px;
     }
+
+    .content {
+        margin-top: 60px;
+        padding: 1rem;
+    }
+
+    .topbar {
+        top: 700px;
+        height: 45px;
+        padding: 0 1rem;
+    }
+
+    .content.con-sidebar {
+        margin-top: 105px;
+        /* 60px navbar + 45px topbar */
+    }
+
+    .text-titulo {
+        font-size: 0.95rem;
+    }
+
+    .navbar-brand small {
+        font-size: 0.7rem;
+    }
+}
+
+/* Scrollbar personalizado para sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /*=============================
@@ -452,8 +598,7 @@ Estilos para la vista gestion de vehiculos sst y admin
 .btn-primary:hover {
     background: var(--color-principal);
 }
-
-.btn-outline-primary {
+F .btn-outline-primary {
     color: var(--azul-contorno);
     border-color: var(--azul-contorno);
 }
@@ -468,6 +613,24 @@ Estilos para la vista gestion de vehiculos sst y admin
     border-left: 6px solid var(--azul-contorno);
 }
 
+/*=========================== 
+vista crear conductor
+
+============================*/
+.text-licencia {
+    color: var(--color-texto);
+}
+.title-licencia {
+    color: #fff;
+}
+
+.bg-conductor {
+    background-color: var(--color-principal);
+}
+
+.color-card {
+    background-color: var(--color-card);
+}
 /*===== vista reportes y consultas=====*/
 
 /* ======== TITULO PRINCIPAL ======== */

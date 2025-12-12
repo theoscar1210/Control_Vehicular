@@ -1,4 +1,9 @@
-@php $navbarEspecial = true; @endphp
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
 
 @extends('layouts.app')
 

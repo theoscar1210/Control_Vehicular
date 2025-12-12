@@ -4,46 +4,36 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{-- Título dinámico: si la vista define @section('title'), se usa; si no, se muestra "Control Vehicular" --}}
     <title>@yield('title', 'Control Vehicular')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Bootstrap CSS desde CDN -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome para íconos -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
-    <!-- Fuente moderna Roboto desde Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    {{-- ========================================================
-        1) Navbar especial (solo si la vista lo activa con $navbarEspecial)
-    ========================================================= --}}
+    {{-- Navbar Especial --}}
     @if(isset($navbarEspecial) && $navbarEspecial === true)
-    {{-- Incluye un navbar alternativo --}}
     @include('profile.partials.navbar-especial')
-
-    {{-- Contenido principal con padding y margen superior --}}
-    <div class="content p-4 mt-5">
+    <div class="{{ empty($sinPadding) ? 'content p-4 mt-5' : '' }}">
         @yield('content')
     </div>
 
-    {{-- ========================================================
-        2) Layout completo normal (navbar principal + sidebar)
-           Solo si NO está oculto y NO es navbar especial
-    ========================================================= --}}
+    {{-- Layout Normal con Sidebar --}}
     @elseif(empty($ocultarNavbar))
 
-    {{-- Navbar principal fijo arriba --}}
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    {{-- Navbar Principal --}}
+    <nav class=" navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container-fluid px-4">
-            {{-- Logo + título --}}
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
                 <img src="{{ asset('imagenes/Logo_solo.png') }}" alt="Logo" class="navbar-logo me-2">
                 <div class="d-flex flex-column lh-sm">
@@ -52,44 +42,30 @@
                 </div>
             </a>
 
-            <!-- se deja desactivado el buscador central
-            {{-- Buscador central (visible solo en pantallas medianas en adelante) --}}
-            <form class="d-none d-md-flex mx-auto w-50">
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" class="form-control border-0 shadow-none" placeholder="Buscar vehículo o conductor">
-                </div>
-            </form>
-    -->
-
-            {{-- Menú de notificaciones y usuario --}}
             <ul class="navbar-nav ms-auto align-items-center">
                 {{-- Notificaciones --}}
                 <li class="nav-item me-3 position-relative">
                     <a class="nav-link text-dark" href="{{ route('alertas.index') }}">
                         <i class="fas fa-bell fa-lg"></i>
-                        {{-- Badge rojo con número de notificaciones (ejemplo fijo en 3) --}}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> {{ \App\Models\Alerta::where('leida',0)->where(function($q){ $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);})->count() }}</span>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ \App\Models\Alerta::where('leida',0)->where(function($q){ 
+                                    $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
+                                })->count() }}
+                        </span>
                     </a>
                 </li>
 
-                {{-- Menú desplegable de usuario --}}
+                {{-- Usuario --}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                        {{-- Iniciales del usuario en círculo --}}
                         <div class="circulo-redondo">
                             {{ strtoupper(substr(auth()->user()->nombre ?? 'U', 0, 2)) }}
                         </div>
-                        {{ auth()->user()->nombre ?? 'Usuario' }}
+                        <span class="d-none d-md-inline">{{ auth()->user()->nombre ?? 'Usuario' }}</span>
                     </a>
-
-                    {{-- Opciones del menú --}}
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#">Perfil</a></li>
                         <li>
-                            {{-- Botón de logout con formulario POST --}}
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button class="dropdown-item text-danger" type="submit">Cerrar sesión</button>
@@ -101,90 +77,129 @@
         </div>
     </nav>
 
-    {{-- Contenedor principal con sidebar y contenido --}}
-    <div class="d-flex">
-        {{-- Sidebar lateral izquierdo --}}
-        <div class="sidebar bg-white shadow-sm border-end pt-3">
-            <ul class="nav flex-column mt-4">
-                {{-- Enlaces principales --}}
-                <li class="nav-item">
-                    <a class="nav-link " href="{{ route('dashboard') }}">
-                        <i class="fas fa-home me-2"></i>Inicio
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('vehiculos.index') }}">
-                        <i class="fas fa-car me-2"></i>Registro de Vehículos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('conductores.create') }}">
-                        <i class="fas fa-id-card me-2"></i>Registro de Conductores
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-file-alt me-2"></i>Verificación Documentos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('usuarios.index') }}">
-                        <i class="fas fa-users me-2"></i>Gestión de Usuarios
-                    </a>
-                </li>
 
-                <hr>
 
-                {{-- Sección de acciones rápidas --}}
-                <span class="text-muted px-3 small">Acciones Rápidas</span>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-plus-circle me-2"></i>Nuevo Registro</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i>Generar Reporte</a>
-                </li>
-            </ul>
-        </div>
+    {{-- Overlay para cerrar sidebar en móvil --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-        {{-- Contenido principal (a la derecha del sidebar) --}}
-        <div class="content flex-grow-1 p-4 mt-5 con-sidebar">
-            @yield('content')
-        </div>
+    {{-- Sidebar --}}
+
+    <div id="sidebar" class="sidebar">
+        <a class="nav-link" href="{{ route('dashboard') }}">
+            <i class="fas fa-home me-2"></i>Inicio
+        </a>
+
+        <a class="nav-link" href="{{ route('vehiculos.index') }}">
+            <i class="fas fa-car me-2"></i>Registro de Vehículos
+        </a>
+
+        <a class="nav-link" href="{{ route('conductores.create') }}">
+            <i class="fas fa-id-card me-2"></i>Registro de Conductores
+        </a>
+
+        <a class="nav-link" href="#">
+            <i class="fas fa-file-alt me-2"></i>Verificación Documentos
+        </a>
+
+        <a class="nav-link" href="{{ route('usuarios.index') }}">
+            <i class="fas fa-users me-2"></i>Gestión de Usuarios
+        </a>
+
+        <span class="text-muted">Acciones Rápidas</span>
+
+        <a class="nav-link" href="#">
+            <i class="fas fa-plus-circle me-2"></i>Nuevo Registro
+        </a>
+
+        <a class="nav-link" href="{{ route('documentos.consultar') }}">
+            <i class="fas fa-chart-line me-2"></i>Generar Reporte
+        </a>
     </div>
 
-    {{-- ========================================================
-        3) Vista sin navbar ni sidebar (ejemplo: login)
-    ========================================================= --}}
+    {{-- Topbar --}}
+    <nav class="topbar">
+        <button class="btn-toggle-menu" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+    </nav>
+
+    {{-- Contenido Principal --}}
+    <div class="content con-sidebar">
+        @yield('content')
+    </div>
+
+    {{-- Sin Navbar ni Sidebar --}}
     @else
-    <div class="content p-4 mt-5">
+    <div class="{{ empty($sinPadding) ? 'content p-4' : '' }}">
         @yield('content')
     </div>
     @endif
 
-    <!-- Scripts de Bootstrap -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Función para marcar una alerta como leída
-        function markAlertRead(id) {
-            fetch('/alertas/' + id + '/read', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            }).then(r => r.json()).then(json => {
-                if (json.ok) {
-                    // actualizar contador
-                    fetch('/alertas/unread-count').then(r => r.json()).then(d => {
-                        document.getElementById('alerts-badge').innerText = d.unread;
-                    });
-                    // ocultar elemento UI o cambiar estilo
-                    document.getElementById('alert-row-' + id).classList.add('text-muted');
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // Cerrar Sidebar
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // Cerrar sidebar al hacer click en un enlace (solo en móvil)
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 991) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            // Marcar enlace activo
+            const currentPath = window.location.pathname;
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
                 }
             });
-        }
+
+            // Alertas
+            window.markAlertRead = function(id) {
+                fetch('/alertas/' + id + '/read', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                }).then(r => r.json()).then(json => {
+                    if (json.ok) {
+                        fetch('/alertas/unread-count')
+                            .then(r => r.json())
+                            .then(d => {
+                                const badge = document.querySelector('.badge.bg-danger');
+                                if (badge) badge.innerText = d.unread;
+                            });
+                        const alertRow = document.getElementById('alert-row-' + id);
+                        if (alertRow) alertRow.classList.add('text-muted');
+                    }
+                });
+            };
+        });
     </script>
 
 </body>
