@@ -420,28 +420,54 @@ class DocumentoController extends Controller
         );
     }
 
+    /**
+     * Mapea un documento para la exportaci n en formato PDF.
+     * @param DocumentoConductor|DocumentoVehiculo $d
+     * @param string $tipo
+     * @param Collection $vehiculos
+     * @param Collection $conductores
+     * @param Collection $propietarios
+     * @return array
+     */
     private function mapDocumentoForExport($d, $tipo, $vehiculos, $conductores, $propietarios)
     {
         $veh = $vehiculos->get($d->id_vehiculo ?? ($d->conductor->id_conductor ?? null));
-        $conductor = $veh && $veh->id_conductor ? $conductores->get($veh->id_conductor) : ($d->conductor ?? null);
-        $prop = $veh && $veh->id_propietario ? $propietarios->get($veh->id_propietario) : null;
+
+        $conductor = $veh && $veh->id_conductor
+            ? $conductores->get($veh->id_conductor)
+            : ($d->conductor ?? null);
+
+        $prop = $veh && $veh->id_propietario
+            ? $propietarios->get($veh->id_propietario)
+            : null;
+
         $creadoPor = $veh ? $this->getUsuarioNombreById($veh->creado_por ?? null) : '';
 
         return [
-            'Origen' => $tipo,
-            'Tipo' => $d->tipo_documento,
-            'Numero' => $d->numero_documento,
-            'Conductor' => $conductor ? "{$conductor->nombre} {$conductor->apellido}" : '',
-            'Version' => $d->version ?? '',
-            'Fecha registro' => optional($d->fecha_registro)->format('Y-m-d H:i'),
-            'Fecha vencimiento' => optional($d->fecha_vencimiento)->format('Y-m-d'),
-            'Estado' => $d->estado,
-            'Propietario' => $prop ? "{$prop->nombre} {$prop->apellido}" : '',
-            'Placa' => $veh ? $veh->placa : '',
-            'Creado por' => $creadoPor
+            'origen' => $tipo,
+            'tipo_documento' => $d->tipo_documento,
+            'numero_documento' => $d->numero_documento,
+            'conductor' => $conductor ? "{$conductor->nombre} {$conductor->apellido}" : '',
+            'version' => $d->version ?? '',
+            'fecha_registro' => optional($d->fecha_registro)->format('Y-m-d H:i'),
+            'fecha_vencimiento' => optional($d->fecha_vencimiento)->format('Y-m-d'),
+            'estado' => $d->estado,
+            'propietario' => $prop ? "{$prop->nombre} {$prop->apellido}" : '',
+            'placa' => $veh ? $veh->placa : '',
+            'creado_por' => $creadoPor
         ];
     }
 
+
+
+    /**
+     * Exporta una colecci n de documentos en formato XLS.
+     *
+     * Filtra por tipo de documento, estado, conductor, placa, propietario, fecha de registro y fecha de vencimiento.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function exportExcel(Request $request)
     {
         $request->validate([
@@ -484,6 +510,12 @@ class DocumentoController extends Controller
         return Excel::download(new DocumentosCollectionExport($collection), 'documentos_report.xlsx');
     }
 
+    /**
+     * Exporta un reporte en formato PDF de todos los documentos de los vehículos y conductores.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function exportPdf(Request $request)
     {
         $request->validate([
@@ -496,31 +528,46 @@ class DocumentoController extends Controller
             'fecha_from' => 'nullable|date',
             'fecha_to' => 'nullable|date|after_or_equal:fecha_from',
         ]);
-
+        // obtener documentos filtrados
         $docsConductor = $this->getDocumentoConductorCollection($request);
         $docsVehiculo  = $this->getDocumentoVehiculoCollection($request);
 
-        $vehiculoIds = $docsVehiculo->pluck('id_vehiculo')
-            ->concat($docsConductor->pluck('conductor.*.id_conductor')->flatten())
+        // IDs correctos
+        $vehiculoIds = $docsVehiculo->pluck('id_vehiculo')->filter()->unique();
+
+        $conductorIds = collect()
+            ->merge($docsConductor->pluck('id_conductor'))
+            ->merge($docsVehiculo->pluck('id_conductor'))
             ->filter()
             ->unique();
 
-        $vehiculos = Vehiculo::whereIn('id_vehiculo', $vehiculoIds)->get()->keyBy('id_vehiculo');
-        $conductores = Conductor::whereIn('id_conductor', $vehiculos->pluck('id_conductor'))->get()->keyBy('id_conductor');
-        $propietarios = Propietario::whereIn('id_propietario', $vehiculos->pluck('id_propietario'))->get()->keyBy('id_propietario');
+        // Propietarios (dependen del vehículo)
+        $propietarioIds = Vehiculo::whereIn('id_vehiculo', $vehiculoIds)
+            ->pluck('id_propietario')
+            ->filter()
+            ->unique();
 
+        // Consultas reales
+        $vehiculos = Vehiculo::whereIn('id_vehiculo', $vehiculoIds)->get()->keyBy('id_vehiculo');
+        $conductores = Conductor::whereIn('id_conductor', $conductorIds)->get()->keyBy('id_conductor');
+        $propietarios = Propietario::whereIn('id_propietario', $propietarioIds)->get()->keyBy('id_propietario');
+
+        // Normalizar datos
         $normalized = collect();
 
         foreach ($docsConductor as $d) {
             $normalized->push((object) $this->mapDocumentoForExport($d, 'CONDUCTOR', $vehiculos, $conductores, $propietarios));
         }
+
         foreach ($docsVehiculo as $d) {
             $normalized->push((object) $this->mapDocumentoForExport($d, 'VEHICULO', $vehiculos, $conductores, $propietarios));
         }
 
         $documentos = $normalized->sortByDesc('Fecha registro')->values();
 
-        $pdf = PDF::loadView('reportes.pdf.documentos', compact('documentos', 'request'));
+        $pdf = PDF::loadView('reportes.pdf.documentos', compact('documentos', 'request'))
+            ->setPaper('a4', 'landscape');
+
         return $pdf->download('documentos_report.pdf');
     }
 }

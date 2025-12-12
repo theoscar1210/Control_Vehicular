@@ -10,11 +10,21 @@ class DocumentosCollectionExport implements FromCollection, WithHeadings
 {
     protected $collection;
 
+    /**
+     * Constructor del exportador de documentos.
+     *
+     * @param Collection $collection La colecci n de documentos a exportar.
+     */
     public function __construct(Collection $collection)
     {
         $this->collection = $collection;
     }
 
+    /**
+     * Devuelve la colecci n de documentos a exportar.
+     * 
+     * @return Collection La colecci n de documentos a exportar.
+     */
     public function collection()
     {
         return $this->collection;
