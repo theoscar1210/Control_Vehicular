@@ -17,12 +17,35 @@
 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Consultar Documentos</a>
+                    <a class="nav-link" href="{{ route('dashboard') }}">Inicio</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('conductores.create') }}">Registrar Conductor</a>
+                <!-- Gestión de Vehículos con submenú -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="vehiculosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Gestión de Vehículos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="vehiculosDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('vehiculos.index') }}">
+                                Listado de Vehículos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('vehiculos.create') }}">
+                                Nuevo Vehículo
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('conductores.create') }}">
+                                Registrar Conductor
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
+
+
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('documentos.consultar') }}">Consultas y Reportes</a>

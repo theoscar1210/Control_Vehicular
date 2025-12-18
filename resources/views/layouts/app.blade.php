@@ -89,25 +89,42 @@
             <i class="fas fa-home me-2"></i>Inicio
         </a>
 
-        <a class="nav-link" href="{{ route('vehiculos.index') }}">
-            <i class="fas fa-car me-2"></i>Registro de Vehículos
+        <!-- Gestión de Vehículos con submenú -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#vehiculosSubmenu" role="button" aria-expanded="false" aria-controls="vehiculosSubmenu">
+            <i class="fas fa-car me-2"></i>Gestión de Vehículos
+            <i class="fas fa-chevron-down float-end"></i>
         </a>
+        <div class="collapse" id="vehiculosSubmenu">
+            <ul class="list-unstyled ps-3">
+                <li>
+                    <a class="nav-link" href="{{ route('vehiculos.index') }}">
+                        <i class="fas fa-list me-2"></i>Listado de Vehículos
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{{ route('vehiculos.create') }}">
+                        <i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo
+                    </a>
+                </li>
+
+            </ul>
+        </div>
 
         <a class="nav-link" href="{{ route('conductores.create') }}">
             <i class="fas fa-id-card me-2"></i>Registro de Conductores
         </a>
 
-        <a class="nav-link" href="#">
-            <i class="fas fa-file-alt me-2"></i>Verificación Documentos
+        <a class="nav-link" href="{{ route('documentos.consultar') }}">
+            <i class="fas fa-file-alt me-2"></i>consultas
         </a>
 
         <a class="nav-link" href="{{ route('usuarios.index') }}">
             <i class="fas fa-users me-2"></i>Gestión de Usuarios
         </a>
 
-        <span class="text-muted">Acciones Rápidas</span>
+        <span class="text-uppercase fw-bold d-block ">Acciones Rápidas</span>
 
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('vehiculos.create') }}">
             <i class="fas fa-plus-circle me-2"></i>Nuevo Registro
         </a>
 
@@ -115,6 +132,7 @@
             <i class="fas fa-chart-line me-2"></i>Generar Reporte
         </a>
     </div>
+
 
     {{-- Topbar --}}
     <nav class="topbar">
