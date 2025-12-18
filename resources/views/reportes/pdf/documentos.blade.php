@@ -365,18 +365,18 @@
 
     {{-- TABLA DE RESULTADOS --}}
     <table style="width:100%; border-collapse: collapse;" border="1" cellpadding="5">
-        <thead>
+        <thead class="hoja-pdf">
             <tr>
-                <th>Tipo</th>
-                <th>Número</th>
-                <th>Conductor</th>
-                <th>Versión</th>
-                <th>F. Registro</th>
-                <th>F. Vencimiento</th>
-                <th>Estado</th>
-                <th>Propietario</th>
-                <th>Placa</th>
-                <th>Registrado por</th>
+                <th class="titulo">Tipo</th>
+                <th class="titulo">Número</th>
+                <th class="titulo">Conductor</th>
+                <th class="titulo">Versión</th>
+                <th class="titulo">F. Registro</th>
+                <th class="titulo">F. Vencimiento</th>
+                <th class="titulo">Estado</th>
+                <th class="titulo">Propietario</th>
+                <th class="titulo">Placa</th>
+                <th class="titulo">Registrado por</th>
             </tr>
         </thead>
 

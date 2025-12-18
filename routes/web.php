@@ -44,11 +44,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('propietarios', [PropietarioController::class, 'store'])->name('propietarios.store');
 
     // Documentos vehículo
-    Route::post('vehiculos/{id}/documentos', [DocumentoVehiculoController::class, 'store'])->name('documentos.store');
-    Route::get('vehiculos/{id}/documentos', [DocumentoVehiculoController::class, 'edit'])->name('documentos_vehiculo.edit');
-    Route::put('documentos/{id}', [DocumentoVehiculoController::class, 'update'])->name('documentos_vehiculo.update');
-    Route::post('documentos/{id}/replace', [DocumentoVehiculoController::class, 'replace'])->name('documentos_vehiculo.replace');
-    Route::post('documentos/{id}/mark-replaced', [DocumentoVehiculoController::class, 'markReplaced'])->name('documentos_vehiculo.mark_replaced');
+    Route::post('vehiculos/{id}/documentos', [DocumentoVehiculoController::class, 'store'])->name('documentos.store'); // Crear documento para vehículo
+    // Renovar documento
+    Route::put('/vehiculos/{vehiculo}/documentos/{documento}', [DocumentoVehiculoController::class, 'update'])->name('vehiculos.documentos.update');
+
+    // Formulario de renovación
+    Route::get('/vehiculos/{vehiculo}/documentos/{documento}/edit', [DocumentoVehiculoController::class, 'edit'])->name('vehiculos.documentos.edit');
+    // Historial de versiones
+    Route::get('/vehiculos/{vehiculo}/documentos/{tipo}/historial', [DocumentoVehiculoController::class, 'historial'])->name('vehiculos.documentos.historial');
 
     // Conductores
     Route::get('/conductores/create', [ConductorController::class, 'create'])->name('conductores.create');

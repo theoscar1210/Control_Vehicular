@@ -87,6 +87,7 @@ class DocumentoVehiculoController extends Controller
                 if ($last) {
                     $last->estado = 'REEMPLAZADO';
                     $last->reemplazado_por = $new->id_doc_vehiculo;
+                    $last->activo = 0;
                     $last->save();
                 }
 
@@ -109,31 +110,10 @@ class DocumentoVehiculoController extends Controller
                 return $fechaVenc;
             });
 
-            // ============================================
-            // RESPUESTA ESPECÍFICA SEGÚN DOCUMENTO
-            // ============================================
-
-            // TECNOMECÁNICA
-            if ($validated['tipo_documento'] === 'Tecnomecanica') {
-                return back()->with([
-                    'success' => 'Documento Tecnomecánica guardado correctamente.',
-                    'fecha_venc_tecnomecanica' => $result
-                ])->withInput();
-            }
-
-            // SOAT
-            if ($validated['tipo_documento'] === 'SOAT') {
-                return back()->with([
-                    'success' => 'SOAT guardado correctamente.',
-                    'fecha_venc_soat' => $result
-                ])->withInput();
-            }
-
-            // OTROS
-            return back()->with([
-                'success' => "{$validated['tipo_documento']} guardado correctamente.",
-                'fecha_venc_generada' => $result
-            ])->withInput();
+            // Redirigir al index de vehículos con mensaje de éxito
+            return redirect()->route('vehiculos.index')->with([
+                'success' => "Documento {$validated['tipo_documento']} guardado correctamente.",
+            ]);
         } catch (\Exception $e) {
 
             Log::error("Error al guardar documento vehículo: " . $e->getMessage());
@@ -142,5 +122,151 @@ class DocumentoVehiculoController extends Controller
                 ->withInput()
                 ->with('error', 'Error al guardar el documento.');
         }
+    }
+
+    /**
+     * Renovar/Actualizar un documento de vehículo
+     * Crea una nueva versión del documento y marca el anterior como REEMPLAZADO
+     */
+    public function update(Request $request, $idVehiculo, $idDocumento)
+    {
+        $validated = $request->validate([
+            'numero_documento'  => 'required|string|max:50',
+            'entidad_emisora'   => 'nullable|string|max:100',
+            'fecha_emision'     => 'required|date',
+            'fecha_vencimiento' => 'nullable|date',
+            'nota'              => 'nullable|string|max:255',
+        ]);
+
+        $vehiculo = Vehiculo::findOrFail($idVehiculo);
+        $documentoAnterior = DocumentoVehiculo::where('id_doc_vehiculo', $idDocumento)
+            ->where('id_vehiculo', $vehiculo->id_vehiculo)
+            ->firstOrFail();
+
+        try {
+
+            $result = DB::transaction(function () use ($validated, $documentoAnterior) {
+
+                // ============================================
+                // CALCULAR FECHA DE VENCIMIENTO (+1 año)
+                // ============================================
+                $fechaEmision = Carbon::parse($validated['fecha_emision'])->startOfDay();
+                $fechaVenc = $fechaEmision->copy()->addYear()->toDateString();
+
+                // ============================================
+                // CALCULAR ESTADO
+                // ============================================
+                $hoy = Carbon::today();
+                $dias = $hoy->diffInDays(Carbon::parse($fechaVenc), false);
+
+                if ($dias < 0) {
+                    $estado = 'VENCIDO';
+                } elseif ($dias <= 30) {
+                    $estado = 'POR_VENCER';
+                } else {
+                    $estado = 'VIGENTE';
+                }
+
+                // ============================================
+                // CREAR NUEVA VERSIÓN DEL DOCUMENTO
+                // ============================================
+                $newVersion = $documentoAnterior->version + 1;
+
+                $nuevoDocumento = DocumentoVehiculo::create([
+                    'id_vehiculo'       => $documentoAnterior->id_vehiculo,
+                    'tipo_documento'    => $documentoAnterior->tipo_documento,
+                    'numero_documento'  => $validated['numero_documento'],
+                    'entidad_emisora'   => $validated['entidad_emisora'] ?? null,
+                    'fecha_emision'     => $fechaEmision->toDateString(),
+                    'fecha_vencimiento' => $fechaVenc,
+                    'estado'            => $estado,
+                    'activo'            => 1,
+                    'creado_por'        => auth()->id() ?? null,
+                    'version'           => $newVersion,
+                    'nota'              => $validated['nota'] ?? null,
+                ]);
+
+                // ============================================
+                // MARCAR DOCUMENTO ANTERIOR COMO REEMPLAZADO
+                // ============================================
+                $documentoAnterior->estado = 'REEMPLAZADO';
+                $documentoAnterior->reemplazado_por = $nuevoDocumento->id_doc_vehiculo;
+                $documentoAnterior->activo = 0;
+                $documentoAnterior->save();
+
+                // ============================================
+                // MARCAR ALERTAS ANTERIORES COMO LEÍDAS
+                // ============================================
+                Alerta::where('id_doc_vehiculo', $documentoAnterior->id_doc_vehiculo)
+                    ->where('leida', 0)
+                    ->update(['leida' => 1]);
+
+                // ============================================
+                // CREAR NUEVA ALERTA SI APLICA
+                // ============================================
+                if (in_array($estado, ['VENCIDO', 'POR_VENCER'])) {
+                    Alerta::create([
+                        'tipo_alerta'      => 'VEHICULO',
+                        'id_doc_vehiculo'  => $nuevoDocumento->id_doc_vehiculo,
+                        'tipo_vencimiento' => $estado === 'VENCIDO' ? 'VENCIDO' : 'PROXIMO_VENCER',
+                        'mensaje'          => "Documento {$nuevoDocumento->tipo_documento} ({$nuevoDocumento->numero_documento}) - vence: {$nuevoDocumento->fecha_vencimiento}",
+                        'fecha_alerta'     => now()->toDateString(),
+                        'leida'            => 0,
+                        'visible_para'     => 'TODOS',
+                        'creado_por'       => auth()->id() ?? null,
+                    ]);
+                }
+
+                return [
+                    'documento' => $nuevoDocumento,
+                    'fecha_vencimiento' => $fechaVenc,
+                    'tipo' => $documentoAnterior->tipo_documento
+                ];
+            });
+
+            // Redirigir al index de vehículos con mensaje de éxito
+            return redirect()->route('vehiculos.index')->with([
+                'success' => "{$result['tipo']} renovado correctamente.",
+            ]);
+        } catch (\Exception $e) {
+
+            Log::error("Error al renovar documento vehículo: " . $e->getMessage(), [
+                'id_documento' => $idDocumento,
+                'id_vehiculo' => $idVehiculo,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al renovar el documento: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mostrar el formulario de edición/renovación
+     */
+    public function edit($idVehiculo, $idDocumento)
+    {
+        $vehiculo = Vehiculo::findOrFail($idVehiculo);
+        $documento = DocumentoVehiculo::where('id_doc_vehiculo', $idDocumento)
+            ->where('id_vehiculo', $vehiculo->id_vehiculo)
+            ->firstOrFail();
+
+        return view('vehiculos.documentos.edit', compact('vehiculo', 'documento'));
+    }
+
+    /**
+     * Obtener historial de versiones de un tipo de documento
+     */
+    public function historial($idVehiculo, $tipoDocumento)
+    {
+        $vehiculo = Vehiculo::findOrFail($idVehiculo);
+
+        $historial = DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)
+            ->where('tipo_documento', $tipoDocumento)
+            ->orderByDesc('version')
+            ->get();
+
+        return view('vehiculos.documentos.historial', compact('vehiculo', 'historial', 'tipoDocumento'));
     }
 }

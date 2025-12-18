@@ -11,15 +11,50 @@ use Carbon\Carbon;
 
 class VehiculoController extends Controller
 {
+    /**
+     * LISTADO DE VEHÍCULOS
+     * Se agrega ViewModel para estados de documentos
+     */
     public function index()
     {
-        $vehiculos = Vehiculo::with('propietario')->orderBy('id_vehiculo', 'desc')->paginate(15);
+        $vehiculos = Vehiculo::with([
+            'propietario',
+            'conductor',
+            'documentosVehiculo' => function ($q) {
+                $q->where('activo', 1);
+            }
+        ])
+            ->orderBy('id_vehiculo', 'desc')
+            ->paginate(15);
+
+        /**
+         * ================================
+         * VIEWMODEL: estados de documentos
+         * ================================
+         */
+        $vehiculos->getCollection()->transform(function ($vehiculo) {
+
+            $soat = $vehiculo->documentosVehiculo
+                ->where('tipo_documento', 'SOAT')
+                ->first();
+
+            $tecno = $vehiculo->documentosVehiculo
+                ->where('tipo_documento', 'Tecnomecanica')
+                ->first();
+
+            // Se agregan propiedades calculadas al modelo
+            $vehiculo->estado_soat  = $this->calcularEstadoDocumento($soat);
+            $vehiculo->estado_tecno = $this->calcularEstadoDocumento($tecno);
+
+            return $vehiculo;
+        });
+
         return view('vehiculos.index', compact('vehiculos'));
     }
 
     /**
      * Mostrar la vista de create.
-     * Si viene ?propietario=ID, cargamos ese propietario para habilitar el formulario de vehículo.
+     * Si viene ?propietario=ID, cargamos ese propietario
      */
     public function create(Request $request)
     {
@@ -34,7 +69,7 @@ class VehiculoController extends Controller
     }
 
     /**
-     * Guardar vehículo (requiere id_propietario)
+     * Guardar vehículo
      */
     public function store(Request $request)
     {
@@ -66,7 +101,12 @@ class VehiculoController extends Controller
 
             DB::commit();
 
-            return redirect()->route('vehiculos.create', ['propietario' => $veh->id_propietario, 'vehiculo' => $veh->id_vehiculo])->with('success', 'Vehículo creado. Ahora puede agregar los documentos.');
+            return redirect()
+                ->route('vehiculos.create', [
+                    'propietario' => $veh->id_propietario,
+                    'vehiculo' => $veh->id_vehiculo
+                ])
+                ->with('success', 'Vehículo creado. Ahora puede agregar los documentos.');
         } catch (\Throwable $e) {
             DB::rollBack();
             \Log::error('Error creando vehículo: ' . $e->getMessage());
@@ -74,30 +114,82 @@ class VehiculoController extends Controller
         }
     }
 
-    //editar un vehiculo
+    /**
+     * Editar vehículo
+     */
     public function edit(Vehiculo $vehiculo)
     {
         return view('vehiculos.edit', compact('vehiculo'));
     }
 
-
-    //eliminar un vehiculo
+    /**
+     * Eliminar vehículo y documentos
+     */
     public function destroy(Vehiculo $vehiculo)
     {
         DB::beginTransaction();
         try {
-            // Eliminar documentos asociados
             DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)->delete();
-
-            // Eliminar vehículo
             $vehiculo->delete();
 
             DB::commit();
-            return redirect()->route('vehiculos.index')->with('success', 'Vehículo y documentos asociados eliminados correctamente.');
+            return redirect()
+                ->route('vehiculos.index')
+                ->with('success', 'Vehículo y documentos asociados eliminados correctamente.');
         } catch (\Throwable $e) {
             DB::rollBack();
             \Log::error('Error eliminando vehículo: ' . $e->getMessage());
             return back()->withErrors(['general' => 'Error al eliminar vehículo.']);
         }
+    }
+
+    /**
+     * =================================================
+     * MÉTODO PRIVADO VIEWMODEL (NO AFECTA RUTAS)
+     * =================================================
+     */
+    private function calcularEstadoDocumento($documento): array
+    {
+        if (!$documento) {
+            return [
+                'estado' => 'SIN_REGISTRO',
+                'dias'   => null,
+                'clase'  => 'secondary',
+                'fecha'  => null,
+                'id'     => null,
+            ];
+        }
+
+        $hoy = Carbon::today();
+        $vencimiento = Carbon::parse($documento->fecha_vencimiento);
+        $dias = $hoy->diffInDays($vencimiento, false);
+
+        if ($dias < 0) {
+            return [
+                'estado' => 'VENCIDO',
+                'dias'   => $dias,
+                'clase'  => 'danger',
+                'fecha'  => $vencimiento,
+                'id'     => $documento->id_doc_vehiculo,
+            ];
+        }
+
+        if ($dias <= 30) {
+            return [
+                'estado' => 'POR_VENCER',
+                'dias'   => $dias,
+                'clase'  => 'warning',
+                'fecha'  => $vencimiento,
+                'id'     => $documento->id_doc_vehiculo,
+            ];
+        }
+
+        return [
+            'estado' => 'VIGENTE',
+            'dias'   => $dias,
+            'clase'  => 'success',
+            'fecha'  => $vencimiento,
+            'id'     => $documento->id_doc_vehiculo,
+        ];
     }
 }
