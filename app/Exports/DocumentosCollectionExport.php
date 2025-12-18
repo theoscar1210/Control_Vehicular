@@ -30,8 +30,13 @@ class DocumentosCollectionExport implements FromCollection, WithHeadings
         return $this->collection;
     }
 
+    /**
+     * Devuelve un array con las cabeceras de las columnas que se van a exportar.
+     *
+     * @return array Un array con las cabeceras de las columnas.
+     */
     public function headings(): array
     {
-        return ['Origen', 'Tipo', 'Numero', 'Conductor', 'Version', 'Fecha registro', 'Fecha vencimiento', 'Estado', 'Propietario', 'Placa', 'Creado por'];
+        return ['Origen', 'Tipo', 'Numero', 'Conductor', 'Version', 'Fecha emision', 'Fecha vencimiento', 'Estado', 'Propietario', 'Placa', 'Creado por'];
     }
 }

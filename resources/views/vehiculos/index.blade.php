@@ -67,7 +67,7 @@ $sinPadding = true;
                             <td>{{ $vehiculo->tipo }}</td>
                             <td>{{ $vehiculo->propietario->nombre }} {{ $vehiculo->propietario->apellido }}</td>
 
-                            {{-- SOAT --}}
+
                             {{-- SOAT --}}
                             <td>
                                 @if($soat['estado'] === 'SIN_REGISTRO')

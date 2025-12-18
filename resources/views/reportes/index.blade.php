@@ -207,7 +207,7 @@ $sinPadding = true;
                             <th class="px-4 py-3 fw-semibold">Tipo</th>
                             <th class="px-3 py-3 fw-semibold">Número</th>
                             <th class="px-3 py-3 fw-semibold">Conductor</th>
-                            <th class="px-3 py-3 fw-semibold">F. Registro</th>
+                            <th class="px-3 py-3 fw-semibold">F. Emision</th>
                             <th class="px-3 py-3 fw-semibold">Vencimiento</th>
                             <th class="px-3 py-3 fw-semibold">Placa</th>
                             <th class="px-3 py-3 fw-semibold text-center">Estado</th>
@@ -248,7 +248,7 @@ $sinPadding = true;
                             </td>
                             <td class="px-3">
                                 <small class="text-muted">
-                                    {{ $doc->fecha_registro }}
+                                    {{ $doc->fecha_emision }}
                                 </small>
                             </td>
                             <td class="px-3">

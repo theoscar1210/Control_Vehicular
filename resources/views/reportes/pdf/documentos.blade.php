@@ -183,7 +183,7 @@
         Total registros: {{ count($documentos) }}
     </div>
 
-    <!-- FILTERS -->
+    <!-- FILTROS APPLICADOS -->
     <div class="filters">
         <div class="filters-title">Filtros Aplicados</div>
 
