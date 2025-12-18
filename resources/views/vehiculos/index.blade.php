@@ -61,7 +61,7 @@ $sinPadding = true;
                         @endphp
 
                         <tr>
-                            <td class="fw-semibold">{{ $vehiculo->placa }}</td>
+                            <td class=" fw-semibold">{{ $vehiculo->placa }}</td>
                             <td>{{ $vehiculo->marca }}</td>
                             <td>{{ $vehiculo->modelo }}</td>
                             <td>{{ $vehiculo->tipo }}</td>

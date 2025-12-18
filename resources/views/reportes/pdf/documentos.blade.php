@@ -6,467 +6,263 @@
     <title>Consultas y Reportes</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
-            margin: 0;
+            font-size: 10px;
             padding: 20px;
             color: #333;
-            line-height: 1.4;
         }
 
-        /* Encabezado corporativo moderno */
+        /* HEADER */
         .header {
-            display: flex;
-            align-items: center;
-            border-bottom: 4px solid #5b8238;
-            padding: 15px 0;
-            margin-bottom: 25px;
-            background: linear-gradient(to right, #f9f9f9 0%, #ffffff 100%);
+            border-bottom: 3px solid #5b8238;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        .header table {
+            width: 100%;
         }
 
         .header img {
-            width: 85px;
-            height: auto;
-            margin-right: 20px;
+            width: 80px;
         }
 
-        .header-content {
-            flex: 1;
-        }
-
-        .header .company {
-            font-size: 22px;
+        .company {
+            font-size: 18px;
             font-weight: bold;
             color: #5b8238;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
         }
 
         .sub-title {
+            font-size: 12px;
             color: #666;
-            font-size: 13px;
-            font-weight: 500;
         }
 
-        /* Metadata del reporte */
+        /* META */
         .report-meta {
-            background: #f8f9fa;
-            border-left: 4px solid #a3c585;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 0 4px 4px 0;
+            background: #f2f2f2;
+            border-left: 4px solid #5b8238;
+            padding: 10px;
+            margin-bottom: 15px;
         }
 
         .report-meta h3 {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
-        .report-meta .meta-info {
-            font-size: 10px;
-            color: #777;
-            margin-top: 5px;
-        }
-
-        /* Sección de filtros mejorada */
+        /* FILTERS */
         .filters {
-            background: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 15px;
         }
 
-        .filters-header {
-            font-size: 13px;
+        .filters-title {
             font-weight: bold;
             color: #5b8238;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #a3c585;
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            margin-bottom: 6px;
         }
 
         .filter-item {
-            background: #f8f9fa;
-            padding: 8px 10px;
-            border-radius: 4px;
-            font-size: 11px;
+            margin-bottom: 3px;
         }
 
-        .filter-item strong {
-            color: #5b8238;
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        .filter-item span {
-            color: #555;
-        }
-
-        .no-filters {
-            color: #999;
-            font-style: italic;
-            font-size: 11px;
-        }
-
-        /* Tabla moderna y limpia */
+        /* TABLE */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 6px;
-            overflow: hidden;
         }
 
         thead {
-            background: linear-gradient(135deg, #5b8238 0%, #6a9745 100%);
+            background-color: #5b8238;
         }
 
         th {
-            color: white;
-            padding: 10px 8px;
+            color: #ffffff;
+            font-size: 9px;
+            padding: 6px;
+            border: 1px solid #ffffff;
             text-align: left;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
         }
 
         td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #e8e8e8;
-            font-size: 10px;
-            color: #444;
-        }
-
-        tbody tr {
-            background: white;
-            transition: background 0.2s;
+            font-size: 9px;
+            padding: 6px;
+            border: 1px solid #dddddd;
         }
 
         tbody tr:nth-child(even) {
-            background: #f9fdf9;
+            background-color: #f6f6f6;
         }
 
-        tbody tr:hover {
-            background: #f0f7ed;
-        }
-
-        /* Columnas específicas */
-        td:first-child,
-        th:first-child {
-            padding-left: 12px;
-        }
-
-        td:last-child,
-        th:last-child {
-            padding-right: 12px;
-        }
-
-        /* Badges para estados */
+        /* BADGES */
         .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 9px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            padding: 2px 6px;
+            font-size: 8px;
+            font-weight: bold;
+            border-radius: 3px;
         }
 
-        .badge-vigente {
+        .vigente {
             background: #d4edda;
             color: #155724;
         }
 
-        .badge-vencido {
+        .vencido {
             background: #f8d7da;
             color: #721c24;
         }
 
-        .badge-por-vencer {
+        .por-vencer {
             background: #fff3cd;
             color: #856404;
         }
 
-        .badge-reemplazado {
+        .otro {
             background: #e2e3e5;
             color: #383d41;
         }
 
-        /* Footer del reporte */
-        .report-footer {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 2px solid #e0e0e0;
-            text-align: center;
-            font-size: 10px;
-            color: #999;
-        }
-
-        .report-footer .generated {
-            font-weight: 600;
-            color: #666;
-        }
-
-        /* Resumen de totales */
+        /* SUMMARY */
         .summary {
-            background: #f8f9fa;
-            border-radius: 6px;
-            padding: 12px;
             margin-top: 15px;
-            display: flex;
-            justify-content: space-around;
+            border: 1px solid #ddd;
+            padding: 10px;
         }
 
         .summary-item {
+            margin-bottom: 5px;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 20px;
             text-align: center;
+            font-size: 9px;
+            color: #777;
         }
 
-        .summary-item .number {
-            font-size: 20px;
-            font-weight: bold;
-            color: #5b8238;
-        }
-
-        .summary-item .label {
-            font-size: 10px;
-            color: #666;
-            margin-top: 3px;
-        }
-
-        /* Marca de agua sutil */
+        /* WATERMARK */
         .watermark {
             position: fixed;
-            bottom: 50%;
-            left: 50%;
-            transform: translate(-50%, 50%) rotate(-45deg);
-            font-size: 80px;
-            color: rgba(163, 197, 133, 0.08);
-            font-weight: bold;
-            z-index: -1;
-            white-space: nowrap;
+            top: 45%;
+            left: 15%;
+            font-size: 60px;
+            color: #cccccc;
+            opacity: 0.15;
+            transform: rotate(-45deg);
         }
     </style>
 </head>
 
 <body>
 
-    {{-- Marca de agua opcional --}}
     <div class="watermark">CONFIDENCIAL</div>
 
-    {{-- ENCABEZADO CORPORATIVO --}}
+    <!-- HEADER -->
     <div class="header">
-        <img src="{{ public_path('imagenes/Logo_solo.png') }}" alt="Logo">
-        <div class="header-content">
-            <div class="company">Club Campestre Altos del Chicalá</div>
-            <div class="sub-title">Sistema de Control Vehicular - Reporte de Documentos</div>
-        </div>
+        <table>
+            <tr>
+                <td width="90">
+                    <img src="{{ public_path('imagenes/Logo_solo.png') }}">
+                </td>
+                <td>
+                    <div class="company">Club Campestre Altos del Chicalá</div>
+                    <div class="sub-title">Sistema de Control Vehicular - Reporte de Documentos</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    {{-- METADATA DEL REPORTE --}}
+    <!-- META -->
     <div class="report-meta">
         <h3>Reporte de Documentos Vehiculares</h3>
-        <div class="meta-info">
-            Generado el: {{ date('d/m/Y H:i:s') }} |
-            Total de registros: {{ count($documentos) }}
-        </div>
+        Generado el: {{ date('d/m/Y H:i:s') }} |
+        Total registros: {{ count($documentos) }}
     </div>
 
-    {{-- FILTROS APLICADOS --}}
+    <!-- FILTERS -->
     <div class="filters">
-        <div class="filters-header">Filtros Aplicados</div>
+        <div class="filters-title">Filtros Aplicados</div>
 
-        @php
-        $hasFilters = false;
-        @endphp
+        @php $hasFilters = false; @endphp
 
-        <div class="filters-grid">
-            @if($request->filled('documentos'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Documentos:</strong>
-                <span>{{ implode(', ', $request->input('documentos')) }}</span>
-            </div>
-            @endif
+        @if($request->filled('documentos'))
+        @php $hasFilters = true; @endphp
+        <div class="filter-item"><strong>Documentos:</strong> {{ implode(', ', $request->documentos) }}</div>
+        @endif
 
-            @if($request->filled('estado'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Estado:</strong>
-                <span>{{ $request->estado }}</span>
-            </div>
-            @endif
+        @if($request->filled('estado'))
+        @php $hasFilters = true; @endphp
+        <div class="filter-item"><strong>Estado:</strong> {{ $request->estado }}</div>
+        @endif
 
-            @if($request->filled('conductor'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Conductor:</strong>
-                <span>{{ $request->conductor }}</span>
-            </div>
-            @endif
-
-            @if($request->filled('placa'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Placa:</strong>
-                <span>{{ strtoupper($request->placa) }}</span>
-            </div>
-            @endif
-
-            @if($request->filled('propietario'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Propietario:</strong>
-                <span>{{ $request->propietario }}</span>
-            </div>
-            @endif
-
-            @if($request->filled('fecha_from'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Desde:</strong>
-                <span>{{ $request->fecha_from }}</span>
-            </div>
-            @endif
-
-            @if($request->filled('fecha_to'))
-            @php $hasFilters = true; @endphp
-            <div class="filter-item">
-                <strong>Hasta:</strong>
-                <span>{{ $request->fecha_to }}</span>
-            </div>
-            @endif
-        </div>
+        @if($request->filled('placa'))
+        @php $hasFilters = true; @endphp
+        <div class="filter-item"><strong>Placa:</strong> {{ strtoupper($request->placa) }}</div>
+        @endif
 
         @if(!$hasFilters)
-        <p class="no-filters">No se aplicaron filtros - Mostrando todos los registros</p>
+        <div class="filter-item">Sin filtros aplicados</div>
         @endif
     </div>
 
-    {{-- TABLA DE RESULTADOS --}}
-    <table style="width:100%; border-collapse: collapse;" border="1" cellpadding="5">
-        <thead class="hoja-pdf">
+    <!-- TABLE -->
+    <table border="1" cellpadding="0" cellspacing="0">
+        <thead>
             <tr>
-                <th class="titulo">Tipo</th>
-                <th class="titulo">Número</th>
-                <th class="titulo">Conductor</th>
-                <th class="titulo">Versión</th>
-                <th class="titulo">F. Registro</th>
-                <th class="titulo">F. Vencimiento</th>
-                <th class="titulo">Estado</th>
-                <th class="titulo">Propietario</th>
-                <th class="titulo">Placa</th>
-                <th class="titulo">Registrado por</th>
+                <th>Tipo</th>
+                <th>Número</th>
+                <th>Conductor</th>
+                <th>Versión</th>
+                <th>F. Registro</th>
+                <th>F. Vencimiento</th>
+                <th>Estado</th>
+                <th>Propietario</th>
+                <th>Placa</th>
+                <th>Registrado por</th>
             </tr>
         </thead>
-
         <tbody>
             @forelse($documentos as $d)
+            @php
+            $estado = data_get($d,'estado') ?? data_get($d,'Estado','');
+            $class = str_contains($estado,'VIGENTE') ? 'vigente'
+            : (str_contains($estado,'VENCIDO') ? 'vencido'
+            : (str_contains($estado,'VENCER') ? 'por-vencer' : 'otro'));
+            @endphp
             <tr>
-                <td>{{ data_get($d, 'tipo_documento') ?? data_get($d, 'Tipo') ?? '—' }}</td>
-                <td><strong>{{ data_get($d, 'numero_documento') ?? data_get($d, 'Numero') ?? '—' }}</strong></td>
-                <td>{{ data_get($d, 'conductor') ?? '—' }}</td>
-                <td style="text-align: center;">{{ data_get($d, 'version') ?? '1' }}</td>
-                <td>{{ data_get($d, 'fecha_registro') ?? data_get($d, 'Fecha registro') ?? '—' }}</td>
-                <td>{{ data_get($d, 'fecha_vencimiento') ?? data_get($d, 'Fecha vencimiento') ?? '—' }}</td>
-                <td>
-                    @php
-                    $estado = data_get($d, 'estado') ?? data_get($d, 'Estado');
-                    $badgeClass = 'badge ';
-                    if (stripos($estado, 'VIGENTE') !== false) {
-                    $badgeClass .= 'badge-vigente';
-                    } elseif (stripos($estado, 'VENCIDO') !== false) {
-                    $badgeClass .= 'badge-vencido';
-                    } elseif (stripos($estado, 'VENCER') !== false) {
-                    $badgeClass .= 'badge-por-vencer';
-                    } else {
-                    $badgeClass .= 'badge-reemplazado';
-                    }
-                    @endphp
-                    <span class="{{ $badgeClass }}">{{ $estado ?? '—' }}</span>
-                </td>
-                <td>{{ data_get($d, 'propietario') ?? '—' }}</td>
-                <td style="text-align: center;">
-                    <strong>{{ data_get($d, 'placa') ?? data_get($d, 'Placa') ?? '—' }}</strong>
-                </td>
-                <td style="font-size: 9px;">{{ data_get($d, 'creado_por') ?? data_get($d, 'Placa registrada por') ?? '—' }}</td>
+                <td>{{ data_get($d,'tipo_documento','—') }}</td>
+                <td>{{ data_get($d,'numero_documento','—') }}</td>
+                <td>{{ data_get($d,'conductor','—') }}</td>
+                <td align="center">{{ data_get($d,'version','1') }}</td>
+                <td>{{ data_get($d,'fecha_registro','—') }}</td>
+                <td>{{ data_get($d,'fecha_vencimiento','—') }}</td>
+                <td><span class="badge {{ $class }}">{{ $estado ?: '—' }}</span></td>
+                <td>{{ data_get($d,'propietario','—') }}</td>
+                <td align="center">{{ data_get($d,'placa','—') }}</td>
+                <td>{{ data_get($d,'creado_por','—') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="10" style="text-align: center; padding: 20px; color: #999;">
-                    No se encontraron registros con los filtros aplicados
-                </td>
+                <td colspan="10" align="center">No se encontraron registros</td>
             </tr>
             @endforelse
         </tbody>
     </table>
 
-    {{-- RESUMEN DE ESTADÍSTICAS --}}
-    @if(count($documentos) > 0)
+    <!-- SUMMARY -->
+    @if(count($documentos))
     <div class="summary">
-        <div class="summary-item">
-            <div class="number">{{ count($documentos) }}</div>
-            <div class="label">Total Registros</div>
-        </div>
-        <div class="summary-item">
-            <div class="number">
-                {{ collect($documentos)->filter(function($d) {
-                    $estado = data_get($d, 'estado') ?? data_get($d, 'Estado');
-                    return stripos($estado, 'VIGENTE') !== false;
-                })->count() }}
-            </div>
-            <div class="label">Vigentes</div>
-        </div>
-        <div class="summary-item">
-            <div class="number">
-                {{ collect($documentos)->filter(function($d) {
-                    $estado = data_get($d, 'estado') ?? data_get($d, 'Estado');
-                    return stripos($estado, 'VENCIDO') !== false;
-                })->count() }}
-            </div>
-            <div class="label">Vencidos</div>
-        </div>
-        <div class="summary-item">
-            <div class="number">
-                {{ collect($documentos)->filter(function($d) {
-                    $estado = data_get($d, 'estado') ?? data_get($d, 'Estado');
-                    return stripos($estado, 'VENCER') !== false;
-                })->count() }}
-            </div>
-            <div class="label">Por Vencer</div>
-        </div>
+        <div class="summary-item"><strong>Total:</strong> {{ count($documentos) }}</div>
     </div>
     @endif
 
-    {{-- FOOTER DEL REPORTE --}}
-    <div class="report-footer">
-        <p class="generated">
-            Documento generado automáticamente por el Sistema de Control Vehicular
-        </p>
-        <p>
-            Club Campestre Altos del Chicalá |
-            © {{ date('Y') }} Todos los derechos reservados
-        </p>
+    <!-- FOOTER -->
+    <div class="footer">
+        Documento generado automáticamente – {{ date('Y') }}
     </div>
 
 </body>
