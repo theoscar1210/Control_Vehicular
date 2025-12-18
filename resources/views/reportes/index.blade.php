@@ -248,12 +248,13 @@ $sinPadding = true;
                             </td>
                             <td class="px-3">
                                 <small class="text-muted">
-                                    {{ $doc->fecha_emision }}
+                                    {{ \Carbon\Carbon::parse($doc->fecha_emision)->format('d/m/Y') }}
                                 </small>
+
                             </td>
                             <td class="px-3">
                                 <small class="text-muted">
-                                    {{ $doc->fecha_vencimiento }}
+                                    {{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y')  }}
                                 </small>
                             </td>
                             <td class="px-3">

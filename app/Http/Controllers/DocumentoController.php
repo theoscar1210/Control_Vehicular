@@ -178,7 +178,7 @@ class DocumentoController extends Controller
             'tipo_documento'   => $d->tipo_documento,
             'numero_documento' => $d->numero_documento,
             'version'          => $d->version,
-            'fecha_registro'   => $d->fecha_registro,
+            'fecha_emision'   => $d->fecha_emision,
             'fecha_vencimiento' => $d->fecha_vencimiento,
             'estado'           => $d->estado,
             'activo'           => $d->activo,
@@ -191,6 +191,18 @@ class DocumentoController extends Controller
 
 
 
+    /**
+     * Filtra los documentos de conductores según los par metros de entrada.
+     * Soporta los siguientes par metros de filtrado:
+     * - documentType: tipo de documento (transformaci n optimizada)
+     * - estado: estado del documento (incluye caso especial "REEMPLAZADO")
+     * - conductor: nombre, apellido o identificaci n del conductor
+     * - placa: placa del veh culo asociado al documento
+     * - propietario: nombre, apellido o identificaci n del propietario asociado al veh culo
+     * - fecha_from: fecha de inicio para filtrar por fecha de registro
+     * - fecha_to: fecha de fin para filtrar por fecha de registro
+     * El m todo devuelve un objeto con los documentos filtrados.
+     */
     private function getDocumentoConductorCollection(Request $request)
     {
         $q = DocumentoConductor::query()
@@ -290,6 +302,12 @@ class DocumentoController extends Controller
         return $q->get();
     }
 
+    /**
+     * Obtiene una colecci n de documentos vehiculos filtrados por tipos de documentos, estado, conductor, placa, propietario, fecha de registro y fecha de vencimiento.
+     *
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     private function getDocumentoVehiculoCollection(Request $request)
     {
         $q = DocumentoVehiculo::query()
@@ -449,7 +467,7 @@ class DocumentoController extends Controller
             'numero_documento' => $d->numero_documento,
             'conductor' => $conductor ? "{$conductor->nombre} {$conductor->apellido}" : '',
             'version' => $d->version ?? '',
-            'fecha_registro' => optional($d->fecha_registro)->format('Y-m-d H:i'),
+            'fecha_emision' => optional($d->fecha_emision)->format('Y-m-d'),
             'fecha_vencimiento' => optional($d->fecha_vencimiento)->format('Y-m-d'),
             'estado' => $d->estado,
             'propietario' => $prop ? "{$prop->nombre} {$prop->apellido}" : '',
