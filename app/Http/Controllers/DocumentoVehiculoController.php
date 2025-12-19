@@ -26,12 +26,21 @@ class DocumentoVehiculoController extends Controller
 
         $vehiculo = Vehiculo::findOrFail($id);
 
+        // Validar tipo de documento ANTES de la transacción
+        $tipo = $validated['tipo_documento'];
+
+        if ($tipo === 'Tecnomecanica' && method_exists($vehiculo, 'requiereTecnomecanica') && !$vehiculo->requiereTecnomecanica()) {
+            return back()->withErrors([
+                'tipo_documento' => 'Este vehículo solo requiere revisión técnicomecánica a partir del'
+                    . optional($vehiculo->fechaPrimeraTecnomecanica())->format('d/m/Y')
+            ])->withInput();
+        }
+
         try {
 
-            $result = DB::transaction(function () use ($validated, $vehiculo) {
+            $result = DB::transaction(function () use ($validated, $vehiculo, $tipo) {
 
                 $vehiculoId = $vehiculo->id_vehiculo;
-                $tipo = $validated['tipo_documento'];
 
                 // ============================================
                 // CALCULAR FECHA DE VENCIMIENTO (+1 año)
@@ -107,20 +116,38 @@ class DocumentoVehiculoController extends Controller
                     ]);
                 }
 
-                return $fechaVenc;
+                return [
+                    'fecha_vencimiento' => $fechaVenc,
+                    'tipo' => $tipo
+                ];
             });
 
-            // Redirigir al index de vehículos con mensaje de éxito
-            return redirect()->route('vehiculos.index')->with([
-                'success' => "Documento {$validated['tipo_documento']} guardado correctamente.",
-            ]);
+            // ============================================
+            // REDIRIGIR CON MENSAJE DE ÉXITO
+            // ============================================
+
+            // Verificar si existe la ruta vehiculos.show
+            if (\Route::has('vehiculos.show')) {
+                return redirect()
+                    ->route('vehiculos.show', $vehiculo->id_vehiculo)
+                    ->with('success', "Documento {$result['tipo']} guardado correctamente.");
+            } else {
+                // Si no existe, redirigir al index
+                return redirect()
+                    ->route('vehiculos.index')
+                    ->with('success', "Documento {$result['tipo']} guardado correctamente.");
+            }
         } catch (\Exception $e) {
 
-            Log::error("Error al guardar documento vehículo: " . $e->getMessage());
+            Log::error("Error al guardar documento vehículo: " . $e->getMessage(), [
+                'vehiculo_id' => $id,
+                'tipo_documento' => $validated['tipo_documento'] ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Error al guardar el documento.');
+                ->with('error', 'Error al guardar el documento: ' . $e->getMessage());
         }
     }
 
@@ -224,10 +251,21 @@ class DocumentoVehiculoController extends Controller
                 ];
             });
 
-            // Redirigir al index de vehículos con mensaje de éxito
-            return redirect()->route('vehiculos.index')->with([
-                'success' => "{$result['tipo']} renovado correctamente.",
-            ]);
+            // ============================================
+            // REDIRIGIR CON MENSAJE DE ÉXITO
+            // ============================================
+
+            // Verificar si existe la ruta vehiculos.show
+            if (\Route::has('vehiculos.show')) {
+                return redirect()
+                    ->route('vehiculos.show', $idVehiculo)
+                    ->with('success', "{$result['tipo']} renovado correctamente.");
+            } else {
+                // Si no existe, redirigir al index
+                return redirect()
+                    ->route('vehiculos.index')
+                    ->with('success', "{$result['tipo']} renovado correctamente.");
+            }
         } catch (\Exception $e) {
 
             Log::error("Error al renovar documento vehículo: " . $e->getMessage(), [

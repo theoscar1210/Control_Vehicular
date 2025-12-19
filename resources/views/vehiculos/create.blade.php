@@ -342,6 +342,25 @@ $sinPadding = true;
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Fecha de Matrícula <span class="text-danger">*</span>
+                                </label>
+                                <input type="date"
+                                    name="fecha_matricula"
+                                    class="form-control @error('fecha_matricula') is-invalid @enderror"
+                                    value="{{ old('fecha_matricula') }}"
+                                    max="{{ now()->toDateString() }}"
+                                    {{ $propietario ? '' : 'disabled' }}>
+                                @error('fecha_matricula')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">
+                                    Fecha en la que el vehículo fue matriculado por primera vez.
+                                </small>
+                            </div>
+
                         </div>
 
                         <div class="mt-4">
@@ -390,7 +409,7 @@ $sinPadding = true;
                                 <label class="form-label">Número <span class="text-danger">*</span></label>
                                 <input type="text" name="numero_documento"
                                     class="form-control @error('numero_documento') is-invalid @enderror"
-                                    value="{{ old('tipo_documento') == 'SOAT' ? old('numero_documento') : '' }}" required>
+                                    value="{{ old('numero_documento') }}" required>
                                 @error('numero_documento')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -425,7 +444,7 @@ $sinPadding = true;
                                 </label>
                                 <input type="date" name="fecha_vencimiento" id="fecha_vencimiento_soat"
                                     class="form-control " readonly style="pointer-events:none; background-color:#e8f0e9 ;"
-                                    value="{{ session('fecha_venc_soat') ?? old('fecha_vencimiento') }}">
+                                    value="{{ old('fecha_vencimiento') }}">
                                 <input type="hidden" name="estado" id="estado_soat" value="{{ old('estado', $computedEstado ?? '') }}">
                                 <small class="text-muted">Se calcula automáticamente (+1 año)</small>
                                 @error('fecha_vencimiento')
@@ -469,7 +488,7 @@ $sinPadding = true;
                                 <label class="form-label">Número <span class="text-danger">*</span></label>
                                 <input type="text" name="numero_documento"
                                     class="form-control @error('numero_documento') is-invalid @enderror"
-                                    value="{{ old('tipo_documento') == 'Tecnomecanica' ? old('numero_documento') : '' }}" required>
+                                    value="{{ old('numero_documento') }}" required>
                                 @error('numero_documento')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

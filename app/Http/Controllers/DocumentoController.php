@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Exports\DocumentosCollectionExport;
+use Carbon\Carbon;
 
 class DocumentoController extends Controller
 {
@@ -223,12 +224,29 @@ class DocumentoController extends Controller
         // FILTRO: ESTADO (incluye caso especial "REEMPLAZADO")
         // -------------------------------------------------------
         if ($estado = $request->input('estado')) {
-            if ($estado === 'REEMPLAZADO') {
-                $q->whereNotNull('reemplazado_por');
-            } else {
-                $q->where('estado', $estado);
-            }
+
+            $hoy = Carbon::now()->startOfDay();
+            $limite = Carbon::now()->addDays(30)->endOfDay();
+
+            match ($estado) {
+                'REEMPLAZADO' => $q->where('activo', false),
+
+                'VENCIDO' => $q->whereNotNull('fecha_vencimiento')
+                    ->whereDate('fecha_vencimiento', '<', $hoy)
+                    ->where('activo', true),
+
+                'POR_VENCER' => $q->whereBetween(
+                    'fecha_vencimiento',
+                    [$hoy, $limite]
+                )->where('activo', true),
+
+                'VIGENTE' => $q->where(function ($w) use ($limite) {
+                    $w->whereNull('fecha_vencimiento')
+                        ->orWhereDate('fecha_vencimiento', '>', $limite);
+                })->where('activo', true),
+            };
         }
+
 
         // -------------------------------------------------------
         // FILTRO: CONDUCTOR (nombre, apellido, identificación)

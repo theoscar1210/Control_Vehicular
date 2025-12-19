@@ -41,7 +41,6 @@ class DocumentoVehiculo extends Model
         'entidad_emisora',
         'fecha_emision',
         'fecha_vencimiento',
-        'estado',
         'activo',
         'version',
         'reemplazado_por',
@@ -58,52 +57,32 @@ class DocumentoVehiculo extends Model
         'fecha_registro' => 'datetime',
     ];
 
-    protected $attributes = [
-        'activo' => true,
-        'estado' => 'VIGENTE',
-    ];
 
-    protected static function boot()
+
+    public function getEstadoAttribute(): string
     {
-        parent::boot();
-
-        static::creating(function ($documento) {
-            if (!$documento->fecha_registro) {
-                $documento->fecha_registro = now();
-            }
-
-            // si la fecha_vencimiento está presente y estado no fue explicitado
-            if ($documento->fecha_vencimiento && empty($documento->estado)) {
-                $documento->estado = static::calcularEstado($documento->fecha_vencimiento);
-            }
-        });
-
-        static::updating(function ($documento) {
-            if ($documento->isDirty('fecha_vencimiento') && $documento->fecha_vencimiento) {
-                $documento->estado = static::calcularEstado($documento->fecha_vencimiento);
-            }
-        });
-    }
-
-    /**
-     * Mutador: normaliza el estado antes de guardar
-     *
-     * El estado se normaliza a mayúsculas y se reemplaza por 'VIGENTE'
-     * si no se encuentra en la lista de ESTADOS.
-     *
-     * @param string $value
-     * @return void
-     */
-    public function setEstadoAttribute($value)
-    {
-        $value = strtoupper(str_replace(' ', '_', trim((string) $value)));
-
-        if (in_array($value, self::ESTADOS)) {
-            $this->attributes['estado'] = $value;
-        } else {
-            $this->attributes['estado'] = 'VIGENTE';
+        // Reemplazado siempre manda
+        if (!$this->activo) {
+            return 'REEMPLAZADO';
         }
+
+        if (!$this->fecha_vencimiento) {
+            return 'VIGENTE';
+        }
+
+        $hoy = now()->startOfDay();
+        $vence = Carbon::parse($this->fecha_vencimiento)->startOfDay();
+        $dias = $hoy->diffInDays($vence, false);
+
+
+        return match (true) {
+            $dias < 0 => 'VENCIDO',
+            $dias <= 30 => 'POR_VENCER',
+            default => 'VIGENTE',
+        };
     }
+
+
 
     /**
      * Devuelve el estado del documento vehículo como string legible
@@ -143,73 +122,18 @@ class DocumentoVehiculo extends Model
         return $query->where('activo', true);
     }
 
-    public function scopeVigentes($query)
-    {
-        return $query->where('estado', 'VIGENTE');
-    }
 
-    public function scopePorVencer($query)
-    {
-        // mejor basarse en fecha_vencimiento si lo prefieres
-        $hoy = Carbon::today();
-        $proximo = $hoy->copy()->addDays(30);
-        return $query->whereBetween('fecha_vencimiento', [$hoy, $proximo])
-            ->where('estado', '!=', 'REEMPLAZADO');
-    }
 
-    /**
-     * Scope a query to only include documents with a expiration date before today
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeVencidos($query)
-    {
-        $hoy = Carbon::today();
-        return $query->where(function ($q) use ($hoy) {
-            $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
-                ->orWhere('estado', 'VENCIDO');
-        })->where('estado', '!=', 'REEMPLAZADO');
-    }
+
 
     public function scopeTipo($query, $tipo)
     {
         return $query->where('tipo_documento', $tipo);
     }
 
-    public static function calcularEstado($fechaVencimiento)
-    {
-        if (!$fechaVencimiento) {
-            return 'VIGENTE';
-        }
 
-        $vencimiento = Carbon::parse($fechaVencimiento);
-        $hoy = Carbon::now();
-        $diasParaVencer = $hoy->diffInDays($vencimiento, false);
 
-        if ($diasParaVencer < 0) {
-            return 'VENCIDO';
-        } elseif ($diasParaVencer <= 30) {
-            return 'POR_VENCER';
-        } else {
-            return 'VIGENTE';
-        }
-    }
 
-    public function estaVigente(): bool
-    {
-        return $this->estado === 'VIGENTE' && $this->activo;
-    }
-
-    public function estaPorVencer(): bool
-    {
-        return $this->estado === 'POR_VENCER' && $this->activo;
-    }
-
-    public function estaVencido(): bool
-    {
-        return $this->estado === 'VENCIDO';
-    }
 
     public function diasRestantes(): ?int
     {
@@ -217,17 +141,22 @@ class DocumentoVehiculo extends Model
             return null;
         }
 
-        return Carbon::now()->diffInDays($this->fecha_vencimiento, false);
+        return now()->startOfDay()->diffInDays(Carbon::parse($this->fecha_vencimiento)->startOfDay(), false);
     }
 
-    public function getClaseBadge(): string
+    /**
+     * Devuelve el color de la clase badge correspondiente al estado del documento vehículo
+     *
+     * @return string success|warning|danger|secondary
+     */
+    public function getClaseBadgeAttribute(): string
     {
         return match ($this->estado) {
-            'VIGENTE' => 'badge bg-success',
-            'POR_VENCER' => 'badge bg-warning text-dark',
-            'VENCIDO' => 'badge bg-danger',
-            'REEMPLAZADO' => 'badge bg-secondary',
-            default => 'badge bg-secondary',
+            'VIGENTE' => 'success',
+            'POR_VENCER' => 'warning',
+            'VENCIDO' => 'danger',
+            'REEMPLAZADO' => 'secondary',
+            default => 'secondary',
         };
     }
 

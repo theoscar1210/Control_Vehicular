@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +27,7 @@ class Vehiculo extends Model
         'modelo',
         'color',
         'tipo',
+        'fecha_matricula',
         'id_propietario',
         'id_conductor',
         'estado',
@@ -35,6 +37,7 @@ class Vehiculo extends Model
 
     protected $casts = [
         'fecha_registro' => 'datetime',
+        'fecha_matricula' => 'date',
     ];
 
     /**
@@ -51,14 +54,48 @@ class Vehiculo extends Model
 
                 //  En vez de borrar propietario, desasignar
                 if ($veh->propietario) {
-                    $veh->id_propietario = null;
-                    $veh->save();
+                    $veh->forceFill(['id_propietario' => null])->saveQuietly();
                 }
             } else {
                 // Force delete documentos y propietario
                 $veh->documentos()->withTrashed()->forceDelete();
             }
         });
+    }
+    /*************  primera tecnomecánica *************/
+    /**
+     * Calcula la fecha de primera tecnomecánica del vehículo
+     * - Carros: 5 años desde la fecha de matrícula
+     * - Motos: 2 años desde la fecha de matrícula
+     *
+     * @return Carbon|null Fecha de primera tecnomecánica del vehículo, o null si no tiene fecha de matrícula
+     */
+    /*******    *******/
+    public function fechaPrimeraTecnomecanica(): ?Carbon
+    {
+        if (!$this->fecha_matricula) {
+            return null;
+        }
+
+        $base = $this->fecha_matricula->copy()->startOffDay();
+
+        return match ($this->tipo) {
+            'Carro' => $this->fecha_matricula->copy()->addYears(5),
+            'Moto' => $this->fecha_matricula->copy()->addYears(2),
+            default => null,
+        };
+    }
+
+    /**
+     * Comprueba si la fecha actual es mayor o igual que la fecha de primera tecnomecánica del vehículo
+     *
+     * @return bool Verdadero si la fecha actual es mayor o igual que la fecha de primera tecnomecánica, o false en caso contrario
+     */
+    public function requiereTecnomecanica(): bool
+    {
+        $fecha = $this->fechaPrimeraTecnomecanica();
+
+        return $fecha ? now()->startOfDay()->greaterThanOrEqualTo($fecha) : false;
     }
 
     /**
