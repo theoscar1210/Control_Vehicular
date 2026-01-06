@@ -50,8 +50,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Formulario de renovación
     Route::get('/vehiculos/{vehiculo}/documentos/{documento}/edit', [DocumentoVehiculoController::class, 'edit'])->name('vehiculos.documentos.edit');
-    // Historial de versiones
-    Route::get('/vehiculos/{vehiculo}/documentos/{tipo}/historial', [DocumentoVehiculoController::class, 'historial'])->name('vehiculos.documentos.historial');
+    // Historial de versiones    
+    Route::get(
+        'vehiculos/{vehiculo}/documentos/historial',
+        [DocumentoVehiculoController::class, 'historialCompleto']
+    )->name('vehiculos.documentos.historial.completo');
+
 
     // Conductores
     Route::get('/conductores/create', [ConductorController::class, 'create'])->name('conductores.create');

@@ -34,7 +34,15 @@ $sinPadding = true;
     <div class="card shadow border-0">
         <div class="card-body">
 
-            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar vehículo...">
+            <form method="GET" action="{{ route('vehiculos.index') }}">
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    class="form-control mb-3"
+                    placeholder="Buscar por placa, marca, modelo o propietario...">
+            </form>
+
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center" id="vehiculosTable">
@@ -135,11 +143,14 @@ $sinPadding = true;
                                 <div class="d-flex justify-content-center gap-2">
 
                                     {{-- HISTORIAL --}}
-                                    <a href="{{ route('vehiculos.documentos.historial', [$vehiculo->id_vehiculo, 'SOAT']) }}"
+                                    <a href="{{ route('vehiculos.documentos.historial.completo', $vehiculo->id_vehiculo) }}"
                                         class="btn btn-sm btn-outline-success"
-                                        title="Historial SOAT">
+                                        title="Historial de documentos">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                     </a>
+
+
+
 
 
 
@@ -175,4 +186,7 @@ $sinPadding = true;
         </div>
     </div>
 </div>
+
+
+
 @endsection

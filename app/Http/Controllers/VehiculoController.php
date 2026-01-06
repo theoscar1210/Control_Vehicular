@@ -15,8 +15,10 @@ class VehiculoController extends Controller
      * LISTADO DE VEHÍCULOS
      * Se agrega ViewModel para estados de documentos
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+
         $vehiculos = Vehiculo::with([
             'propietario',
             'conductor',
@@ -24,8 +26,24 @@ class VehiculoController extends Controller
                 $q->where('activo', 1);
             }
         ])
+
+            /*= Filtro de búsqueda =================*/
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('placa', 'like', "%{$search}%")
+                        ->orWhere('marca', 'like', "%{$search}%")
+                        ->orWhere('modelo', 'like', "%{$search}%")
+                        ->orWhere('tipo', 'like', "%{$search}%")
+                        ->orWhereHas('propietario', function ($p) use ($search) {
+                            $p->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('apellido', 'like', "%{$search}%");
+                        });
+                });
+            })
+
             ->orderBy('id_vehiculo', 'desc')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         /**
          * ================================

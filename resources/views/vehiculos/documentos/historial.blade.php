@@ -16,7 +16,7 @@ $sinPadding = true;
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('vehiculos.index') }}" style="color:#5B8238;">Vehículos</a></li>
-            <li class="breadcrumb-item active">Historial {{ $tipoDocumento }}</li>
+            <li class="breadcrumb-item active">Historial {{ $vehiculo->placa }}</li>
         </ol>
     </nav>
 
@@ -25,16 +25,17 @@ $sinPadding = true;
         <div>
             <h3 class="fw-bold text-dark">
                 <i class="fa-solid fa-clock-rotate-left me-2"></i>
-                Historial de {{ $tipoDocumento }}
+                Historial de documentos del vehículo
             </h3>
-            <p class="text-muted mb-0">
-                Vehículo: <strong>{{ $vehiculo->placa }}</strong> - {{ $vehiculo->marca }} {{ $vehiculo->modelo }}
-            </p>
+
+
         </div>
-        <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary px-3 py-2" style="border-radius:12px;">
-            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+        <a href="{{ route('vehiculos.index') }}" class="btn btn-universal px-3 py-2" style="border-radius:12px;">
+            <i class="fa-solid fa-arrow-left me-1 "></i> Volver
         </a>
+
     </div>
+
 
     @if($historial->isEmpty())
     {{-- SIN HISTORIAL --}}
@@ -173,8 +174,11 @@ $sinPadding = true;
                                             @if($doc->creado_por)
                                             <p class="mb-2">
                                                 <strong><i class="fa-solid fa-user me-1"></i>Por:</strong>
-                                                Usuario #{{ $doc->creado_por }}
+                                                {{ $doc->creador->nombre_completo }}
+
                                             </p>
+
+
                                             @endif
                                             @if($doc->nota)
                                             <p class="mb-2">

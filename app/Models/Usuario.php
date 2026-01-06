@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
 
 class Usuario extends Authenticatable
 {
@@ -60,5 +61,17 @@ class Usuario extends Authenticatable
     {
         // relación polimórfica/ genérica
         return $this->hasMany(Propietario::class, 'creado_por', 'id_usuario');
+    }
+
+    /**
+     * Devuelve el nombre completo del usuario, con mayúsculas y 
+     * separado por un espacio, utilizando los atributos 
+     * nombre y apellido.
+     * 
+     * @return string
+     */
+    public function getNombreCompletoAttribute()
+    {
+        return Str::title(trim($this->nombre . ' ' . $this->apellido));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DocumentoVehiculo;
 use App\Models\Vehiculo;
+use App\Models\Usuario;
 use App\Models\Alerta;
 use App\Helpers\DocumentoHelper;
 use Illuminate\Http\Request;
@@ -85,7 +86,7 @@ class DocumentoVehiculoController extends Controller
                     'fecha_vencimiento' => $fechaVenc,
                     'estado'            => $estado,
                     'activo'            => 1,
-                    'creado_por'        => auth()->id() ?? null,
+                    'creado_por'        => auth()->user()->id_usuario ?? null,
                     'version'           => $newVersion,
                     'nota'              => $validated['nota'] ?? null,
                 ]);
@@ -112,7 +113,7 @@ class DocumentoVehiculoController extends Controller
                         'fecha_alerta'     => now()->toDateString(),
                         'leida'            => 0,
                         'visible_para'     => 'TODOS',
-                        'creado_por'       => auth()->id() ?? null,
+                        'creado_por'       => auth()->user()->id_usuario ?? null,
                     ]);
                 }
 
@@ -208,7 +209,7 @@ class DocumentoVehiculoController extends Controller
                     'fecha_vencimiento' => $fechaVenc,
                     'estado'            => $estado,
                     'activo'            => 1,
-                    'creado_por'        => auth()->id() ?? null,
+                    'creado_por'       => auth()->user()->id_usuario ?? null,
                     'version'           => $newVersion,
                     'nota'              => $validated['nota'] ?? null,
                 ]);
@@ -240,7 +241,7 @@ class DocumentoVehiculoController extends Controller
                         'fecha_alerta'     => now()->toDateString(),
                         'leida'            => 0,
                         'visible_para'     => 'TODOS',
-                        'creado_por'       => auth()->id() ?? null,
+                        'creado_por'       => auth()->user()->id_usuario ?? null,
                     ]);
                 }
 
@@ -295,7 +296,7 @@ class DocumentoVehiculoController extends Controller
 
     /**
      * Obtener historial de versiones de un tipo de documento
-     */
+     
     public function historial($idVehiculo, $tipoDocumento)
     {
         $vehiculo = Vehiculo::findOrFail($idVehiculo);
@@ -306,5 +307,27 @@ class DocumentoVehiculoController extends Controller
             ->get();
 
         return view('vehiculos.documentos.historial', compact('vehiculo', 'historial', 'tipoDocumento'));
+    }
+     */
+
+
+    public function historialCompleto($idVehiculo)
+    {
+        // 1. Obtener el vehículo
+        $vehiculo = Vehiculo::findOrFail($idVehiculo);
+
+        // 2. Obtener TODOS los documentos del vehículo
+        //    Ordenados por tipo y versión (la versión más alta primero)
+        $historial = DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)
+            ->with('creador')
+            ->orderBy('tipo_documento')
+            ->orderByDesc('version')
+            ->get();
+
+        // 3. Retornar la vista
+        return view('vehiculos.documentos.historial', compact(
+            'vehiculo',
+            'historial'
+        ));
     }
 }

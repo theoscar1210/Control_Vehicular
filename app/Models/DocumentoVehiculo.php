@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
@@ -106,12 +108,22 @@ class DocumentoVehiculo extends Model
         return $this->belongsTo(Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
     }
 
+
+
     public function creador()
     {
-        return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
+        return $this->belongsTo(
+            Usuario::class,
+            'creado_por',
+            'id_usuario'
+        )->withDefault([
+            'name' => 'Usuario eliminado'
+        ]);
     }
 
-    // <-- CORRECCIÓN: usar id_doc_vehiculo (según tu esquema)
+
+
+
     public function alertas()
     {
         return $this->hasMany(Alerta::class, 'id_doc_vehiculo', 'id_doc_vehiculo');
@@ -121,6 +133,7 @@ class DocumentoVehiculo extends Model
     {
         return $query->where('activo', true);
     }
+
 
 
 
