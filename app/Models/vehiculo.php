@@ -27,7 +27,6 @@ class Vehiculo extends Model
         'modelo',
         'color',
         'tipo',
-        'fecha_matricula',
         'id_propietario',
         'id_conductor',
         'estado',
@@ -37,7 +36,7 @@ class Vehiculo extends Model
 
     protected $casts = [
         'fecha_registro' => 'datetime',
-        'fecha_matricula' => 'date',
+
     ];
 
     /**

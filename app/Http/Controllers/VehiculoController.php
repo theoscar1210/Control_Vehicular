@@ -77,14 +77,20 @@ class VehiculoController extends Controller
     public function create(Request $request)
     {
         $propietario = null;
-        $propId = $request->query('propietario') ?? session('created_propietario_id');
+        $vehiculo = null;
 
-        if ($propId) {
-            $propietario = Propietario::find($propId);
+        if ($request->has('vehiculo')) {
+            $vehiculo = Vehiculo::with('propietario')
+                ->find($request->vehiculo);
+
+            $propietario = $vehiculo?->propietario;
+        } elseif ($request->has('propietario')) {
+            $propietario = Propietario::find($request->propietario);
         }
 
-        return view('vehiculos.create', compact('propietario'));
+        return view('vehiculos.create', compact('vehiculo', 'propietario'));
     }
+
 
     /**
      * Guardar vehículo
@@ -95,7 +101,6 @@ class VehiculoController extends Controller
             'placa' => 'required|string|max:10|unique:vehiculos,placa',
             'marca' => 'required|string|max:50',
             'modelo' => 'nullable|string|max:50',
-            'fecha_matricula' => 'required|date|before_or_equal:today',
             'color' => 'nullable|string|max:50',
             'tipo' => 'required|in:Carro,Moto,Camion,Otro',
             'id_propietario' => 'required|integer|exists:propietarios,id_propietario',
@@ -110,7 +115,6 @@ class VehiculoController extends Controller
                 'placa' => strtoupper($validated['placa']),
                 'marca' => $validated['marca'],
                 'modelo' => $validated['modelo'] ?? null,
-                'fecha_matricula' => $validated['fecha_matricula'],
                 'color' => $validated['color'] ?? null,
                 'tipo' => $validated['tipo'],
                 'id_propietario' => $validated['id_propietario'],

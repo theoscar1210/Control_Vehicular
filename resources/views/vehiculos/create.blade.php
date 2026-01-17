@@ -2,6 +2,10 @@
 $navbarEspecial = true;
 $ocultarNavbar = true;
 $sinPadding = true;
+
+
+$vehiculoId = request()->query('vehiculo');
+
 @endphp
 
 
@@ -165,7 +169,14 @@ $sinPadding = true;
 
     </div>
     @endif
-
+    @if($vehiculo)
+    <div class="alert alert-info">
+        <strong>Vehículo:</strong> {{ $vehiculo->placa }} <br>
+        <strong>Propietario:</strong>
+        {{ $vehiculo->propietario->nombre }}
+        {{ $vehiculo->propietario->apellido }}
+    </div>
+    @endif
 
 
     <div class="row gy-4 mt-3">
@@ -260,6 +271,12 @@ $sinPadding = true;
             </div>
         </div>
 
+
+
+        {{-- 2. FORMULARIOS DE DOCUMENTOS  --}}
+
+
+
         {{-- 2. FORMULARIO VEHÍCULO --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm {{ request()->query('vehiculo') ? 'border-success-thick' : '' }}">
@@ -343,23 +360,7 @@ $sinPadding = true;
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    Fecha de Matrícula <span class="text-danger">*</span>
-                                </label>
-                                <input type="date"
-                                    name="fecha_matricula"
-                                    class="form-control @error('fecha_matricula') is-invalid @enderror"
-                                    value="{{ old('fecha_matricula') }}"
-                                    max="{{ now()->toDateString() }}"
-                                    {{ $propietario ? '' : 'disabled' }}>
-                                @error('fecha_matricula')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                <small class="text-muted">
-                                    Fecha en la que el vehículo fue matriculado por primera vez.
-                                </small>
-                            </div>
+
 
                         </div>
 
@@ -384,6 +385,124 @@ $sinPadding = true;
             </div>
         </div>
 
+
+
+
+        {{-- 2. FORMULARIO LICENCIA DE TRÁNSITO --}}
+        <div class="col-12 col-lg-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-header text-white">
+                    <i class="fa-solid fa-id-card me-2"></i>2. Licencia de Tránsito
+                </div>
+                <div class="card-body">
+
+
+
+
+                    @if(!$vehiculoId)
+                    <div class="alert alert-custom" role="alert">
+                        <i class="fa-solid fa-info-circle me-2"></i>
+                        Registra primero el vehículo para agregar la licencia.
+                    </div>
+                    @else
+                    <form action="{{ route('documentos.store', $vehiculoId) }}"
+                        method="POST"
+                        class="form-con-loader"
+                        id="form-licencia">
+
+                        @csrf
+
+                        {{-- Identificación --}}
+                        <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
+                        <input type="hidden" name="tipo_documento" value="Tarjeta Propiedad">
+
+                        <div class="row g-3">
+
+                            {{-- Número --}}
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Número Licencia <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                    name="numero_documento"
+                                    class="form-control @error('numero_documento') is-invalid @enderror"
+                                    value="{{ old('numero_documento') }}"
+                                    required>
+
+                                @error('numero_documento')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Entidad --}}
+                            <div class="col-md-6">
+                                <label class="form-label">Entidad Emisora</label>
+                                <input type="text"
+                                    name="entidad_emisora"
+                                    class="form-control @error('entidad_emisora') is-invalid @enderror"
+                                    value="{{ old('entidad_emisora') }}"
+                                    placeholder="Ej: Secretaría de Tránsito">
+
+                                @error('entidad_emisora')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Fecha expedición --}}
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Fecha de Expedición <span class="text-danger">*</span>
+                                </label>
+                                <input type="date"
+                                    name="fecha_emision"
+                                    class="form-control @error('fecha_emision') is-invalid @enderror"
+                                    value="{{ old('fecha_emision') }}"
+                                    max="{{ now()->toDateString() }}"
+                                    required>
+
+                                @error('fecha_emision')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Fecha matrícula --}}
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Fecha de Matrícula <span class="text-danger">*</span>
+                                </label>
+                                <input type="date"
+                                    name="fecha_matricula"
+                                    class="form-control @error('fecha_matricula') is-invalid @enderror"
+                                    value="{{ old('fecha_matricula') }}"
+                                    max="{{ now()->toDateString() }}"
+                                    required>
+
+                                @error('fecha_matricula')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                                <small class="text-muted">
+                                    Fecha en la que el vehículo fue matriculado por primera vez.
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit"
+                                class="btn btn-universal"
+                                data-loading-text="Guardando...">
+                                <i class="fa-solid fa-save me-2"></i>Guardar Licencia
+                            </button>
+                        </div>
+
+                    </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+
         {{-- 3. FORMULARIO DOCUMENTO SOAT --}}
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
@@ -391,9 +510,9 @@ $sinPadding = true;
                     <i class="fa-solid fa-shield-halved me-2"></i>3. Documento SOAT
                 </div>
                 <div class="card-body">
-                    @php $vehiculoId = request()->query('vehiculo') ?? null; @endphp
 
                     @if(!$vehiculoId)
+
                     <div class="alert alert-custom" role="alert">
                         <i class="fa-solid fa-info-circle me-2"></i>
                         Registra primero el vehículo para agregar documentos.
