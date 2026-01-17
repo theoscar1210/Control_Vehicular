@@ -405,7 +405,7 @@ $vehiculoId = request()->query('vehiculo');
                         Registra primero el vehículo para agregar la licencia.
                     </div>
                     @else
-                    <form action="{{ route('documentos.store', $vehiculoId) }}"
+                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}"
                         method="POST"
                         class="form-con-loader"
                         id="form-licencia">
@@ -518,7 +518,7 @@ $vehiculoId = request()->query('vehiculo');
                         Registra primero el vehículo para agregar documentos.
                     </div>
                     @else
-                    <form action="{{ route('documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-soat">
+                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-soat">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
                         <input type="hidden" name="tipo_documento" value="SOAT">
@@ -597,7 +597,7 @@ $vehiculoId = request()->query('vehiculo');
                         Registra primero el vehículo para agregar documentos.
                     </div>
                     @else
-                    <form action="{{ route('documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
+                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
                         <input type="hidden" name="tipo_documento" value="Tecnomecanica">

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
 @section('content')
 <br><br>
@@ -113,17 +115,29 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Asignar a Vehículo</label>
-
-                                            <select name="id_vehiculo" class="form-select rounded-3 border-success-subtle">
+                                            <label class="form-label fw-semibold">
+                                                <i class="bi bi-car-front me-1"></i>Asignar a Vehículo
+                                            </label>
+                                            <select name="id_vehiculo" id="select-vehiculo" class="form-select rounded-3 border-success-subtle">
                                                 <option value="">--- Sin asignar ---</option>
                                                 @foreach($vehiculos as $veh)
                                                 <option value="{{ $veh->id_vehiculo }}"
+                                                    data-placa="{{ $veh->placa }}"
+                                                    data-marca="{{ $veh->marca }}"
+                                                    data-modelo="{{ $veh->modelo ?? '' }}"
+                                                    data-color="{{ $veh->color ?? '' }}"
+                                                    data-propietario="{{ $veh->propietario->nombre ?? '' }} {{ $veh->propietario->apellido ?? '' }}"
                                                     {{ old('id_vehiculo') == $veh->id_vehiculo ? 'selected' : '' }}>
-                                                    {{ $veh->placa }} — {{ $veh->marca }} — {{ $veh->modelo ?? '' }}
+                                                    {{ $veh->placa }} - {{ $veh->marca }} {{ $veh->modelo ?? '' }}
+                                                    @if($veh->propietario)
+                                                        ({{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }})
+                                                    @endif
                                                 </option>
                                                 @endforeach
                                             </select>
+                                            <small class="text-muted">
+                                                <i class="bi bi-search me-1"></i>Busca por placa, marca, modelo o propietario
+                                            </small>
                                         </div>
 
                                     </div>
@@ -217,4 +231,105 @@
     </div>
 
 </div>
+
+{{-- Scripts de Select2 --}}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2 en el selector de vehículos
+        $('#select-vehiculo').select2({
+            theme: 'bootstrap-5',
+            placeholder: '🔍 Buscar vehículo por placa, marca, modelo o propietario...',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "No se encontraron vehículos";
+                },
+                searching: function() {
+                    return "Buscando...";
+                }
+            },
+            templateResult: formatVehiculo,
+            templateSelection: formatVehiculoSelection
+        });
+
+        // Formato personalizado para los resultados del dropdown
+        function formatVehiculo(vehiculo) {
+            if (!vehiculo.id) {
+                return vehiculo.text;
+            }
+
+            var $vehiculo = $(
+                '<div class="d-flex align-items-center py-2">' +
+                    '<div class="me-3">' +
+                        '<i class="bi bi-car-front-fill fs-4" style="color:#5B8238;"></i>' +
+                    '</div>' +
+                    '<div class="flex-grow-1">' +
+                        '<div class="fw-bold">' + $(vehiculo.element).data('placa') + '</div>' +
+                        '<small class="text-muted">' +
+                            $(vehiculo.element).data('marca') + ' ' +
+                            $(vehiculo.element).data('modelo') + ' - ' +
+                            $(vehiculo.element).data('color') +
+                        '</small><br>' +
+                        '<small class="text-muted">' +
+                            '<i class="bi bi-person-fill me-1"></i>' +
+                            $(vehiculo.element).data('propietario') +
+                        '</small>' +
+                    '</div>' +
+                '</div>'
+            );
+
+            return $vehiculo;
+        }
+
+        // Formato para la selección (cuando ya está seleccionado)
+        function formatVehiculoSelection(vehiculo) {
+            if (!vehiculo.id) {
+                return vehiculo.text;
+            }
+
+            var placa = $(vehiculo.element).data('placa') || '';
+            var marca = $(vehiculo.element).data('marca') || '';
+            var modelo = $(vehiculo.element).data('modelo') || '';
+
+            return placa + ' - ' + marca + ' ' + modelo;
+        }
+    });
+</script>
+
+<style>
+    /* Estilos personalizados para Select2 */
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: rgba(var(--bs-success-rgb), 0.3) !important;
+        min-height: 38px;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection:focus,
+    .select2-container--bootstrap-5.select2-container--focus .select2-selection {
+        border-color: #5B8238 !important;
+        box-shadow: 0 0 0 0.25rem rgba(91, 130, 56, 0.25) !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-dropdown {
+        border-color: rgba(var(--bs-success-rgb), 0.3) !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-results__option--highlighted {
+        background-color: #5B8238 !important;
+        color: white !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-search__field {
+        border-color: rgba(var(--bs-success-rgb), 0.3) !important;
+    }
+
+    .select2-container--bootstrap-5 .select2-search__field:focus {
+        border-color: #5B8238 !important;
+        outline: none !important;
+    }
+</style>
+
 @endsection

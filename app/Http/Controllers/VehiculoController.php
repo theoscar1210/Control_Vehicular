@@ -39,6 +39,66 @@ class VehiculoController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request)
+    {
+        // Obtener propietario si existe en la sesión o URL
+        $propietarioId = session('propietario_id') ?? $request->query('propietario');
+        $propietario = $propietarioId ? Propietario::find($propietarioId) : null;
+
+        // Obtener vehículo si existe en URL
+        $vehiculoId = $request->query('vehiculo');
+        $vehiculo = $vehiculoId ? Vehiculo::with('propietario')->find($vehiculoId) : null;
+
+        return view('vehiculos.create', compact('propietario', 'vehiculo'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'placa'           => 'required|string|max:10|unique:vehiculos,placa',
+            'marca'           => 'required|string|max:50',
+            'modelo'          => 'required|string|max:50',
+            'color'           => 'required|string|max:30',
+            'tipo'            => 'required|in:Carro,Moto',
+            'id_propietario'  => 'required|exists:propietarios,id_propietario',
+        ]);
+
+        try {
+            // Crear el vehículo
+            $vehiculo = Vehiculo::create([
+                'placa'          => strtoupper($validated['placa']),
+                'marca'          => $validated['marca'],
+                'modelo'         => $validated['modelo'],
+                'color'          => $validated['color'],
+                'tipo'           => $validated['tipo'],
+                'id_propietario' => $validated['id_propietario'],
+                'estado'         => 'Activo',
+                'creado_por'     => auth()->id() ?? null,
+                'fecha_registro' => now(),
+            ]);
+
+            // Redirigir con el ID del vehículo para continuar con documentos
+            return redirect()
+                ->route('vehiculos.create', ['vehiculo' => $vehiculo->id_vehiculo])
+                ->with('success', '¡Vehículo creado correctamente! Ahora puedes agregar los documentos.');
+        } catch (\Exception $e) {
+            Log::error('Error al crear vehículo', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Error al crear el vehículo: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
