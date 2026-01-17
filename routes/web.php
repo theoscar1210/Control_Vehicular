@@ -13,74 +13,136 @@ use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-// Rutas públicas
+/*
+|--------------------------------------------------------------------------
+| RUTAS PÚBLICAS
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rutas protegidas
+/*
+|--------------------------------------------------------------------------
+| RUTAS PROTEGIDAS (REQUIEREN AUTENTICACIÓN)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
 
-
-    // Dashboard
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.home');
 
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE USUARIOS (Solo ADMIN)
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('usuarios', UserController::class)->except(['show']);
 
-    // Gestión de usuarios (solo ADMIN)
-    Route::middleware(['auth'])->group(function () {
-        Route::resource('usuarios', UserController::class)->except(['show']);
+    /*
+    |--------------------------------------------------------------------------
+    | VEHÍCULOS
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('vehiculos')->name('vehiculos.')->group(function () {
+        Route::get('/', [VehiculoController::class, 'index'])->name('index');
+        Route::get('/create', [VehiculoController::class, 'create'])->name('create');
+        Route::post('/', [VehiculoController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [VehiculoController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [VehiculoController::class, 'update'])->name('update');
+        Route::delete('/{id}', [VehiculoController::class, 'destroy'])->name('destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOCUMENTOS DE VEHÍCULOS
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('{vehiculo}/documentos')->name('documentos.')->group(function () {
+            // Crear documento
+            Route::post('/', [DocumentoVehiculoController::class, 'store'])->name('store');
+
+            // Editar/Renovar documento específico
+            Route::get('/{documento}/edit', [DocumentoVehiculoController::class, 'edit'])->name('edit');
+            Route::put('/{documento}', [DocumentoVehiculoController::class, 'update'])->name('update');
+
+            // Historial completo del vehículo (todos los documentos)
+            Route::get('/historial', [DocumentoVehiculoController::class, 'historialCompleto'])->name('historial.completo');
+
+            // Historial de un tipo específico (opcional)
+            Route::get('/{tipo}/historial', [DocumentoVehiculoController::class, 'historial'])->name('historial');
+        });
     });
 
-    // Vehículos
-    Route::get('vehiculos', [VehiculoController::class, 'index'])->name('vehiculos.index');
-    Route::get('vehiculos/create', [VehiculoController::class, 'create'])->name('vehiculos.create');
-    Route::post('vehiculos', [VehiculoController::class, 'store'])->name('vehiculos.store');
-    Route::get('vehiculos/{id}/edit', [VehiculoController::class, 'edit'])->name('vehiculos.edit');
-    Route::put('vehiculos/{id}', [VehiculoController::class, 'update'])->name('vehiculos.update');
-    Route::delete('vehiculos/{id}', [VehiculoController::class, 'destroy'])->name('vehiculos.destroy');
-
-    // Propietarios
+    /*
+    |--------------------------------------------------------------------------
+    | PROPIETARIOS
+    |--------------------------------------------------------------------------
+    */
     Route::post('propietarios', [PropietarioController::class, 'store'])->name('propietarios.store');
 
-    // Documentos vehículo
-    Route::post('vehiculos/{id}/documentos', [DocumentoVehiculoController::class, 'store'])->name('documentos.store'); // Crear documento para vehículo
-    // Renovar documento
-    Route::put('/vehiculos/{vehiculo}/documentos/{documento}', [DocumentoVehiculoController::class, 'update'])->name('vehiculos.documentos.update');
+    /*
+    |--------------------------------------------------------------------------
+    | CONDUCTORES
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('conductores')->name('conductores.')->group(function () {
+        Route::get('/create', [ConductorController::class, 'create'])->name('create');
+        Route::post('/', [ConductorController::class, 'store'])->name('store');
+        Route::get('/{conductor}/edit', [ConductorController::class, 'edit'])->name('edit');
+        Route::put('/{conductor}', [ConductorController::class, 'update'])->name('update');
+    });
 
-    // Formulario de renovación
-    Route::get('/vehiculos/{vehiculo}/documentos/{documento}/edit', [DocumentoVehiculoController::class, 'edit'])->name('vehiculos.documentos.edit');
-    // Historial de versiones    
-    Route::get(
-        'vehiculos/{vehiculo}/documentos/historial',
-        [DocumentoVehiculoController::class, 'historialCompleto']
-    )->name('vehiculos.documentos.historial.completo');
+    /*
+    |--------------------------------------------------------------------------
+    | DOCUMENTOS DE CONDUCTORES
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('documentos_conductor', DocumentoConductorController::class)
+        ->only(['store', 'update', 'destroy']);
 
+    /*
+    |--------------------------------------------------------------------------
+    | CONSULTAS Y REPORTES
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('consultar-documentos')->name('documentos.consultar')->group(function () {
+        Route::get('/', [DocumentoController::class, 'index']);
+        Route::get('/export/excel', [DocumentoController::class, 'exportExcel'])->name('.export.excel');
+        Route::get('/export/pdf', [DocumentoController::class, 'exportPdf'])->name('.export.pdf');
+    });
 
-    // Conductores
-    Route::get('/conductores/create', [ConductorController::class, 'create'])->name('conductores.create');
-    Route::post('/conductores', [ConductorController::class, 'store'])->name('conductores.store');
-    Route::get('/conductores/{conductor}/edit', [ConductorController::class, 'edit'])->name('conductores.edit');
-    Route::put('/conductores/{conductor}', [ConductorController::class, 'update'])->name('conductores.update');
-    Route::resource('documentos_conductor', DocumentoConductorController::class)->only(['store', 'update', 'destroy']);
+    Route::get('/documentos_conductor/{documento}/download', [DocumentoController::class, 'download'])
+        ->name('documentos_conductor.download');
 
-    // Consultas y reportes
-    Route::get('/consultar-documentos', [DocumentoController::class, 'index'])->name('documentos.consultar');
-    Route::get('/consultar-documentos/export/excel', [DocumentoController::class, 'exportExcel'])->name('documentos.consultar.export.excel');
-    Route::get('/consultar-documentos/export/pdf', [DocumentoController::class, 'exportPdf'])->name('documentos.consultar.export.pdf');
-    Route::get('/documentos_conductor/{documento}/download', [DocumentoController::class, 'download'])->name('documentos_conductor.download');
+    /*
+    |--------------------------------------------------------------------------
+    | PERFIL DE USUARIO
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+    });
 
-    // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Alertas
-    Route::get('alertas', [AlertaController::class, 'index'])->name('alertas.index');
-    Route::get('alertas/{alerta}', [AlertaController::class, 'show'])->name('alertas.show');
-    Route::post('alertas', [AlertaController::class, 'store'])->name('alertas.store');
-    Route::delete('alertas/{alerta}', [AlertaController::class, 'destroy'])->name('alertas.destroy');
-    Route::post('alertas/{alerta}/read', [AlertaController::class, 'markAsRead'])->name('alertas.read');
-    Route::post('alertas/mark-all-read', [AlertaController::class, 'markAllRead'])->name('alertas.mark_all_read');
-    Route::get('alertas/unread-count', [AlertaController::class, 'unreadCount'])->name('alertas.unread_count');
+    /*
+    |--------------------------------------------------------------------------
+    | ALERTAS
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('alertas')->name('alertas.')->group(function () {
+        Route::get('/', [AlertaController::class, 'index'])->name('index');
+        Route::get('/unread-count', [AlertaController::class, 'unreadCount'])->name('unread_count');
+        Route::post('/mark-all-read', [AlertaController::class, 'markAllRead'])->name('mark_all_read');
+        Route::get('/{alerta}', [AlertaController::class, 'show'])->name('show');
+        Route::post('/', [AlertaController::class, 'store'])->name('store');
+        Route::post('/{alerta}/read', [AlertaController::class, 'markAsRead'])->name('read');
+        Route::delete('/{alerta}', [AlertaController::class, 'destroy'])->name('destroy');
+    });
 });
