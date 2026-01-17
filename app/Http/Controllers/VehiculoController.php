@@ -4,216 +4,228 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehiculo;
 use App\Models\Propietario;
+use App\Models\Conductor;
 use App\Models\DocumentoVehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class VehiculoController extends Controller
 {
     /**
-     * LISTADO DE VEHÍCULOS
-     * Se agrega ViewModel para estados de documentos
+     * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $search = $request->get('search');
+        $query = Vehiculo::with(['propietario', 'conductor', 'documentosVehiculo']);
 
-        $vehiculos = Vehiculo::with([
-            'propietario',
-            'conductor',
-            'documentosVehiculo' => function ($q) {
-                $q->where('activo', 1);
-            }
-        ])
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('placa', 'like', "%{$search}%")
+                    ->orWhere('marca', 'like', "%{$search}%")
+                    ->orWhere('modelo', 'like', "%{$search}%")
+                    ->orWhereHas('propietario', function ($q2) use ($search) {
+                        $q2->where('nombre', 'like', "%{$search}%")
+                            ->orWhere('apellido', 'like', "%{$search}%");
+                    });
+            });
+        }
 
-            /*= Filtro de búsqueda =================*/
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('placa', 'like', "%{$search}%")
-                        ->orWhere('marca', 'like', "%{$search}%")
-                        ->orWhere('modelo', 'like', "%{$search}%")
-                        ->orWhere('tipo', 'like', "%{$search}%")
-                        ->orWhereHas('propietario', function ($p) use ($search) {
-                            $p->where('nombre', 'like', "%{$search}%")
-                                ->orWhere('apellido', 'like', "%{$search}%");
-                        });
-                });
-            })
-
-            ->orderBy('id_vehiculo', 'desc')
-            ->paginate(15)
-            ->withQueryString();
-
-        /**
-         * ================================
-         * VIEWMODEL: estados de documentos
-         * ================================
-         */
-        $vehiculos->getCollection()->transform(function ($vehiculo) {
-
-            $soat = $vehiculo->documentosVehiculo
-                ->where('tipo_documento', 'SOAT')
-                ->first();
-
-            $tecno = $vehiculo->documentosVehiculo
-                ->where('tipo_documento', 'Tecnomecanica')
-                ->first();
-
-            // Se agregan propiedades calculadas al modelo
-            $vehiculo->estado_soat  = $this->calcularEstadoDocumento($soat);
-            $vehiculo->estado_tecno = $this->calcularEstadoDocumento($tecno);
-
-            return $vehiculo;
-        });
+        $vehiculos = $query->paginate(15);
 
         return view('vehiculos.index', compact('vehiculos'));
     }
 
     /**
-     * Mostrar la vista de create.
-     * Si viene ?propietario=ID, cargamos ese propietario
+     * Show the form for editing the specified resource.
      */
-    public function create(Request $request)
+    public function edit($id)
     {
-        $propietario = null;
-        $vehiculo = null;
+        $vehiculo = Vehiculo::with(['propietario', 'documentosVehiculo'])->findOrFail($id);
 
-        if ($request->has('vehiculo')) {
-            $vehiculo = Vehiculo::with('propietario')
-                ->find($request->vehiculo);
+        // Obtener Tarjeta de Propiedad si existe
+        $tarjetaPropiedad = $vehiculo->documentosVehiculo()
+            ->where('tipo_documento', 'Tarjeta Propiedad')
+            ->where('activo', 1)
+            ->first();
 
-            $propietario = $vehiculo?->propietario;
-        } elseif ($request->has('propietario')) {
-            $propietario = Propietario::find($request->propietario);
-        }
+        $conductores = Conductor::all();
 
-        return view('vehiculos.create', compact('vehiculo', 'propietario'));
+        return view('vehiculos.edit', compact('vehiculo', 'tarjetaPropiedad', 'conductores'));
     }
 
-
     /**
-     * Guardar vehículo
+     * Update the specified resource in storage.
      */
-    public function store(Request $request)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'placa' => 'required|string|max:10|unique:vehiculos,placa',
-            'marca' => 'required|string|max:50',
-            'modelo' => 'nullable|string|max:50',
-            'color' => 'nullable|string|max:50',
-            'tipo' => 'required|in:Carro,Moto,Camion,Otro',
-            'id_propietario' => 'required|integer|exists:propietarios,id_propietario',
-        ], [
-            'id_propietario.required' => 'Debe existir un propietario asociado. Crea primero el propietario.',
-            'id_propietario.exists' => 'Propietario no válido.',
+            // Datos del vehículo
+            'placa'           => 'required|string|max:10|unique:vehiculos,placa,' . $id . ',id_vehiculo',
+            'marca'           => 'required|string|max:50',
+            'modelo'          => 'required|string|max:50',
+            'color'           => 'required|string|max:30',
+            'tipo'            => 'required|string|max:50',
+            'estado'          => 'required|in:Activo,Inactivo',
+            'id_conductor'    => 'nullable|exists:conductores,id_conductor',
+            'fecha_matricula' => 'nullable|date',
+
+            // Datos del propietario
+            'propietario_nombre'    => 'required|string|max:100',
+            'propietario_apellido'  => 'required|string|max:100',
+            'propietario_documento' => 'required|string|max:20',
+            'propietario_telefono'  => 'nullable|string|max:15',
+            'propietario_email'     => 'nullable|email|max:100',
+
+            // Datos de Tarjeta de Propiedad (opcional)
+            'tarjeta_numero'        => 'nullable|string|max:50',
+            'tarjeta_entidad'       => 'nullable|string|max:100',
+            'tarjeta_fecha_emision' => 'nullable|date',
         ]);
 
-        DB::beginTransaction();
         try {
-            $veh = Vehiculo::create([
-                'placa' => strtoupper($validated['placa']),
-                'marca' => $validated['marca'],
-                'modelo' => $validated['modelo'] ?? null,
-                'color' => $validated['color'] ?? null,
-                'tipo' => $validated['tipo'],
-                'id_propietario' => $validated['id_propietario'],
-                'id_conductor' => null,
-                'estado' => 'Activo',
-                'creado_por' => auth()->id() ?? null,
-            ]);
+            DB::transaction(function () use ($validated, $id, $request) {
+                $vehiculo = Vehiculo::findOrFail($id);
 
-            DB::commit();
+                // 1. ACTUALIZAR PROPIETARIO
+                $vehiculo->propietario->update([
+                    'nombre'    => $validated['propietario_nombre'],
+                    'apellido'  => $validated['propietario_apellido'],
+                    'documento' => $validated['propietario_documento'],
+                    'telefono'  => $validated['propietario_telefono'] ?? null,
+                    'email'     => $validated['propietario_email'] ?? null,
+                ]);
 
-            return redirect()
-                ->route('vehiculos.create', [
-                    'propietario' => $veh->id_propietario,
-                    'vehiculo' => $veh->id_vehiculo
-                ])
-                ->with('success', 'Vehículo creado. Ahora puede agregar los documentos.');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            \Log::error('Error creando vehículo: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['general' => 'Error al crear vehículo.']);
-        }
-    }
+                // 2. ACTUALIZAR VEHÍCULO
+                $vehiculo->update([
+                    'placa'           => $validated['placa'],
+                    'marca'           => $validated['marca'],
+                    'modelo'          => $validated['modelo'],
+                    'color'           => $validated['color'],
+                    'tipo'            => $validated['tipo'],
+                    'estado'          => $validated['estado'],
+                    'id_conductor'    => $validated['id_conductor'],
+                    'fecha_matricula' => $validated['fecha_matricula'] ?? null,
+                ]);
 
-    /**
-     * Editar vehículo
-     */
-    public function edit(Vehiculo $vehiculo)
-    {
-        return view('vehiculos.edit', compact('vehiculo'));
-    }
+                // 3. ACTUALIZAR O CREAR TARJETA DE PROPIEDAD
+                if ($request->filled('tarjeta_numero')) {
+                    $tarjetaExistente = DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)
+                        ->where('tipo_documento', 'Tarjeta Propiedad')
+                        ->where('activo', 1)
+                        ->first();
 
-    /**
-     * Eliminar vehículo y documentos
-     */
-    public function destroy(Vehiculo $vehiculo)
-    {
-        DB::beginTransaction();
-        try {
-            DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)->delete();
-            $vehiculo->delete();
+                    if ($tarjetaExistente) {
+                        // Actualizar tarjeta existente
+                        $tarjetaExistente->update([
+                            'numero_documento' => $validated['tarjeta_numero'],
+                            'entidad_emisora'  => $validated['tarjeta_entidad'] ?? null,
+                            'fecha_emision'    => $validated['tarjeta_fecha_emision'] ?? null,
+                        ]);
+                    } else {
+                        // Crear nueva tarjeta
+                        DocumentoVehiculo::create([
+                            'id_vehiculo'       => $vehiculo->id_vehiculo,
+                            'tipo_documento'    => 'Tarjeta Propiedad',
+                            'numero_documento'  => $validated['tarjeta_numero'],
+                            'entidad_emisora'   => $validated['tarjeta_entidad'] ?? null,
+                            'fecha_emision'     => $validated['tarjeta_fecha_emision'] ?? null,
+                            'fecha_vencimiento' => null, // No tiene vencimiento
+                            'estado'            => 'VIGENTE',
+                            'activo'            => 1,
+                            'version'           => 1,
+                            'creado_por'        => auth()->id() ?? null,
+                        ]);
+                    }
+                }
+            });
 
-            DB::commit();
             return redirect()
                 ->route('vehiculos.index')
-                ->with('success', 'Vehículo y documentos asociados eliminados correctamente.');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            \Log::error('Error eliminando vehículo: ' . $e->getMessage());
-            return back()->withErrors(['general' => 'Error al eliminar vehículo.']);
+                ->with('success', '¡Vehículo actualizado correctamente!');
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar vehículo', [
+                'vehiculo_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Error al actualizar el vehículo: ' . $e->getMessage());
         }
     }
 
     /**
-     * =================================================
-     * MÉTODO PRIVADO VIEWMODEL (NO AFECTA RUTAS)
-     * =================================================
+     * Soft delete - Ocultar vehículo
      */
-    private function calcularEstadoDocumento($documento): array
+    public function destroy($id)
     {
-        if (!$documento) {
-            return [
-                'estado' => 'SIN_REGISTRO',
-                'dias'   => null,
-                'clase'  => 'secondary',
-                'fecha'  => null,
-                'id'     => null,
-            ];
+        try {
+            $vehiculo = Vehiculo::findOrFail($id);
+
+            // Soft delete - no elimina físicamente
+            $vehiculo->delete();
+
+            return redirect()
+                ->route('vehiculos.index')
+                ->with('success', 'Vehículo ocultado correctamente. Se eliminará permanentemente después de 6 meses.');
+        } catch (\Exception $e) {
+            Log::error('Error al ocultar vehículo', [
+                'vehiculo_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()
+                ->with('error', 'Error al ocultar el vehículo.');
         }
+    }
 
-        $hoy = Carbon::today();
-        $vencimiento = Carbon::parse($documento->fecha_vencimiento);
-        $dias = $hoy->diffInDays($vencimiento, false);
+    /**
+     * Restaurar vehículo eliminado (opcional - para admin)
+     */
+    public function restore($id)
+    {
+        try {
+            $vehiculo = Vehiculo::onlyTrashed()->findOrFail($id);
+            $vehiculo->restore();
 
-        if ($dias < 0) {
-            return [
-                'estado' => 'VENCIDO',
-                'dias'   => $dias,
-                'clase'  => 'danger',
-                'fecha'  => $vencimiento,
-                'id'     => $documento->id_doc_vehiculo,
-            ];
+            return redirect()
+                ->route('vehiculos.index')
+                ->with('success', 'Vehículo restaurado correctamente.');
+        } catch (\Exception $e) {
+            Log::error('Error al restaurar vehículo', [
+                'vehiculo_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()
+                ->with('error', 'Error al restaurar el vehículo.');
         }
+    }
 
-        if ($dias <= 30) {
-            return [
-                'estado' => 'POR_VENCER',
-                'dias'   => $dias,
-                'clase'  => 'warning',
-                'fecha'  => $vencimiento,
-                'id'     => $documento->id_doc_vehiculo,
-            ];
+    /**
+     * Forzar eliminación permanente (opcional - para admin)
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $vehiculo = Vehiculo::onlyTrashed()->findOrFail($id);
+            $vehiculo->forceDelete();
+
+            return redirect()
+                ->route('vehiculos.index')
+                ->with('success', 'Vehículo eliminado permanentemente.');
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar permanentemente vehículo', [
+                'vehiculo_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()
+                ->with('error', 'Error al eliminar el vehículo.');
         }
-
-        return [
-            'estado' => 'VIGENTE',
-            'dias'   => $dias,
-            'clase'  => 'success',
-            'fecha'  => $vencimiento,
-            'id'     => $documento->id_doc_vehiculo,
-        ];
     }
 }

@@ -36,6 +36,7 @@ class Vehiculo extends Model
 
     protected $casts = [
         'fecha_registro' => 'datetime',
+        'deleted_at',
 
     ];
 
@@ -135,5 +136,100 @@ class Vehiculo extends Model
     public function documentosVehiculo()
     {
         return $this->hasMany(DocumentoVehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
+
+
+
+    /**
+     * Accessor para obtener estado de SOAT
+     */
+    public function getEstadoSoatAttribute()
+    {
+        $soat = $this->documentosVehiculo()
+            ->where('tipo_documento', 'SOAT')
+            ->where('activo', 1)
+            ->first();
+
+        if (!$soat) {
+            return [
+                'estado' => 'SIN_REGISTRO',
+                'clase' => 'secondary',
+                'dias' => null,
+                'fecha' => null
+            ];
+        }
+
+        $hoy = \Carbon\Carbon::today();
+        $vencimiento = \Carbon\Carbon::parse($soat->fecha_vencimiento);
+        $dias = $hoy->diffInDays($vencimiento, false);
+
+        if ($dias < 0) {
+            $estado = 'VENCIDO';
+            $clase = 'danger';
+        } elseif ($dias <= 30) {
+            $estado = 'POR_VENCER';
+            $clase = 'warning';
+        } else {
+            $estado = 'VIGENTE';
+            $clase = 'success';
+        }
+
+        return [
+            'estado' => $estado,
+            'clase' => $clase,
+            'dias' => abs($dias),
+            'fecha' => $vencimiento
+        ];
+    }
+
+    /**
+     * Accessor para obtener estado de Tecnomecánica
+     */
+    public function getEstadoTecnoAttribute()
+    {
+        $tecno = $this->documentosVehiculo()
+            ->where('tipo_documento', 'Tecnomecanica')
+            ->where('activo', 1)
+            ->first();
+
+        if (!$tecno) {
+            return [
+                'estado' => 'SIN_REGISTRO',
+                'clase' => 'secondary',
+                'dias' => null,
+                'fecha' => null
+            ];
+        }
+
+        $hoy = \Carbon\Carbon::today();
+        $vencimiento = \Carbon\Carbon::parse($tecno->fecha_vencimiento);
+        $dias = $hoy->diffInDays($vencimiento, false);
+
+        if ($dias < 0) {
+            $estado = 'VENCIDO';
+            $clase = 'danger';
+        } elseif ($dias <= 30) {
+            $estado = 'POR_VENCER';
+            $clase = 'warning';
+        } else {
+            $estado = 'VIGENTE';
+            $clase = 'success';
+        }
+
+        return [
+            'estado' => $estado,
+            'clase' => $clase,
+            'dias' => abs($dias),
+            'fecha' => $vencimiento
+        ];
+    }
+
+    /**
+     * Scope para programar eliminación automática
+     */
+    public function scopeProgramarEliminacion($query)
+    {
+        return $query->onlyTrashed()
+            ->where('deleted_at', '<=', now()->subMonths(6));
     }
 }
