@@ -194,6 +194,13 @@ class DocumentoVehiculoController extends Controller
             );
         }
 
+        if (!in_array($documentoAnterior->estado, ['VENCIDO', 'POR_VENCER'])) {
+            return back()->with(
+                'error',
+                'Solo se pueden renovar documentos vencidos o próximos a vencer.'
+            );
+        }
+
         $validated = $request->validate([
             'numero_documento' => 'required|string|max:50',
             'entidad_emisora'  => 'nullable|string|max:100',
@@ -258,15 +265,13 @@ class DocumentoVehiculoController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | MARCAR ALERTAS ANTERIORES COMO LEÍDAS
+                | MARCAR ALERTAS ANTERIORES COMO LEÍDAS (SIN updated_at)
                 |--------------------------------------------------------------------------
                 */
+                // CORRECCIÓN: No intentar actualizar updated_at
                 Alerta::where('id_doc_vehiculo', $documentoAnterior->id_doc_vehiculo)
                     ->where('leida', 0)
-                    ->update([
-                        'leida' => 1,
-                        'updated_at' => now()
-                    ]);
+                    ->update(['leida' => 1]); // ✅ Sin updated_at
 
                 /*
                 |--------------------------------------------------------------------------
@@ -292,15 +297,15 @@ class DocumentoVehiculoController extends Controller
                 ];
             });
 
-            // Verificar si existe la ruta vehiculos.show o usar index
-            if (\Route::has('vehiculos.show')) {
+            // Redirigir al historial del vehículo
+            if (\Route::has('vehiculos.documentos.historial.completo')) {
                 return redirect()
-                    ->route('vehiculos.show', $result['vehiculo_id'])
-                    ->with('success', "Documento {$result['tipo']} renovado correctamente.");
+                    ->route('vehiculos.documentos.historial.completo', $result['vehiculo_id'])
+                    ->with('success', "¡Documento {$result['tipo']} renovado correctamente!");
             } else {
                 return redirect()
                     ->route('vehiculos.index')
-                    ->with('success', "Documento {$result['tipo']} renovado correctamente.");
+                    ->with('success', "¡Documento {$result['tipo']} renovado correctamente!");
             }
         } catch (\Exception $e) {
             Log::error('Error al renovar documento', [
@@ -324,11 +329,14 @@ class DocumentoVehiculoController extends Controller
     public function edit($idVehiculo, $idDocumento)
     {
         $vehiculo = Vehiculo::findOrFail($idVehiculo);
+
         $documento = DocumentoVehiculo::where('id_doc_vehiculo', $idDocumento)
             ->where('id_vehiculo', $vehiculo->id_vehiculo)
             ->firstOrFail();
 
-        return view('vehiculos.documentos.edit', compact('vehiculo', 'documento'));
+        $nuevaVersion = $documento->version + 1;
+
+        return view('vehiculos.documentos.edit', compact('vehiculo', 'documento', 'nuevaVersion'));
     }
 
     /**
