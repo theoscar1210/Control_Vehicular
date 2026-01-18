@@ -11,12 +11,6 @@ use App\Notifications\DocumentoVencidoNotification;
 
 class AlertaController extends Controller
 {
-    public function __construct()
-    {
-        // proteger con auth
-        $this->middleware('auth');
-    }
-
     /**
      * Lista las alertas visibles para el usuario (no eliminadas) paginadas.
      */
@@ -71,19 +65,32 @@ class AlertaController extends Controller
     }
 
     /**
-     * API / AJAX: marca una alerta como leída (retorna JSON).
+     * Marca una alerta como leída.
+     * Soporta tanto peticiones AJAX (retorna JSON) como formularios normales (redirige).
      */
     public function markAsRead(Request $request, Alerta $alerta)
     {
         $user = Auth::user();
+
+        // Verificar visibilidad
         if (!($alerta->visible_para === 'TODOS' || $alerta->visible_para === $user->rol)) {
-            return response()->json(['error' => 'No autorizado'], 403);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'No autorizado'], 403);
+            }
+            abort(403, 'No autorizado para modificar esta alerta.');
         }
 
+        // Marcar como leída
         $alerta->leida = 1;
         $alerta->save();
 
-        return response()->json(['ok' => true, 'id_alerta' => $alerta->id_alerta]);
+        // Si es AJAX, retornar JSON
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'id_alerta' => $alerta->id_alerta]);
+        }
+
+        // Si es formulario normal, redirigir de vuelta
+        return redirect()->back()->with('success', 'Alerta marcada como leída.');
     }
 
     /**

@@ -66,34 +66,82 @@ $rol = $user->rol ?? 'N/A';
 
 <!-- Alertas -->
 <div class="container mb-4">
-    <h3>Alertas</h3>
+    {{-- Mensajes de éxito/error --}}
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
-    <form method="POST" action="{{ route('alertas.mark_all_read') }}">
-        @csrf
-        <button class="btn btn-sm btn-outline-primary">Marcar todas como leídas</button>
-    </form>
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">
+            <i class="bi bi-bell-fill me-2" style="color:#5B8238;"></i>Alertas
+        </h3>
+        <form method="POST" action="{{ route('alertas.mark_all_read') }}" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-check-all me-1"></i>Marcar todas como leídas
+            </button>
+        </form>
+    </div>
 
     <div class="list-group mt-3">
         @forelse($alertas as $a)
-        <div id="alert-row-{{ $a->id_alerta }}" class="list-group-item d-flex justify-content-between {{ $a->leida ? 'text-muted' : '' }}">
-            <div>
-                <strong>{{ $a->tipo_vencimiento }}</strong> — {{ $a->mensaje }}
-                <div><small class="text-muted">{{ optional($a->fecha_alerta)->format('Y-m-d') ?? $a->fecha_alerta }}</small></div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <a href="{{ route('alertas.show', $a->id_alerta) }}" class="btn btn-sm btn-primary">Ver</a>
-                @if(!$a->leida)
-                <button onclick="event.preventDefault(); markAlertRead({{ $a->id_alerta }} )" class="btn btn-sm btn-outline-success">Marcar leída</button>
-                @endif
+        <div class="list-group-item {{ $a->leida ? 'bg-light text-muted' : 'border-start border-warning border-3' }}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-2">
+                        @php
+                        $iconos = [
+                            'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
+                            'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
+                            'Tecnomecánica' => ['icon' => 'bi-tools', 'color' => 'danger'],
+                            'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
+                        ];
+                        $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
+                        @endphp
+                        <i class="bi {{ $config['icon'] }} text-{{ $config['color'] }} me-2 fs-5"></i>
+                        <strong class="{{ $a->leida ? '' : 'fw-bold' }}">{{ $a->tipo_vencimiento }}</strong>
+                    </div>
+                    <p class="mb-1 {{ $a->leida ? 'text-muted' : '' }}">{{ $a->mensaje }}</p>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        {{ optional($a->fecha_alerta)->format('d/m/Y H:i') ?? $a->fecha_alerta }}
+                    </small>
+                </div>
+                <div class="d-flex gap-2 align-items-start ms-3">
+                    <a href="{{ route('alertas.show', $a->id_alerta) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-eye-fill me-1"></i>Ver
+                    </a>
+                    @if(!$a->leida)
+                    <form method="POST" action="{{ route('alertas.read', $a->id_alerta) }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-check-circle me-1"></i>Marcar leída
+                        </button>
+                    </form>
+                    @endif
+                </div>
             </div>
         </div>
         @empty
-        <div class="list-group-item text-center text-muted">No hay alertas.</div>
+        <div class="list-group-item text-center text-muted py-4">
+            <i class="bi bi-inbox fs-1 d-block mb-2" style="opacity:0.3;"></i>
+            <p class="mb-0">No hay alertas pendientes</p>
+        </div>
         @endforelse
     </div>
 
     @if(method_exists($alertas, 'links'))
-    <div class="mt-3">{{ $alertas->links() }}</div>
+    <div class="mt-3">{{ $alertas->links('pagination::bootstrap-5') }}</div>
     @endif
 </div>
 
@@ -101,37 +149,5 @@ $rol = $user->rol ?? 'N/A';
 <footer class="text-center mt-5 mb-3 text-muted small">
     © 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
 </footer>
-
-{{-- JS para marcar alerta como leída (usa fetch + rutas definidas) --}}
-@push('scripts')
-<script>
-    function markAlertRead(id) {
-        fetch('/alertas/' + id + '/read', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({})
-            })
-            .then(r => r.json())
-            .then(json => {
-                if (json.ok) {
-                    // actualizar contador del nav (si existe endpoint)
-                    fetch('{{ route("alertas.unread_count") }}').then(r => r.json()).then(d => {
-                        const badge = document.getElementById('alerts-badge');
-                        if (badge) badge.innerText = d.unread;
-                    }).catch(() => {});
-                    // aplicar estilo visual
-                    const row = document.getElementById('alert-row-' + id);
-                    if (row) row.classList.add('text-muted');
-                } else if (json.error) {
-                    console.error(json.error);
-                }
-            }).catch(err => console.error(err));
-    }
-</script>
-@endpush
 
 @endsection

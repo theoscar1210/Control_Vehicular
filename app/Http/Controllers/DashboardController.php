@@ -68,11 +68,13 @@ class DashboardController extends Controller
         $ultima_actualizacion = Carbon::now()->format('d M Y, H:i:s');
 
         // Alertas: visibles para el rol del usuario o para TODOS, no borradas (softDelete),
-        // ordenamos por no leídas primero y luego por fecha.
+        // solo mostrar las NO LEÍDAS (leida = 0).
         $user = Auth::user();
         $role = $user ? $user->rol : null;
 
-        $alertasQuery = Alerta::query()->whereNull('deleted_at');
+        $alertasQuery = Alerta::query()
+            ->whereNull('deleted_at')
+            ->where('leida', 0); // Solo mostrar alertas no leídas
 
         if ($role) {
             $alertasQuery->where(function ($q) use ($role) {
@@ -83,8 +85,8 @@ class DashboardController extends Controller
             $alertasQuery->where('visible_para', 'TODOS');
         }
 
-        // ordenar: primero no leídas, luego por fecha desc
-        $alertas = $alertasQuery->orderBy('leida', 'asc')->orderByDesc('fecha_alerta')->paginate(10);
+        // ordenar por fecha desc
+        $alertas = $alertasQuery->orderByDesc('fecha_alerta')->orderByDesc('fecha_registro')->paginate(10);
 
         return view('dashboard', compact(
             'totalVehiculos',
