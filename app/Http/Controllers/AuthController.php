@@ -26,7 +26,17 @@ class AuthController extends Controller
 
         if (Auth::attempt([$loginField => $request->usuario, 'password' => $request->password], $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+
+            // Redirigir según el rol del usuario
+            $user = Auth::user();
+            switch ($user->rol) {
+                case 'PORTERIA':
+                    return redirect()->route('porteria.index');
+                case 'SST':
+                case 'ADMIN':
+                default:
+                    return redirect()->intended(route('dashboard'));
+            }
         }
 
         return back()->withErrors([

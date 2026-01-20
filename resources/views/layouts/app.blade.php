@@ -191,14 +191,17 @@
     {{-- Sidebar --}}
 
     <div id="sidebar" class="sidebar">
+        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+        {{-- Menú para ADMIN y SST --}}
         <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-home me-2"></i>Inicio
         </a>
 
-        {{-- Enlace Portería - Visible para todos pero especialmente útil para rol PORTERIA --}}
+        @if(auth()->user()->rol === 'ADMIN')
         <a class="nav-link" href="{{ route('porteria.index') }}">
             <i class="fas fa-door-open me-2"></i>Portería
         </a>
+        @endif
 
         <!-- Gestión de Vehículos con submenú -->
         <a class="nav-link" data-bs-toggle="collapse" href="#vehiculosSubmenu" role="button" aria-expanded="false" aria-controls="vehiculosSubmenu">
@@ -217,7 +220,6 @@
                         <i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo
                     </a>
                 </li>
-
             </ul>
         </div>
 
@@ -244,6 +246,7 @@
         <a class="nav-link" href="{{ route('documentos.consultar') }}">
             <i class="fas fa-chart-line me-2"></i>Generar Reporte
         </a>
+        @endif
     </div>
 
 
