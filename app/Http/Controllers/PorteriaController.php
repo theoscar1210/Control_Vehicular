@@ -41,7 +41,7 @@ class PorteriaController extends Controller
         if ($placaBuscada) {
             $placaBuscada = strtoupper(trim($placaBuscada));
             $vehiculo = Vehiculo::with([
-                    'conductor.documentos',
+                    'conductor.documentosConductor',
                     'propietario',
                     'documentos'
                 ])
@@ -133,7 +133,7 @@ class PorteriaController extends Controller
         if ($vehiculo->conductor) {
             $tiposConductor = ['Licencia Conducción'];
             foreach ($tiposConductor as $tipo) {
-                $doc = $vehiculo->conductor->documentos
+                $doc = $vehiculo->conductor->documentosConductor
                     ->where('tipo_documento', $tipo)
                     ->where('activo', 1)
                     ->first();
