@@ -95,22 +95,52 @@ $rol = $user->rol ?? 'N/A';
 
     <div class="list-group mt-3">
         @forelse($alertas as $a)
+        @php
+            $iconos = [
+                'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
+                'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
+                'Tecnomecánica' => ['icon' => 'bi-tools', 'color' => 'danger'],
+                'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
+            ];
+            $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
+
+            // Obtener placa y conductor
+            $placaDash = null;
+            $conductorDash = null;
+            if ($a->documentoVehiculo && $a->documentoVehiculo->vehiculo) {
+                $placaDash = $a->documentoVehiculo->vehiculo->placa;
+                if ($a->documentoVehiculo->vehiculo->conductor) {
+                    $conductorDash = $a->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $a->documentoVehiculo->vehiculo->conductor->apellido;
+                }
+            }
+            if ($a->documentoConductor && $a->documentoConductor->conductor) {
+                $conductorDash = $a->documentoConductor->conductor->nombre . ' ' . $a->documentoConductor->conductor->apellido;
+            }
+        @endphp
         <div class="list-group-item {{ $a->leida ? 'bg-light text-muted' : 'border-start border-warning border-3' }}">
             <div class="d-flex justify-content-between align-items-start">
                 <div class="flex-grow-1">
                     <div class="d-flex align-items-center mb-2">
-                        @php
-                        $iconos = [
-                            'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
-                            'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
-                            'Tecnomecánica' => ['icon' => 'bi-tools', 'color' => 'danger'],
-                            'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
-                        ];
-                        $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
-                        @endphp
                         <i class="bi {{ $config['icon'] }} text-{{ $config['color'] }} me-2 fs-5"></i>
                         <strong class="{{ $a->leida ? '' : 'fw-bold' }}">{{ $a->tipo_vencimiento }}</strong>
                     </div>
+
+                    {{-- Información de Placa y Conductor --}}
+                    @if($placaDash || $conductorDash)
+                    <div class="mb-2">
+                        @if($placaDash)
+                        <span class="badge bg-dark me-2">
+                            <i class="bi bi-car-front-fill me-1"></i>{{ $placaDash }}
+                        </span>
+                        @endif
+                        @if($conductorDash)
+                        <span class="text-primary">
+                            <i class="bi bi-person-fill me-1"></i>{{ $conductorDash }}
+                        </span>
+                        @endif
+                    </div>
+                    @endif
+
                     <p class="mb-1 {{ $a->leida ? 'text-muted' : '' }}">{{ $a->mensaje }}</p>
                     <small class="text-muted">
                         <i class="bi bi-calendar-event me-1"></i>

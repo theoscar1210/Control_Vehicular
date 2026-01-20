@@ -43,7 +43,11 @@
             </a>
 
             @php
-                $alertasMenu = \App\Models\Alerta::where('leida', 0)
+                $alertasMenu = \App\Models\Alerta::with([
+                        'documentoVehiculo.vehiculo.conductor',
+                        'documentoConductor.conductor'
+                    ])
+                    ->where('leida', 0)
                     ->whereNull('deleted_at')
                     ->where(function($q){
                         $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
@@ -90,6 +94,19 @@
                                         'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                                     ];
                                     $configMenu = $iconosMenu[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
+
+                                    // Obtener placa y conductor
+                                    $placaMenu = null;
+                                    $conductorMenu = null;
+                                    if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+                                        $placaMenu = $alerta->documentoVehiculo->vehiculo->placa;
+                                        if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                            $conductorMenu = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                        }
+                                    }
+                                    if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+                                        $conductorMenu = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                    }
                                 @endphp
                                 <li>
                                     <div class="dropdown-item py-2 border-bottom">
@@ -102,6 +119,16 @@
                                                     <strong class="small">{{ $alerta->tipo_vencimiento }}</strong>
                                                     <small class="text-muted">{{ optional($alerta->fecha_alerta)->format('d/m') }}</small>
                                                 </div>
+                                                @if($placaMenu || $conductorMenu)
+                                                <div class="small mb-1">
+                                                    @if($placaMenu)
+                                                    <span class="badge bg-dark me-1"><i class="fas fa-car me-1"></i>{{ $placaMenu }}</span>
+                                                    @endif
+                                                    @if($conductorMenu)
+                                                    <span class="text-primary"><i class="fas fa-user me-1"></i>{{ Str::limit($conductorMenu, 20) }}</span>
+                                                    @endif
+                                                </div>
+                                                @endif
                                                 <p class="mb-1 small text-muted text-truncate" style="max-width: 250px;">{{ $alerta->mensaje }}</p>
                                                 <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="d-inline">
                                                     @csrf
@@ -168,6 +195,11 @@
             <i class="fas fa-home me-2"></i>Inicio
         </a>
 
+        {{-- Enlace Portería - Visible para todos pero especialmente útil para rol PORTERIA --}}
+        <a class="nav-link" href="{{ route('porteria.index') }}">
+            <i class="fas fa-door-open me-2"></i>Portería
+        </a>
+
         <!-- Gestión de Vehículos con submenú -->
         <a class="nav-link" data-bs-toggle="collapse" href="#vehiculosSubmenu" role="button" aria-expanded="false" aria-controls="vehiculosSubmenu">
             <i class="fas fa-car me-2"></i>Gestión de Vehículos
@@ -194,12 +226,14 @@
         </a>
 
         <a class="nav-link" href="{{ route('documentos.consultar') }}">
-            <i class="fas fa-file-alt me-2"></i>consultas
+            <i class="fas fa-file-alt me-2"></i>Consultas
         </a>
 
+        @if(auth()->user()->rol === 'ADMIN')
         <a class="nav-link" href="{{ route('usuarios.index') }}">
             <i class="fas fa-users me-2"></i>Gestión de Usuarios
         </a>
+        @endif
 
         <span class="text-uppercase fw-bold d-block ">Acciones Rápidas</span>
 

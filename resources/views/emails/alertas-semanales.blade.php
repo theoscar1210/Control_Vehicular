@@ -71,6 +71,24 @@
             font-size: 12px;
             margin-top: 5px;
         }
+        .alert-info {
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+        .alert-info .placa {
+            background-color: #343a40;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .alert-info .conductor {
+            color: #0d6efd;
+        }
         .footer {
             background-color: #f8f9fa;
             padding: 15px;
@@ -118,16 +136,42 @@
                         </div>
 
                         @foreach($alertas as $alerta)
+                            @php
+                                // Obtener placa y conductor
+                                $placaEmail = null;
+                                $conductorEmail = null;
+                                if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+                                    $placaEmail = $alerta->documentoVehiculo->vehiculo->placa;
+                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                        $conductorEmail = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                    }
+                                }
+                                if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+                                    $conductorEmail = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                }
+                            @endphp
                             <div class="alert-item {{ $alerta->tipo_vencimiento === 'PROXIMO_VENCER' ? 'warning' : '' }}">
                                 <strong>{{ $alerta->mensaje }}</strong>
+
+                                @if($placaEmail || $conductorEmail)
+                                <div class="alert-info">
+                                    @if($placaEmail)
+                                    <span class="placa">🚗 {{ $placaEmail }}</span>
+                                    @endif
+                                    @if($conductorEmail)
+                                    <span class="conductor">👤 {{ $conductorEmail }}</span>
+                                    @endif
+                                </div>
+                                @endif
+
                                 <div class="alert-date">
-                                    Fecha de alerta: {{ optional($alerta->fecha_alerta)->format('d/m/Y') ?? 'No especificada' }}
+                                    📅 Fecha de alerta: {{ optional($alerta->fecha_alerta)->format('d/m/Y') ?? 'No especificada' }}
                                 </div>
                                 @if($alerta->id_doc_vehiculo)
-                                    <div class="alert-date">Tipo: Documento de Vehículo</div>
+                                    <div class="alert-date">📄 Tipo: Documento de Vehículo</div>
                                 @endif
                                 @if($alerta->id_doc_conductor)
-                                    <div class="alert-date">Tipo: Documento de Conductor</div>
+                                    <div class="alert-date">📄 Tipo: Documento de Conductor</div>
                                 @endif
                             </div>
                         @endforeach

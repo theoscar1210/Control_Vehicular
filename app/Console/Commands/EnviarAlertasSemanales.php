@@ -31,8 +31,12 @@ class EnviarAlertasSemanales extends Command
     {
         $this->info('Iniciando envío de alertas semanales...');
 
-        // Obtener todas las alertas no leídas
-        $alertas = Alerta::where('leida', 0)
+        // Obtener todas las alertas no leídas con relaciones
+        $alertas = Alerta::with([
+                'documentoVehiculo.vehiculo.conductor',
+                'documentoConductor.conductor'
+            ])
+            ->where('leida', 0)
             ->whereNull('deleted_at')
             ->orderBy('tipo_vencimiento')
             ->orderByDesc('fecha_alerta')

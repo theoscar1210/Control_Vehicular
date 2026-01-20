@@ -18,7 +18,11 @@ class AlertaController extends Controller
     {
         $user = Auth::user();
 
-        $query = Alerta::query()->whereNull('deleted_at')
+        $query = Alerta::with([
+                'documentoVehiculo.vehiculo.conductor',
+                'documentoConductor.conductor'
+            ])
+            ->whereNull('deleted_at')
             ->where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')
                     ->orWhere('visible_para', $user->rol);
@@ -34,7 +38,7 @@ class AlertaController extends Controller
 
     /**
      * Muestra una alerta concreta, la marca como leída y redirige
-     * (puedes personalizar la redirección al documento relacionado).
+     * al documento o vehículo/conductor relacionado.
      */
     public function show(Alerta $alerta)
     {
@@ -50,18 +54,24 @@ class AlertaController extends Controller
             $alerta->save();
         }
 
-        // redirigir al documento si existe, si no al listado de alertas
-        if ($alerta->id_doc_conductor) {
-            return redirect()->route('conductores.edit', $alerta->id_doc_conductor)
-                ->with('info', 'Alerta marcada como leída.');
+        // Cargar relaciones para obtener IDs correctos
+        $alerta->load(['documentoVehiculo.vehiculo', 'documentoConductor.conductor']);
+
+        // Redirigir al vehículo si es documento de vehículo
+        if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+            return redirect()->route('vehiculos.edit', $alerta->documentoVehiculo->vehiculo->id_vehiculo)
+                ->with('success', 'Alerta marcada como leída.');
         }
 
-        if ($alerta->id_doc_vehiculo) {
-            return redirect()->route('vehiculos.show', $alerta->id_doc_vehiculo)
-                ->with('info', 'Alerta marcada como leída.');
+        // Redirigir al conductor si es documento de conductor
+        if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+            return redirect()->route('conductores.edit', $alerta->documentoConductor->conductor->id_conductor)
+                ->with('success', 'Alerta marcada como leída.');
         }
 
-        return view('alertas.show', compact('alerta'));
+        // Si no hay documento relacionado, redirigir al listado de alertas
+        return redirect()->route('alertas.index')
+            ->with('success', 'Alerta marcada como leída.');
     }
 
     /**

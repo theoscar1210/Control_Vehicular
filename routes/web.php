@@ -11,6 +11,7 @@ use App\Http\Controllers\ConductorController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PorteriaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -145,4 +146,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{alerta}/read', [AlertaController::class, 'markAsRead'])->name('read');
         Route::delete('/{alerta}', [AlertaController::class, 'destroy'])->name('destroy');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PORTERÍA
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/porteria', [PorteriaController::class, 'index'])->name('porteria.index');
 });

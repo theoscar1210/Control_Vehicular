@@ -20,6 +20,10 @@
                     <a class="nav-link" href="{{ route('dashboard') }}">Inicio</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('porteria.index') }}">Portería</a>
+                </li>
+
                 <!-- Gestión de Vehículos con submenú -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="vehiculosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -54,7 +58,11 @@
         </div>
 
         @php
-            $alertasMenuEspecial = \App\Models\Alerta::where('leida', 0)
+            $alertasMenuEspecial = \App\Models\Alerta::with([
+                    'documentoVehiculo.vehiculo.conductor',
+                    'documentoConductor.conductor'
+                ])
+                ->where('leida', 0)
                 ->whereNull('deleted_at')
                 ->where(function($q){
                     $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
@@ -101,6 +109,19 @@
                                     'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                                 ];
                                 $configMenuE = $iconosMenuE[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
+
+                                // Obtener placa y conductor
+                                $placaMenuE = null;
+                                $conductorMenuE = null;
+                                if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+                                    $placaMenuE = $alerta->documentoVehiculo->vehiculo->placa;
+                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                        $conductorMenuE = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                    }
+                                }
+                                if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+                                    $conductorMenuE = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                }
                             @endphp
                             <li>
                                 <div class="dropdown-item py-2 border-bottom">
@@ -113,6 +134,16 @@
                                                 <strong class="small">{{ $alerta->tipo_vencimiento }}</strong>
                                                 <small class="text-muted">{{ optional($alerta->fecha_alerta)->format('d/m') }}</small>
                                             </div>
+                                            @if($placaMenuE || $conductorMenuE)
+                                            <div class="small mb-1">
+                                                @if($placaMenuE)
+                                                <span class="badge bg-dark me-1"><i class="fas fa-car me-1"></i>{{ $placaMenuE }}</span>
+                                                @endif
+                                                @if($conductorMenuE)
+                                                <span class="text-primary"><i class="fas fa-user me-1"></i>{{ Str::limit($conductorMenuE, 20) }}</span>
+                                                @endif
+                                            </div>
+                                            @endif
                                             <p class="mb-1 small text-muted text-truncate" style="max-width: 250px;">{{ $alerta->mensaje }}</p>
                                             <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="d-inline">
                                                 @csrf

@@ -72,7 +72,10 @@ class DashboardController extends Controller
         $user = Auth::user();
         $role = $user ? $user->rol : null;
 
-        $alertasQuery = Alerta::query()
+        $alertasQuery = Alerta::with([
+                'documentoVehiculo.vehiculo.conductor',
+                'documentoConductor.conductor'
+            ])
             ->whereNull('deleted_at')
             ->where('leida', 0); // Solo mostrar alertas no leídas
 

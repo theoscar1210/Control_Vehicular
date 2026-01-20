@@ -55,6 +55,19 @@
                             ];
                             $config = $iconos[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
                             $esNoLeida = !$alerta->leida;
+
+                            // Obtener placa y conductor
+                            $placaAlerta = null;
+                            $conductorAlerta = null;
+                            if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+                                $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                                if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                    $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                }
+                            }
+                            if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+                                $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                            }
                         @endphp
                         <div class="list-group-item {{ $esNoLeida ? 'bg-light border-start border-4 border-warning' : '' }}">
                             <div class="d-flex align-items-start">
@@ -77,16 +90,33 @@
                                             {{ optional($alerta->fecha_alerta)->format('d/m/Y') ?? 'Sin fecha' }}
                                         </small>
                                     </div>
+
+                                    {{-- Información de Placa y Conductor --}}
+                                    @if($placaAlerta || $conductorAlerta)
+                                    <div class="mb-2">
+                                        @if($placaAlerta)
+                                        <span class="badge bg-dark me-2">
+                                            <i class="fas fa-car me-1"></i>{{ $placaAlerta }}
+                                        </span>
+                                        @endif
+                                        @if($conductorAlerta)
+                                        <span class="text-primary">
+                                            <i class="fas fa-user me-1"></i>{{ $conductorAlerta }}
+                                        </span>
+                                        @endif
+                                    </div>
+                                    @endif
+
                                     <p class="mb-2 {{ $esNoLeida ? '' : 'text-muted' }}">{{ $alerta->mensaje }}</p>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
                                         @if($alerta->id_doc_vehiculo)
                                             <span class="badge bg-secondary">
-                                                <i class="fas fa-car me-1"></i>Vehículo
+                                                <i class="fas fa-file-alt me-1"></i>Doc. Vehículo
                                             </span>
                                         @endif
                                         @if($alerta->id_doc_conductor)
                                             <span class="badge bg-secondary">
-                                                <i class="fas fa-user me-1"></i>Conductor
+                                                <i class="fas fa-file-alt me-1"></i>Doc. Conductor
                                             </span>
                                         @endif
                                         <span class="badge bg-{{ $alerta->tipo_alerta === 'VENCIDO' ? 'danger' : 'warning' }}">
