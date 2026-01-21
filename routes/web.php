@@ -12,6 +12,7 @@ use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PorteriaController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -131,7 +132,7 @@ Route::middleware(['auth'])->group(function () {
 
         /*
         |--------------------------------------------------------------------------
-        | CONSULTAS Y REPORTES
+        | CONSULTAS Y REPORTES (Antiguo)
         |--------------------------------------------------------------------------
         */
         Route::prefix('consultar-documentos')->name('documentos.consultar')->group(function () {
@@ -142,6 +143,35 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/documentos_conductor/{documento}/download', [DocumentoController::class, 'download'])
             ->name('documentos_conductor.download');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CENTRO DE REPORTES
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('reportes')->name('reportes.')->group(function () {
+            // Centro de reportes (dashboard)
+            Route::get('/', [ReporteController::class, 'index'])->name('centro');
+
+            // Reporte General de Vehículos
+            Route::get('/vehiculos', [ReporteController::class, 'vehiculos'])->name('vehiculos');
+
+            // Ficha detallada de un vehículo
+            Route::get('/vehiculo/{id}/ficha', [ReporteController::class, 'fichaVehiculo'])->name('ficha');
+            Route::get('/vehiculo/{id}/ficha/pdf', [ReporteController::class, 'fichaVehiculoPdf'])->name('ficha.pdf');
+
+            // Reporte de Alertas y Vencimientos
+            Route::get('/alertas', [ReporteController::class, 'alertas'])->name('alertas');
+
+            // Reporte por Propietario
+            Route::get('/propietarios', [ReporteController::class, 'propietarios'])->name('propietarios');
+
+            // Reporte Histórico
+            Route::get('/historico', [ReporteController::class, 'historico'])->name('historico');
+
+            // Exportación de reportes
+            Route::get('/export/{tipo}', [ReporteController::class, 'exportPdf'])->name('export');
+        });
 
         /*
         |--------------------------------------------------------------------------

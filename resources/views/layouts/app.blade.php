@@ -231,6 +231,10 @@
             <i class="fas fa-file-alt me-2"></i>Consultas
         </a>
 
+        <a class="nav-link" href="{{ route('reportes.centro') }}">
+            <i class="fas fa-chart-bar me-2"></i>Centro de Reportes
+        </a>
+
         @if(auth()->user()->rol === 'ADMIN')
         <a class="nav-link" href="{{ route('usuarios.index') }}">
             <i class="fas fa-users me-2"></i>Gestión de Usuarios
@@ -243,7 +247,7 @@
             <i class="fas fa-plus-circle me-2"></i>Nuevo Registro
         </a>
 
-        <a class="nav-link" href="{{ route('documentos.consultar') }}">
+        <a class="nav-link" href="{{ route('reportes.centro') }}">
             <i class="fas fa-chart-line me-2"></i>Generar Reporte
         </a>
         @endif
