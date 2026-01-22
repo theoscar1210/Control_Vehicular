@@ -1,8 +1,17 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
+
+
 @extends('layouts.app')
 
 @section('title', 'Reporte de Vehículos')
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -72,7 +81,7 @@
                     <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-car me-1"></i> Placa</label>
                         <input type="text" name="placa" class="form-control text-uppercase"
-                               placeholder="ABC123" value="{{ request('placa') }}">
+                            placeholder="ABC123" value="{{ request('placa') }}">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-truck me-1"></i> Tipo</label>
@@ -89,9 +98,9 @@
                         <select name="propietario" class="form-select">
                             <option value="">Todos</option>
                             @foreach($propietarios as $prop)
-                                <option value="{{ $prop->id_propietario }}" {{ request('propietario') == $prop->id_propietario ? 'selected' : '' }}>
-                                    {{ $prop->nombre }} {{ $prop->apellido }}
-                                </option>
+                            <option value="{{ $prop->id_propietario }}" {{ request('propietario') == $prop->id_propietario ? 'selected' : '' }}>
+                                {{ $prop->nombre }} {{ $prop->apellido }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -166,17 +175,17 @@
                             </td>
                             <td>
                                 @if($vehiculo->propietario)
-                                    <div>{{ $vehiculo->propietario->nombre }} {{ $vehiculo->propietario->apellido }}</div>
-                                    <small class="text-muted">{{ $vehiculo->propietario->identificacion }}</small>
+                                <div>{{ $vehiculo->propietario->nombre }} {{ $vehiculo->propietario->apellido }}</div>
+                                <small class="text-muted">{{ $vehiculo->propietario->identificacion }}</small>
                                 @else
-                                    <span class="text-muted">Sin propietario</span>
+                                <span class="text-muted">Sin propietario</span>
                                 @endif
                             </td>
                             <td>
                                 @if($vehiculo->conductor)
-                                    {{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}
+                                {{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}
                                 @else
-                                    <span class="text-muted">Sin conductor</span>
+                                <span class="text-muted">Sin conductor</span>
                                 @endif
                             </td>
                             <td class="text-center">
@@ -187,7 +196,7 @@
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('reportes.ficha', $vehiculo->id_vehiculo) }}"
-                                   class="btn btn-sm btn-outline-primary" title="Ver Ficha">
+                                    class="btn btn-sm btn-outline-primary" title="Ver Ficha">
                                     <i class="fas fa-id-badge me-1"></i> Ficha
                                 </a>
                             </td>
@@ -208,18 +217,20 @@
 </div>
 
 <script>
-function exportarReporte(formato) {
-    const form = document.getElementById('filtrosForm');
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData).toString();
+    function exportarReporte(formato) {
+        const form = document.getElementById('filtrosForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData).toString();
 
-    // Crear URL de exportación
-    let url = '{{ route("reportes.export", ["tipo" => "vehiculos"]) }}?formato=' + formato;
-    if (params) {
-        url += '&' + params;
+        let url = formato === 'excel' ?
+            '{{ route("reportes.export.excel", ["tipo" => "vehiculos"]) }}' :
+            '{{ route("reportes.export.pdf", ["tipo" => "vehiculos"]) }}';
+
+        if (params) {
+            url += '?' + params;
+        }
+
+        window.open(url, '_blank');
     }
-
-    window.open(url, '_blank');
-}
 </script>
 @endsection

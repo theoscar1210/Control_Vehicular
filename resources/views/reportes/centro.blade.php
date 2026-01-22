@@ -1,8 +1,15 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Centro de Reportes')
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -251,10 +258,10 @@
 
                     {{-- Mini gráfico de barras con Bootstrap --}}
                     @php
-                        $totalDocs = $stats['docs_vigentes'] + $stats['docs_por_vencer'] + $stats['docs_vencidos'];
-                        $pctVigentes = $totalDocs > 0 ? round(($stats['docs_vigentes'] / $totalDocs) * 100) : 0;
-                        $pctPorVencer = $totalDocs > 0 ? round(($stats['docs_por_vencer'] / $totalDocs) * 100) : 0;
-                        $pctVencidos = $totalDocs > 0 ? round(($stats['docs_vencidos'] / $totalDocs) * 100) : 0;
+                    $totalDocs = $stats['docs_vigentes'] + $stats['docs_por_vencer'] + $stats['docs_vencidos'];
+                    $pctVigentes = $totalDocs > 0 ? round(($stats['docs_vigentes'] / $totalDocs) * 100) : 0;
+                    $pctPorVencer = $totalDocs > 0 ? round(($stats['docs_por_vencer'] / $totalDocs) * 100) : 0;
+                    $pctVencidos = $totalDocs > 0 ? round(($stats['docs_vencidos'] / $totalDocs) * 100) : 0;
                     @endphp
                     <div class="mb-3">
                         <div class="d-flex justify-content-between small mb-1">
@@ -333,10 +340,12 @@
     .reporte-card {
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
+
     .reporte-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     }
+
     .icon-box {
         width: 50px;
         height: 50px;

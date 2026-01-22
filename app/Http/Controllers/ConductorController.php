@@ -40,10 +40,16 @@ class ConductorController extends Controller
             'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
 
             // Datos del documento sin archivo
-            'documento_tipo' => 'nullable|string|in:Licencia Conducción,Certificado Médico,Otro',
+            'documento_tipo' => 'nullable|string|in:Licencia Conducción,Certificado Médico,ARL,EPS,Otro',
             'documento_numero' => 'nullable|string|max:50',
             'documento_fecha_emision' => 'nullable|date',
             'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',
+            'entidad_emisora' => 'nullable|string|max:100',
+
+            // Categorías de licencia
+            'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
+            'categorias_adicionales' => 'nullable|array',
+            'categorias_adicionales.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
         ];
 
         $validated = $request->validate($rules);
@@ -71,17 +77,43 @@ class ConductorController extends Controller
 
         // Guardar datos del documento (sin archivo)
         if (!empty($validated['documento_numero'])) {
+            // Procesar categorías adicionales
+            $categoriasAdicionales = null;
+            if (!empty($validated['categorias_adicionales'])) {
+                // Filtrar para no incluir la categoría principal
+                $adicionales = array_filter($validated['categorias_adicionales'], function($cat) use ($validated) {
+                    return $cat !== ($validated['categoria_licencia'] ?? '');
+                });
+                if (!empty($adicionales)) {
+                    $categoriasAdicionales = implode(',', $adicionales);
+                }
+            }
+
+            // Calcular estado basado en fecha de vencimiento
+            $estado = 'VIGENTE';
+            if (!empty($validated['documento_fecha_vencimiento'])) {
+                $fechaVenc = \Carbon\Carbon::parse($validated['documento_fecha_vencimiento']);
+                if (now()->greaterThan($fechaVenc)) {
+                    $estado = 'VENCIDO';
+                } elseif (now()->diffInDays($fechaVenc, false) <= 30) {
+                    $estado = 'POR_VENCER';
+                }
+            }
+
             DocumentoConductor::create([
                 'id_conductor' => $conductor->id_conductor,
                 'tipo_documento' => $validated['documento_tipo'] ?? 'Licencia Conducción',
+                'categoria_licencia' => $validated['categoria_licencia'] ?? null,
+                'categorias_adicionales' => $categoriasAdicionales,
                 'numero_documento' => $validated['documento_numero'],
+                'entidad_emisora' => $validated['entidad_emisora'] ?? null,
                 'fecha_emision' => $validated['documento_fecha_emision'] ?? null,
                 'fecha_vencimiento' => $validated['documento_fecha_vencimiento'] ?? null,
-                'estado' => (!empty($validated['documento_fecha_vencimiento']) && now()->greaterThan($validated['documento_fecha_vencimiento']))
-                    ? 'VENCIDO'
-                    : 'VIGENTE',
+                'estado' => $estado,
                 'activo' => 1,
                 'creado_por' => Auth::id(),
+                'version' => 1,
+                'fecha_registro' => now(),
             ]);
         }
 
