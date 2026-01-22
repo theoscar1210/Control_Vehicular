@@ -1,8 +1,17 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
+
+
 @extends('layouts.app')
 
 @section('title', 'Ficha Vehículo - ' . $vehiculo->placa)
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
@@ -116,15 +125,15 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="card-title mb-0">
                                         @php
-                                            $iconos = [
-                                                'SOAT' => 'fas fa-shield-alt',
-                                                'Tecnomecánica' => 'fas fa-tools',
-                                                'Tarjeta Propiedad' => 'fas fa-credit-card',
-                                                'Póliza' => 'fas fa-file-contract',
-                                                'conductor_Licencia Conducción' => 'fas fa-id-card'
-                                            ];
-                                            $icono = $iconos[$tipo] ?? 'fas fa-file';
-                                            $nombreTipo = str_replace('conductor_', '', $tipo);
+                                        $iconos = [
+                                        'SOAT' => 'fas fa-shield-alt',
+                                        'Tecnomecánica' => 'fas fa-tools',
+                                        'Tarjeta Propiedad' => 'fas fa-credit-card',
+                                        'Póliza' => 'fas fa-file-contract',
+                                        'conductor_Licencia Conducción' => 'fas fa-id-card'
+                                        ];
+                                        $icono = $iconos[$tipo] ?? 'fas fa-file';
+                                        $nombreTipo = str_replace('conductor_', '', $tipo);
                                         @endphp
                                         <i class="{{ $icono }} me-1"></i>
                                         {{ $nombreTipo }}
@@ -230,12 +239,24 @@
         height: 20px;
         border-radius: 50%;
         display: inline-block;
-        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     }
-    .semaforo-success { background-color: #28a745; }
-    .semaforo-warning { background-color: #ffc107; }
-    .semaforo-danger { background-color: #dc3545; }
-    .semaforo-secondary { background-color: #6c757d; }
+
+    .semaforo-success {
+        background-color: #28a745;
+    }
+
+    .semaforo-warning {
+        background-color: #ffc107;
+    }
+
+    .semaforo-danger {
+        background-color: #dc3545;
+    }
+
+    .semaforo-secondary {
+        background-color: #6c757d;
+    }
 
     .placa-badge {
         font-family: 'Courier New', monospace;
@@ -244,23 +265,50 @@
 
     /* Estilos de impresión */
     @media print {
-        .no-print { display: none !important; }
-        .sidebar, .navbar, .topbar { display: none !important; }
-        .content { margin: 0 !important; padding: 0 !important; }
-        .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd !important; }
-        .ficha-container { max-width: 100% !important; }
-        body { font-size: 12px; }
-        .print-footer { display: block !important; }
+        .no-print {
+            display: none !important;
+        }
+
+        .sidebar,
+        .navbar,
+        .topbar {
+            display: none !important;
+        }
+
+        .content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .card {
+            break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+        }
+
+        .ficha-container {
+            max-width: 100% !important;
+        }
+
+        body {
+            font-size: 12px;
+        }
+
+        .print-footer {
+            display: block !important;
+        }
     }
 
     @media screen {
-        .print-footer { display: none; }
+        .print-footer {
+            display: none;
+        }
     }
 </style>
 
 <script>
-function exportarPDF() {
-    window.open('{{ route("reportes.ficha.pdf", $vehiculo->id_vehiculo) }}', '_blank');
-}
+    function exportarPDF() {
+        window.open('{{ route("reportes.ficha.pdf", $vehiculo->id_vehiculo) }}', '_blank');
+    }
 </script>
 @endsection

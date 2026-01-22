@@ -1,8 +1,17 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
+
+
 @extends('layouts.app')
 
 @section('title', 'Reporte por Propietario')
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -82,16 +91,16 @@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold"><i class="fas fa-search me-1"></i> Buscar Propietario</label>
                         <input type="text" name="buscar" class="form-control"
-                               placeholder="Nombre, apellido o identificación..." value="{{ request('buscar') }}">
+                            placeholder="Nombre, apellido o identificación..." value="{{ request('buscar') }}">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold"><i class="fas fa-user me-1"></i> Propietario Específico</label>
                         <select name="propietario" class="form-select">
                             <option value="">Todos los propietarios</option>
                             @foreach($propietarios as $prop)
-                                <option value="{{ $prop->id_propietario }}" {{ request('propietario') == $prop->id_propietario ? 'selected' : '' }}>
-                                    {{ $prop->nombre }} {{ $prop->apellido }} ({{ $prop->identificacion }})
-                                </option>
+                            <option value="{{ $prop->id_propietario }}" {{ request('propietario') == $prop->id_propietario ? 'selected' : '' }}>
+                                {{ $prop->nombre }} {{ $prop->apellido }} ({{ $prop->identificacion }})
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -173,9 +182,9 @@
                             </td>
                             <td>
                                 @if($vehiculo->conductor)
-                                    {{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}
+                                {{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}
                                 @else
-                                    <span class="text-muted">Sin asignar</span>
+                                <span class="text-muted">Sin asignar</span>
                                 @endif
                             </td>
                             <td class="text-center">
@@ -186,7 +195,7 @@
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('reportes.ficha', $vehiculo->id_vehiculo) }}"
-                                   class="btn btn-sm btn-outline-primary">
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-id-badge"></i>
                                 </a>
                             </td>
@@ -229,10 +238,12 @@
 </style>
 
 <script>
-function exportarReporte(formato) {
-    const params = new URLSearchParams(window.location.search);
-    params.set('formato', formato);
-    window.open('{{ route("reportes.export", ["tipo" => "propietarios"]) }}?' + params.toString(), '_blank');
-}
+    function exportarReporte(formato) {
+        const params = new URLSearchParams(window.location.search);
+        let url = formato === 'excel' ?
+            '{{ route("reportes.export.excel", ["tipo" => "propietarios"]) }}' :
+            '{{ route("reportes.export.pdf", ["tipo" => "propietarios"]) }}';
+        window.open(url + '?' + params.toString(), '_blank');
+    }
 </script>
 @endsection

@@ -1,8 +1,16 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
+
 @extends('layouts.app')
 
 @section('title', 'Reporte Histórico')
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -110,7 +118,7 @@
                     <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-car me-1"></i> Placa</label>
                         <input type="text" name="placa" class="form-control text-uppercase"
-                               placeholder="ABC123" value="{{ request('placa') }}">
+                            placeholder="ABC123" value="{{ request('placa') }}">
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn px-4" style="background-color: #5B8238; color: white;">
@@ -122,11 +130,11 @@
                         {{-- Accesos rápidos --}}
                         <div class="btn-group ms-2">
                             <a href="{{ route('reportes.historico') }}?fecha_inicio={{ now()->subDays(7)->format('Y-m-d') }}&fecha_fin={{ now()->format('Y-m-d') }}"
-                               class="btn btn-outline-info btn-sm">Última semana</a>
+                                class="btn btn-outline-info btn-sm">Última semana</a>
                             <a href="{{ route('reportes.historico') }}?fecha_inicio={{ now()->subMonth()->format('Y-m-d') }}&fecha_fin={{ now()->format('Y-m-d') }}"
-                               class="btn btn-outline-info btn-sm">Último mes</a>
+                                class="btn btn-outline-info btn-sm">Último mes</a>
                             <a href="{{ route('reportes.historico') }}?fecha_inicio={{ now()->subMonths(3)->format('Y-m-d') }}&fecha_fin={{ now()->format('Y-m-d') }}"
-                               class="btn btn-outline-info btn-sm">Últimos 3 meses</a>
+                                class="btn btn-outline-info btn-sm">Últimos 3 meses</a>
                         </div>
                     </div>
                 </div>
@@ -184,13 +192,13 @@
                                     <td class="fw-medium" style="color: #5B8238;">{{ $evento['referencia'] }}</td>
                                     <td>
                                         @php
-                                            $estadoClase = match($evento['estado']) {
-                                                'VIGENTE' => 'success',
-                                                'POR_VENCER' => 'warning',
-                                                'VENCIDO' => 'danger',
-                                                'REEMPLAZADO' => 'secondary',
-                                                default => 'secondary'
-                                            };
+                                        $estadoClase = match($evento['estado']) {
+                                        'VIGENTE' => 'success',
+                                        'POR_VENCER' => 'warning',
+                                        'VENCIDO' => 'danger',
+                                        'REEMPLAZADO' => 'secondary',
+                                        default => 'secondary'
+                                        };
                                         @endphp
                                         <span class="badge bg-{{ $estadoClase }}">{{ $evento['estado'] }}</span>
                                     </td>
@@ -330,10 +338,12 @@
 </style>
 
 <script>
-function exportarReporte(formato) {
-    const params = new URLSearchParams(window.location.search);
-    params.set('formato', formato);
-    window.open('{{ route("reportes.export", ["tipo" => "historico"]) }}?' + params.toString(), '_blank');
-}
+    function exportarReporte(formato) {
+        const params = new URLSearchParams(window.location.search);
+        let url = formato === 'excel' ?
+            '{{ route("reportes.export.excel", ["tipo" => "historico"]) }}' :
+            '{{ route("reportes.export.pdf", ["tipo" => "historico"]) }}';
+        window.open(url + '?' + params.toString(), '_blank');
+    }
 </script>
 @endsection

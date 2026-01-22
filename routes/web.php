@@ -170,7 +170,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/historico', [ReporteController::class, 'historico'])->name('historico');
 
             // Exportación de reportes
-            Route::get('/export/{tipo}', [ReporteController::class, 'exportPdf'])->name('export');
+            Route::get('/export/{tipo}/pdf', [ReporteController::class, 'exportPdf'])->name('export.pdf');
+            Route::get('/export/{tipo}/excel', [ReporteController::class, 'exportExcel'])->name('export.excel');
         });
 
         /*

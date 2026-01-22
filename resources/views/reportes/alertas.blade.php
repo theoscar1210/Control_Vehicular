@@ -1,8 +1,16 @@
+@php
+$navbarEspecial = true;
+$ocultarNavbar = true;
+$sinPadding = true;
+@endphp
+
+
 @extends('layouts.app')
 
 @section('title', 'Reporte de Alertas')
 
 @section('content')
+<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -157,12 +165,12 @@
                             <tbody>
                                 @forelse($documentosVehiculos as $doc)
                                 @php
-                                    $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
+                                $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
                                 @endphp
                                 <tr>
                                     <td class="px-3">
                                         <a href="{{ route('reportes.ficha', $doc->vehiculo->id_vehiculo ?? 0) }}"
-                                           class="fw-bold text-decoration-none" style="color: #5B8238;">
+                                            class="fw-bold text-decoration-none" style="color: #5B8238;">
                                             {{ $doc->vehiculo->placa ?? 'N/A' }}
                                         </a>
                                     </td>
@@ -175,10 +183,10 @@
                                         <small class="text-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }} fw-bold">
                                             @if($diasRestantes < 0)
                                                 Vencido hace {{ abs($diasRestantes) }} días
-                                            @else
+                                                @else
                                                 Vence en {{ $diasRestantes }} días
-                                            @endif
-                                        </small>
+                                                @endif
+                                                </small>
                                     </td>
                                     <td class="text-center">
                                         <span class="semaforo semaforo-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }}"></span>
@@ -223,7 +231,7 @@
                             <tbody>
                                 @forelse($documentosConductores as $doc)
                                 @php
-                                    $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
+                                $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
                                 @endphp
                                 <tr>
                                     <td class="px-3">
@@ -239,10 +247,10 @@
                                         <small class="text-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }} fw-bold">
                                             @if($diasRestantes < 0)
                                                 Vencido hace {{ abs($diasRestantes) }} días
-                                            @else
+                                                @else
                                                 Vence en {{ $diasRestantes }} días
-                                            @endif
-                                        </small>
+                                                @endif
+                                                </small>
                                     </td>
                                     <td class="text-center">
                                         <span class="semaforo semaforo-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }}"></span>
@@ -332,17 +340,26 @@
         height: 16px;
         border-radius: 50%;
         display: inline-block;
-        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
     }
-    .semaforo-success { background-color: #28a745; }
-    .semaforo-warning { background-color: #ffc107; }
-    .semaforo-danger { background-color: #dc3545; }
+
+    .semaforo-success {
+        background-color: #28a745;
+    }
+
+    .semaforo-warning {
+        background-color: #ffc107;
+    }
+
+    .semaforo-danger {
+        background-color: #dc3545;
+    }
 
     .semaforo-grande {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .timeline-mes {
@@ -352,10 +369,12 @@
 </style>
 
 <script>
-function exportarReporte(formato) {
-    const params = new URLSearchParams(window.location.search);
-    params.set('formato', formato);
-    window.open('{{ route("reportes.export", ["tipo" => "alertas"]) }}?' + params.toString(), '_blank');
-}
+    function exportarReporte(formato) {
+        const params = new URLSearchParams(window.location.search);
+        let url = formato === 'excel' ?
+            '{{ route("reportes.export.excel", ["tipo" => "alertas"]) }}' :
+            '{{ route("reportes.export.pdf", ["tipo" => "alertas"]) }}';
+        window.open(url + '?' + params.toString(), '_blank');
+    }
 </script>
 @endsection
