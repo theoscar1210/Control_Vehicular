@@ -127,7 +127,7 @@ $sinPadding = true;
                                         @php
                                         $iconos = [
                                         'SOAT' => 'fas fa-shield-alt',
-                                        'Tecnomecánica' => 'fas fa-tools',
+                                        'Tecnomecanica' => 'fas fa-tools',
                                         'Tarjeta Propiedad' => 'fas fa-credit-card',
                                         'Póliza' => 'fas fa-file-contract',
                                         'conductor_Licencia Conducción' => 'fas fa-id-card'

@@ -3,6 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Carbon\Carbon;
+
+// Configurar Carbon para español
+Carbon::setLocale('es');
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
