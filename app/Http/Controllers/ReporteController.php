@@ -21,13 +21,23 @@ class ReporteController extends Controller
     {
         $navbarEspecial = true;
 
+        $hoy = Carbon::today();
+        $limite30Dias = Carbon::today()->addDays(30);
+
         $stats = [
             'total_vehiculos' => Vehiculo::where('estado', 'Activo')->count(),
             'total_propietarios' => Propietario::count(),
             'total_conductores' => Conductor::where('activo', 1)->count(),
-            'docs_vigentes' => DocumentoVehiculo::where('activo', 1)->where('estado', 'VIGENTE')->count(),
-            'docs_por_vencer' => DocumentoVehiculo::where('activo', 1)->where('estado', 'POR_VENCER')->count(),
-            'docs_vencidos' => DocumentoVehiculo::where('activo', 1)->where('estado', 'VENCIDO')->count(),
+            'docs_vigentes' => DocumentoVehiculo::where('activo', 1)
+                ->where('fecha_vencimiento', '>', $limite30Dias)
+                ->count(),
+            'docs_por_vencer' => DocumentoVehiculo::where('activo', 1)
+                ->where('fecha_vencimiento', '>=', $hoy)
+                ->where('fecha_vencimiento', '<=', $limite30Dias)
+                ->count(),
+            'docs_vencidos' => DocumentoVehiculo::where('activo', 1)
+                ->where('fecha_vencimiento', '<', $hoy)
+                ->count(),
         ];
 
         return view('reportes.centro', compact('stats', 'navbarEspecial'));
@@ -146,48 +156,66 @@ class ReporteController extends Controller
     {
         $navbarEspecial = true;
 
-        $diasProximoVencer = $request->input('dias', 30);
+        $diasProximoVencer = (int) $request->input('dias', 30);
         $tipoFiltro = $request->input('tipo_documento');
         $estadoFiltro = $request->input('estado_alerta');
 
+        $hoy = Carbon::today();
+        $limiteDias = Carbon::today()->addDays($diasProximoVencer);
+
+        // Query para documentos de vehículos (por vencer o vencidos)
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario', 'vehiculo.conductor'])
             ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO']);
+            ->where('fecha_vencimiento', '<=', $limiteDias);
 
         if ($tipoFiltro) {
             $queryVehiculos->where('tipo_documento', $tipoFiltro);
         }
 
+        // Filtrar por estado basado en fecha
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
-            $queryVehiculos->where('estado', $estadoFiltro);
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryVehiculos->where('fecha_vencimiento', '>=', $hoy)
+                               ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryVehiculos->where('fecha_vencimiento', '<', $hoy);
+            }
         }
 
         $documentosVehiculos = $queryVehiculos->orderBy('fecha_vencimiento')->get();
 
+        // Query para documentos de conductores (por vencer o vencidos)
         $queryConductores = DocumentoConductor::with(['conductor'])
             ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO']);
+            ->where('fecha_vencimiento', '<=', $limiteDias);
 
         if ($tipoFiltro) {
             $queryConductores->where('tipo_documento', $tipoFiltro);
         }
 
+        // Filtrar por estado basado en fecha
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
-            $queryConductores->where('estado', $estadoFiltro);
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryConductores->where('fecha_vencimiento', '>=', $hoy)
+                                 ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryConductores->where('fecha_vencimiento', '<', $hoy);
+            }
         }
 
         $documentosConductores = $queryConductores->orderBy('fecha_vencimiento')->get();
 
+        // Estadísticas usando el accessor 'estado' en la colección (ya obtenida)
         $estadisticas = [
-            'vehiculos_por_vencer' => $documentosVehiculos->where('estado', 'POR_VENCER')->count(),
-            'vehiculos_vencidos' => $documentosVehiculos->where('estado', 'VENCIDO')->count(),
-            'conductores_por_vencer' => $documentosConductores->where('estado', 'POR_VENCER')->count(),
-            'conductores_vencidos' => $documentosConductores->where('estado', 'VENCIDO')->count(),
+            'vehiculos_por_vencer' => $documentosVehiculos->filter(fn($d) => $d->estado === 'POR_VENCER')->count(),
+            'vehiculos_vencidos' => $documentosVehiculos->filter(fn($d) => $d->estado === 'VENCIDO')->count(),
+            'conductores_por_vencer' => $documentosConductores->filter(fn($d) => Carbon::parse($d->fecha_vencimiento)->gte($hoy) && Carbon::parse($d->fecha_vencimiento)->lte($limiteDias))->count(),
+            'conductores_vencidos' => $documentosConductores->filter(fn($d) => Carbon::parse($d->fecha_vencimiento)->lt($hoy))->count(),
         ];
 
         $lineaTiempo = $this->generarLineaTiempo($documentosVehiculos, $documentosConductores);
 
-        $tiposDocumentoVehiculo = ['SOAT', 'Tecnomecánica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
+        $tiposDocumentoVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
         $tiposDocumentoConductor = ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro'];
 
         return view('reportes.alertas', compact(
@@ -305,7 +333,7 @@ class ReporteController extends Controller
         $cronologia = $this->generarCronologia($historialVehiculos, $historialConductores);
 
         $tiposDocumento = [
-            'vehiculo' => ['SOAT', 'Tecnomecánica', 'Tarjeta Propiedad', 'Póliza', 'Otro'],
+            'vehiculo' => ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'],
             'conductor' => ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro']
         ];
 
@@ -404,30 +432,44 @@ class ReporteController extends Controller
         $tipoFiltro = $request->input('tipo_documento');
         $estadoFiltro = $request->input('estado_alerta');
 
+        $hoy = Carbon::today();
+        $limiteDias = Carbon::today()->addDays(30);
+
+        // Query base: documentos activos con vencimiento dentro de 30 días o ya vencidos
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
             ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO']);
+            ->where('fecha_vencimiento', '<=', $limiteDias);
 
         if ($tipoFiltro) {
             $queryVehiculos->where('tipo_documento', $tipoFiltro);
         }
 
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
-            $queryVehiculos->where('estado', $estadoFiltro);
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryVehiculos->where('fecha_vencimiento', '>=', $hoy)
+                               ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryVehiculos->where('fecha_vencimiento', '<', $hoy);
+            }
         }
 
         $documentosVehiculos = $queryVehiculos->orderBy('fecha_vencimiento')->get();
 
         $queryConductores = DocumentoConductor::with(['conductor'])
             ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO']);
+            ->where('fecha_vencimiento', '<=', $limiteDias);
 
         if ($tipoFiltro) {
             $queryConductores->where('tipo_documento', $tipoFiltro);
         }
 
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
-            $queryConductores->where('estado', $estadoFiltro);
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryConductores->where('fecha_vencimiento', '>=', $hoy)
+                                 ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryConductores->where('fecha_vencimiento', '<', $hoy);
+            }
         }
 
         $documentosConductores = $queryConductores->orderBy('fecha_vencimiento')->get();
@@ -504,12 +546,27 @@ class ReporteController extends Controller
             $query->where('tipo', $request->tipo);
         }
 
+        if ($request->filled('propietario')) {
+            $query->where('id_propietario', $request->propietario);
+        }
+
+        if ($request->filled('placa')) {
+            $query->where('placa', 'LIKE', '%' . strtoupper($request->placa) . '%');
+        }
+
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
             $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
             return $vehiculo;
         });
+
+        $estadoFiltro = $request->input('estado_docs');
+        if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
+            $vehiculos = $vehiculos->filter(function($v) use ($estadoFiltro) {
+                return $v->estado_general['estado'] === $estadoFiltro;
+            });
+        }
 
         $filename = 'reporte_vehiculos_' . date('Y-m-d') . '.csv';
 
@@ -520,21 +577,33 @@ class ReporteController extends Controller
 
         $callback = function() use ($vehiculos) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
 
-            fputcsv($file, ['Placa', 'Tipo', 'Marca', 'Modelo', 'Color', 'Propietario', 'Conductor', 'Estado Documental']);
+            // Función para limpiar caracteres especiales para Excel
+            $limpiar = function($texto) {
+                return mb_convert_encoding($texto, 'Windows-1252', 'UTF-8');
+            };
+
+            // Encabezados
+            fputcsv($file, array_map($limpiar, ['Placa', 'Tipo', 'Marca', 'Modelo', 'Color', 'Año', 'Propietario', 'Documento Propietario', 'Conductor', 'Estado Documental', 'SOAT Vence', 'Tecno Vence']), ';');
 
             foreach ($vehiculos as $v) {
-                fputcsv($file, [
+                $soatVence = $v->documentos->where('tipo_documento', 'SOAT')->first();
+                $tecnoVence = $v->documentos->where('tipo_documento', 'Tecnomecanica')->first();
+
+                fputcsv($file, array_map($limpiar, [
                     $v->placa,
                     $v->tipo,
                     $v->marca,
                     $v->modelo,
                     $v->color,
+                    $v->anio ?? '-',
                     $v->propietario ? $v->propietario->nombre . ' ' . $v->propietario->apellido : 'Sin propietario',
+                    $v->propietario ? $v->propietario->tipo_doc . ' ' . $v->propietario->identificacion : '-',
                     $v->conductor ? $v->conductor->nombre . ' ' . $v->conductor->apellido : 'Sin conductor',
-                    $v->estado_general['texto']
-                ]);
+                    $v->estado_general['texto'],
+                    $soatVence ? Carbon::parse($soatVence->fecha_vencimiento)->format('d/m/Y') : 'Sin registro',
+                    $tecnoVence ? Carbon::parse($tecnoVence->fecha_vencimiento)->format('d/m/Y') : 'Sin registro',
+                ]), ';');
             }
 
             fclose($file);
@@ -545,17 +614,49 @@ class ReporteController extends Controller
 
     private function exportAlertasExcel(Request $request)
     {
-        $documentosVehiculos = DocumentoVehiculo::with(['vehiculo'])
-            ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO'])
-            ->orderBy('fecha_vencimiento')
-            ->get();
+        $tipoFiltro = $request->input('tipo_documento');
+        $estadoFiltro = $request->input('estado_alerta');
 
-        $documentosConductores = DocumentoConductor::with(['conductor'])
+        $hoy = Carbon::today();
+        $limiteDias = Carbon::today()->addDays(30);
+
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario', 'vehiculo.conductor'])
             ->where('activo', 1)
-            ->whereIn('estado', ['POR_VENCER', 'VENCIDO'])
-            ->orderBy('fecha_vencimiento')
-            ->get();
+            ->where('fecha_vencimiento', '<=', $limiteDias);
+
+        if ($tipoFiltro) {
+            $queryVehiculos->where('tipo_documento', $tipoFiltro);
+        }
+
+        if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryVehiculos->where('fecha_vencimiento', '>=', $hoy)
+                               ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryVehiculos->where('fecha_vencimiento', '<', $hoy);
+            }
+        }
+
+        $documentosVehiculos = $queryVehiculos->orderBy('fecha_vencimiento')->get();
+
+        $queryConductores = DocumentoConductor::with(['conductor'])
+            ->where('activo', 1)
+            ->where('fecha_vencimiento', '<=', $limiteDias);
+
+        if ($tipoFiltro) {
+            $queryConductores->where('tipo_documento', $tipoFiltro);
+        }
+
+        if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
+            if ($estadoFiltro === 'POR_VENCER') {
+                $queryConductores->where('fecha_vencimiento', '>=', $hoy)
+                                 ->where('fecha_vencimiento', '<=', $limiteDias);
+            } elseif ($estadoFiltro === 'VENCIDO') {
+                $queryConductores->where('fecha_vencimiento', '<', $hoy);
+            }
+        }
+
+        $documentosConductores = $queryConductores->orderBy('fecha_vencimiento')->get();
 
         $filename = 'reporte_alertas_' . date('Y-m-d') . '.csv';
 
@@ -566,32 +667,48 @@ class ReporteController extends Controller
 
         $callback = function() use ($documentosVehiculos, $documentosConductores) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($file, ['Tipo', 'Referencia', 'Documento', 'Vencimiento', 'Estado', 'Días']);
+            // Función para limpiar caracteres especiales para Excel
+            $limpiar = function($texto) {
+                if (is_numeric($texto)) return $texto;
+                return mb_convert_encoding((string)$texto, 'Windows-1252', 'UTF-8');
+            };
+
+            // Encabezados
+            fputcsv($file, array_map($limpiar, ['Tipo Entidad', 'Placa/Nombre', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Vencimiento', 'Estado', 'Dias Restantes', 'Urgencia']), ';');
 
             foreach ($documentosVehiculos as $doc) {
                 $dias = Carbon::now()->diffInDays(Carbon::parse($doc->fecha_vencimiento), false);
-                fputcsv($file, [
-                    'Vehículo',
+                $urgencia = $dias < 0 ? 'VENCIDO' : ($dias <= 7 ? 'URGENTE' : ($dias <= 15 ? 'PRONTO' : 'NORMAL'));
+
+                fputcsv($file, array_map($limpiar, [
+                    'Vehiculo',
                     $doc->vehiculo->placa ?? 'N/A',
+                    $doc->vehiculo && $doc->vehiculo->propietario ? $doc->vehiculo->propietario->nombre . ' ' . $doc->vehiculo->propietario->apellido : '-',
                     $doc->tipo_documento,
+                    $doc->numero_documento ?? '-',
                     Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y'),
                     $doc->estado,
-                    $dias
-                ]);
+                    $dias,
+                    $urgencia
+                ]), ';');
             }
 
             foreach ($documentosConductores as $doc) {
                 $dias = Carbon::now()->diffInDays(Carbon::parse($doc->fecha_vencimiento), false);
-                fputcsv($file, [
+                $urgencia = $dias < 0 ? 'VENCIDO' : ($dias <= 7 ? 'URGENTE' : ($dias <= 15 ? 'PRONTO' : 'NORMAL'));
+
+                fputcsv($file, array_map($limpiar, [
                     'Conductor',
                     $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A',
+                    '-',
                     $doc->tipo_documento,
+                    $doc->numero_documento ?? '-',
                     Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y'),
                     $doc->estado,
-                    $dias
-                ]);
+                    $dias,
+                    $urgencia
+                ]), ';');
             }
 
             fclose($file);
@@ -602,9 +719,30 @@ class ReporteController extends Controller
 
     private function exportPropietariosExcel(Request $request)
     {
-        $propietarios = Propietario::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo');
-        }])->orderBy('nombre')->get();
+        $query = Propietario::with(['vehiculos' => function($q) {
+            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+                $q2->where('activo', 1);
+            }, 'conductor']);
+        }]);
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('apellido', 'LIKE', "%{$buscar}%")
+                  ->orWhere('identificacion', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        $propietarios = $query->orderBy('nombre')->get();
+
+        $propietarios = $propietarios->map(function($propietario) {
+            $propietario->vehiculos = $propietario->vehiculos->map(function($vehiculo) {
+                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                return $vehiculo;
+            });
+            return $propietario;
+        });
 
         $filename = 'reporte_propietarios_' . date('Y-m-d') . '.csv';
 
@@ -615,19 +753,36 @@ class ReporteController extends Controller
 
         $callback = function() use ($propietarios) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($file, ['Propietario', 'Documento', 'Identificación', 'Vehículos', 'Placas']);
+            // Función para limpiar caracteres especiales para Excel
+            $limpiar = function($texto) {
+                if (is_numeric($texto)) return $texto;
+                return mb_convert_encoding((string)$texto, 'Windows-1252', 'UTF-8');
+            };
+
+            // Encabezados
+            fputcsv($file, array_map($limpiar, ['Nombre', 'Apellido', 'Tipo Documento', 'Identificacion', 'Telefono', 'Email', 'Direccion', 'Total Vehiculos', 'Vehiculos Vigentes', 'Vehiculos Por Vencer', 'Vehiculos Vencidos', 'Placas']), ';');
 
             foreach ($propietarios as $p) {
-                $placas = $p->vehiculos->pluck('placa')->implode(', ');
-                fputcsv($file, [
-                    $p->nombre . ' ' . $p->apellido,
+                $placas = $p->vehiculos->pluck('placa')->implode(' | ');
+                $vigentes = $p->vehiculos->where('estado_general.estado', 'VIGENTE')->count();
+                $porVencer = $p->vehiculos->where('estado_general.estado', 'POR_VENCER')->count();
+                $vencidos = $p->vehiculos->where('estado_general.estado', 'VENCIDO')->count();
+
+                fputcsv($file, array_map($limpiar, [
+                    $p->nombre,
+                    $p->apellido,
                     $p->tipo_doc,
                     $p->identificacion,
+                    $p->telefono ?? '-',
+                    $p->email ?? '-',
+                    $p->direccion ?? '-',
                     $p->vehiculos->count(),
-                    $placas
-                ]);
+                    $vigentes,
+                    $porVencer,
+                    $vencidos,
+                    $placas ?: 'Sin vehiculos'
+                ]), ';');
             }
 
             fclose($file);
@@ -640,16 +795,32 @@ class ReporteController extends Controller
     {
         $fechaInicio = $request->input('fecha_inicio', Carbon::now()->subMonths(6)->format('Y-m-d'));
         $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
+        $tipoDocumento = $request->input('tipo_documento');
+        $placa = $request->input('placa');
 
-        $historialVehiculos = DocumentoVehiculo::with(['vehiculo'])
-            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59'])
-            ->orderByDesc('fecha_registro')
-            ->get();
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
-        $historialConductores = DocumentoConductor::with(['conductor'])
-            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59'])
-            ->orderByDesc('fecha_registro')
-            ->get();
+        if ($tipoDocumento) {
+            $queryVehiculos->where('tipo_documento', $tipoDocumento);
+        }
+
+        if ($placa) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($placa) {
+                $q->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
+            });
+        }
+
+        $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
+
+        $queryConductores = DocumentoConductor::with(['conductor'])
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
+
+        if ($tipoDocumento) {
+            $queryConductores->where('tipo_documento', $tipoDocumento);
+        }
+
+        $historialConductores = $queryConductores->orderByDesc('fecha_registro')->get();
 
         $filename = 'reporte_historico_' . date('Y-m-d') . '.csv';
 
@@ -658,34 +829,50 @@ class ReporteController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $callback = function() use ($historialVehiculos, $historialConductores) {
+        $callback = function() use ($historialVehiculos, $historialConductores, $fechaInicio, $fechaFin) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($file, ['Fecha', 'Tipo', 'Referencia', 'Documento', 'Acción', 'Estado', 'Versión']);
+            // Función para limpiar caracteres especiales para Excel
+            $limpiar = function($texto) {
+                if (is_numeric($texto)) return $texto;
+                return mb_convert_encoding((string)$texto, 'Windows-1252', 'UTF-8');
+            };
+
+            // Encabezados
+            fputcsv($file, array_map($limpiar, ['Fecha Registro', 'Hora', 'Tipo Entidad', 'Placa/Nombre', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Expedicion', 'Fecha Vencimiento', 'Estado', 'Accion', 'Version']), ';');
 
             foreach ($historialVehiculos as $doc) {
-                fputcsv($file, [
-                    Carbon::parse($doc->fecha_registro)->format('d/m/Y H:i'),
-                    'Vehículo',
+                fputcsv($file, array_map($limpiar, [
+                    Carbon::parse($doc->fecha_registro)->format('d/m/Y'),
+                    Carbon::parse($doc->fecha_registro)->format('H:i'),
+                    'Vehiculo',
                     $doc->vehiculo->placa ?? 'N/A',
+                    $doc->vehiculo && $doc->vehiculo->propietario ? $doc->vehiculo->propietario->nombre . ' ' . $doc->vehiculo->propietario->apellido : '-',
                     $doc->tipo_documento,
-                    $doc->version > 1 ? 'Renovación' : 'Nuevo',
+                    $doc->numero_documento ?? '-',
+                    $doc->fecha_expedicion ? Carbon::parse($doc->fecha_expedicion)->format('d/m/Y') : '-',
+                    $doc->fecha_vencimiento ? Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') : '-',
                     $doc->estado,
+                    $doc->version > 1 ? 'Renovacion' : 'Registro inicial',
                     'v' . $doc->version
-                ]);
+                ]), ';');
             }
 
             foreach ($historialConductores as $doc) {
-                fputcsv($file, [
-                    Carbon::parse($doc->fecha_registro)->format('d/m/Y H:i'),
+                fputcsv($file, array_map($limpiar, [
+                    Carbon::parse($doc->fecha_registro)->format('d/m/Y'),
+                    Carbon::parse($doc->fecha_registro)->format('H:i'),
                     'Conductor',
                     $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A',
+                    '-',
                     $doc->tipo_documento,
-                    $doc->version > 1 ? 'Renovación' : 'Nuevo',
+                    $doc->numero_documento ?? '-',
+                    $doc->fecha_expedicion ? Carbon::parse($doc->fecha_expedicion)->format('d/m/Y') : '-',
+                    $doc->fecha_vencimiento ? Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') : '-',
                     $doc->estado,
+                    $doc->version > 1 ? 'Renovacion' : 'Registro inicial',
                     'v' . $doc->version
-                ]);
+                ]), ';');
             }
 
             fclose($file);
@@ -741,7 +928,7 @@ class ReporteController extends Controller
     private function calcularEstadosDocumentosDetallado($vehiculo)
     {
         $estados = [];
-        $tiposVehiculo = ['SOAT', 'Tecnomecánica', 'Tarjeta Propiedad', 'Póliza'];
+        $tiposVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza'];
 
         foreach ($tiposVehiculo as $tipo) {
             $doc = $vehiculo->documentos->where('tipo_documento', $tipo)->first();

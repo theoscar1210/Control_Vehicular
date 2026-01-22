@@ -99,7 +99,7 @@ $rol = $user->rol ?? 'N/A';
             $iconos = [
                 'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
                 'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
-                'Tecnomecánica' => ['icon' => 'bi-tools', 'color' => 'danger'],
+                'Tecnomecanica' => ['icon' => 'bi-tools', 'color' => 'danger'],
                 'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
             ];
             $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];

@@ -90,7 +90,7 @@
                         $iconosMenu = [
                         'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
                         'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
-                        'Tecnomecánica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
+                        'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
                         'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                         ];
                         $configMenu = $iconosMenu[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
