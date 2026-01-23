@@ -95,7 +95,7 @@ class ConductorController extends Controller
                 $fechaVenc = \Carbon\Carbon::parse($validated['documento_fecha_vencimiento']);
                 if (now()->greaterThan($fechaVenc)) {
                     $estado = 'VENCIDO';
-                } elseif (now()->diffInDays($fechaVenc, false) <= 30) {
+                } elseif (now()->diffInDays($fechaVenc, false) <= 20) {
                     $estado = 'POR_VENCER';
                 }
             }

@@ -77,9 +77,10 @@ class DocumentoVehiculo extends Model
         $dias = $hoy->diffInDays($vence, false);
 
 
+        // Estado basado en días: POR_VENCER si <= 20 días, VIGENTE si > 20 días
         return match (true) {
             $dias < 0 => 'VENCIDO',
-            $dias <= 30 => 'POR_VENCER',
+            $dias <= 20 => 'POR_VENCER',
             default => 'VIGENTE',
         };
     }

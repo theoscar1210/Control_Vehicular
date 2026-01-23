@@ -26,7 +26,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $hoy = Carbon::today();
-        $proximo = $hoy->copy()->addDays(30);
+        $proximo = $hoy->copy()->addDays(20); // Cambio de 30 a 20 días para POR_VENCER
 
         // Total vehículos: contar solo los activos (evita valores irreales)
         $totalVehiculos = Vehiculo::where('estado', 'Activo')->count();

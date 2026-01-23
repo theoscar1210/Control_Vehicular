@@ -60,9 +60,7 @@ $sinPadding = true;
                     <i class="fa-solid fa-table-list me-2"></i>
                     Listado de Vehículos
                 </h5>
-                <span class="badge bg-white text-dark">
-                    {{ $vehiculos->count() }} de {{ $vehiculos->total() }}
-                </span>
+
             </div>
         </div>
 
@@ -188,24 +186,24 @@ $sinPadding = true;
                             {{-- TECNOMECÁNICA --}}
                             <td class="text-center">
                                 @if($tecno['estado'] === 'SIN_REGISTRO')
-                                    @php
-                                        $requiereTecnoVeh = $vehiculo->requiereTecnomecanica();
-                                        $fechaPrimeraRevVeh = $vehiculo->fechaPrimeraTecnomecanica();
-                                    @endphp
-                                    @if($vehiculo->fecha_matricula && !$requiereTecnoVeh)
-                                    {{-- Vehículo nuevo exento por tiempo --}}
-                                    <span class="badge bg-success px-2 py-2" data-bs-toggle="tooltip"
-                                        title="Primera revisión: {{ $fechaPrimeraRevVeh?->format('d/m/Y') }}">
-                                        <i class="fa-solid fa-shield-check me-1"></i>Nuevo
-                                    </span>
-                                    <small class="d-block text-success" style="font-size: 0.7rem;">
-                                        Exento
-                                    </small>
-                                    @else
-                                    <span class="badge bg-secondary">
-                                        <i class="fa-solid fa-ban me-1"></i>Sin registro
-                                    </span>
-                                    @endif
+                                @php
+                                $requiereTecnoVeh = $vehiculo->requiereTecnomecanica();
+                                $fechaPrimeraRevVeh = $vehiculo->fechaPrimeraTecnomecanica();
+                                @endphp
+                                @if($vehiculo->fecha_matricula && !$requiereTecnoVeh)
+                                {{-- Vehículo nuevo exento por tiempo --}}
+                                <span class="badge bg-success px-2 py-2" data-bs-toggle="tooltip"
+                                    title="Primera revisión: {{ $fechaPrimeraRevVeh?->format('d/m/Y') }}">
+                                    <i class="fa-solid fa-shield-check me-1"></i>Nuevo
+                                </span>
+                                <small class="d-block text-success" style="font-size: 0.7rem;">
+                                    Exento
+                                </small>
+                                @else
+                                <span class="badge bg-secondary">
+                                    <i class="fa-solid fa-ban me-1"></i>Sin registro
+                                </span>
+                                @endif
                                 @else
                                 <div class="d-flex flex-column align-items-center gap-1">
                                     <span class="badge bg-{{ $tecno['clase'] }} px-3 py-2">

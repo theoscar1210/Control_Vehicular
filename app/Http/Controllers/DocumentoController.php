@@ -226,7 +226,7 @@ class DocumentoController extends Controller
         if ($estado = $request->input('estado')) {
 
             $hoy = Carbon::now()->startOfDay();
-            $limite = Carbon::now()->addDays(30)->endOfDay();
+            $limite = Carbon::now()->addDays(20)->endOfDay(); // Cambio de 30 a 20 días
 
             match ($estado) {
                 'REEMPLAZADO' => $q->where('activo', false),

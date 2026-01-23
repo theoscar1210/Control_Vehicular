@@ -39,7 +39,7 @@ class DocumentoConductorController extends Controller
             $vto = Carbon::parse($data['fecha_vencimiento']);
             if ($vto->isPast()) {
                 $data['estado'] = 'VENCIDO';
-            } elseif ($vto->diffInDays(Carbon::today()) <= 30) {
+            } elseif ($vto->diffInDays(Carbon::today()) <= 20) {
                 $data['estado'] = 'POR_VENCER';
             } else {
                 $data['estado'] = 'VIGENTE';
@@ -84,7 +84,7 @@ class DocumentoConductorController extends Controller
             $vto = Carbon::parse($data['fecha_vencimiento']);
             if ($vto->isPast()) {
                 $data['estado'] = 'VENCIDO';
-            } elseif ($vto->diffInDays(Carbon::today()) <= 30) {
+            } elseif ($vto->diffInDays(Carbon::today()) <= 20) {
                 $data['estado'] = 'POR_VENCER';
             } else {
                 $data['estado'] = 'VIGENTE';

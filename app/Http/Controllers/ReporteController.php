@@ -22,18 +22,18 @@ class ReporteController extends Controller
         $navbarEspecial = true;
 
         $hoy = Carbon::today();
-        $limite30Dias = Carbon::today()->addDays(30);
+        $limite20Dias = Carbon::today()->addDays(20); // Cambio de 30 a 20 días
 
         $stats = [
             'total_vehiculos' => Vehiculo::where('estado', 'Activo')->count(),
             'total_propietarios' => Propietario::count(),
             'total_conductores' => Conductor::where('activo', 1)->count(),
             'docs_vigentes' => DocumentoVehiculo::where('activo', 1)
-                ->where('fecha_vencimiento', '>', $limite30Dias)
+                ->where('fecha_vencimiento', '>', $limite20Dias)
                 ->count(),
             'docs_por_vencer' => DocumentoVehiculo::where('activo', 1)
                 ->where('fecha_vencimiento', '>=', $hoy)
-                ->where('fecha_vencimiento', '<=', $limite30Dias)
+                ->where('fecha_vencimiento', '<=', $limite20Dias)
                 ->count(),
             'docs_vencidos' => DocumentoVehiculo::where('activo', 1)
                 ->where('fecha_vencimiento', '<', $hoy)
@@ -433,9 +433,9 @@ class ReporteController extends Controller
         $estadoFiltro = $request->input('estado_alerta');
 
         $hoy = Carbon::today();
-        $limiteDias = Carbon::today()->addDays(30);
+        $limiteDias = Carbon::today()->addDays(20); // Cambio de 30 a 20 días
 
-        // Query base: documentos activos con vencimiento dentro de 30 días o ya vencidos
+        // Query base: documentos activos con vencimiento dentro de 20 días o ya vencidos
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
             ->where('activo', 1)
             ->where('fecha_vencimiento', '<=', $limiteDias);
@@ -618,7 +618,7 @@ class ReporteController extends Controller
         $estadoFiltro = $request->input('estado_alerta');
 
         $hoy = Carbon::today();
-        $limiteDias = Carbon::today()->addDays(30);
+        $limiteDias = Carbon::today()->addDays(20); // Cambio de 30 a 20 días
 
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario', 'vehiculo.conductor'])
             ->where('activo', 1)

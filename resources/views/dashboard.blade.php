@@ -48,7 +48,7 @@ $rol = $user->rol ?? 'N/A';
             <div class="card-body text-center">
                 <h6 class="text-muted mb-2">Documentos por vencer</h6>
                 <h3 class="fw-bold text-warning">{{ $porVencerCount }}</h3>
-                <small class="text-warning">Próximos 30 días</small>
+                <small class="text-warning">Próximos 20 días</small>
             </div>
         </div>
     </div>
