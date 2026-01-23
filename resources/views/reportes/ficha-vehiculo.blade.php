@@ -119,8 +119,18 @@ $sinPadding = true;
             <div class="card-body">
                 <div class="row">
                     @foreach($estadosDocumentos as $tipo => $info)
+                    @php
+                        $esExentoTecno = false;
+                        $fechaPrimeraRevFicha = null;
+                        if ($tipo === 'Tecnomecanica' && !$info['documento']) {
+                            $requiereTecnoFicha = $vehiculo->requiereTecnomecanica();
+                            $fechaPrimeraRevFicha = $vehiculo->fechaPrimeraTecnomecanica();
+                            $esExentoTecno = $vehiculo->fecha_matricula && !$requiereTecnoFicha;
+                        }
+                        $claseCard = $esExentoTecno ? 'success' : $info['clase'];
+                    @endphp
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100 border-{{ $info['clase'] }} border-2">
+                        <div class="card h-100 border-{{ $claseCard }} border-2">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="card-title mb-0">
@@ -139,7 +149,7 @@ $sinPadding = true;
                                         {{ $nombreTipo }}
                                     </h6>
                                     {{-- Semáforo --}}
-                                    <span class="semaforo semaforo-{{ $info['clase'] }}"></span>
+                                    <span class="semaforo semaforo-{{ $claseCard }}"></span>
                                 </div>
 
                                 @if($info['documento'])
@@ -168,6 +178,19 @@ $sinPadding = true;
                                 <div class="mt-2">
                                     <span class="badge bg-{{ $info['clase'] }}">
                                         {{ $info['mensaje'] }}
+                                    </span>
+                                </div>
+                                @elseif($esExentoTecno)
+                                {{-- Vehículo Nuevo - Exención por tiempo --}}
+                                <div class="text-center py-2">
+                                    <i class="fas fa-shield-check fa-2x text-success mb-2"></i>
+                                    <p class="text-success fw-bold mb-1">
+                                        Vehículo "Nuevo"
+                                    </p>
+                                    <p class="small text-success mb-2">(Exención por tiempo)</p>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Primera revisión: {{ $fechaPrimeraRevFicha?->format('d/m/Y') }}
                                     </span>
                                 </div>
                                 @else

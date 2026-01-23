@@ -188,9 +188,24 @@ $sinPadding = true;
                             {{-- TECNOMECÁNICA --}}
                             <td class="text-center">
                                 @if($tecno['estado'] === 'SIN_REGISTRO')
-                                <span class="badge bg-secondary">
-                                    <i class="fa-solid fa-ban me-1"></i>Sin registro
-                                </span>
+                                    @php
+                                        $requiereTecnoVeh = $vehiculo->requiereTecnomecanica();
+                                        $fechaPrimeraRevVeh = $vehiculo->fechaPrimeraTecnomecanica();
+                                    @endphp
+                                    @if($vehiculo->fecha_matricula && !$requiereTecnoVeh)
+                                    {{-- Vehículo nuevo exento por tiempo --}}
+                                    <span class="badge bg-success px-2 py-2" data-bs-toggle="tooltip"
+                                        title="Primera revisión: {{ $fechaPrimeraRevVeh?->format('d/m/Y') }}">
+                                        <i class="fa-solid fa-shield-check me-1"></i>Nuevo
+                                    </span>
+                                    <small class="d-block text-success" style="font-size: 0.7rem;">
+                                        Exento
+                                    </small>
+                                    @else
+                                    <span class="badge bg-secondary">
+                                        <i class="fa-solid fa-ban me-1"></i>Sin registro
+                                    </span>
+                                    @endif
                                 @else
                                 <div class="d-flex flex-column align-items-center gap-1">
                                     <span class="badge bg-{{ $tecno['clase'] }} px-3 py-2">
@@ -312,22 +327,20 @@ $sinPadding = true;
 {{-- ESTILOS --}}
 <style>
     .vehiculo-row {
-        transition: all 0.2s ease-in-out;
+        transition: background-color 0.2s ease-in-out;
     }
 
     .vehiculo-row:hover {
         background-color: #f8fdf5 !important;
-        transform: scale(1.005);
-        box-shadow: 0 2px 8px rgba(91, 130, 56, 0.1);
+    }
+
+    .vehiculo-row:hover td {
+        box-shadow: inset 0 0 0 9999px rgba(91, 130, 56, 0.03);
     }
 
     .btn:hover {
-        transform: translateY(-2px);
-        transition: all 0.2s ease-in-out;
-    }
-
-    .card {
-        transition: all 0.3s ease-in-out;
+        opacity: 0.85;
+        transition: opacity 0.2s ease-in-out;
     }
 
     .input-group-text {
@@ -337,6 +350,17 @@ $sinPadding = true;
     .form-control:focus {
         border-color: #5B8238;
         box-shadow: 0 0 0 0.2rem rgba(91, 130, 56, 0.25);
+    }
+
+    /* Estabilizar tabla para evitar temblor en scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        table-layout: auto;
+        min-width: 100%;
     }
 
     @media (max-width: 768px) {
