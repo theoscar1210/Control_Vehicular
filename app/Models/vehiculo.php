@@ -204,15 +204,20 @@ class Vehiculo extends Model
         $vencimiento = \Carbon\Carbon::parse($soat->fecha_vencimiento);
         $dias = $hoy->diffInDays($vencimiento, false);
 
+        // Determinar estado y clase según días restantes
+        // Rojo (danger): VENCIDO o 0-5 días | Amarillo (warning): 6-20 días | Verde (success): > 20 días
         if ($dias < 0) {
             $estado = 'VENCIDO';
             $clase = 'danger';
-        } elseif ($dias <= 30) {
+        } elseif ($dias <= 5) {
             $estado = 'POR_VENCER';
-            $clase = 'warning';
+            $clase = 'danger'; // Crítico: 0-5 días
+        } elseif ($dias <= 20) {
+            $estado = 'POR_VENCER';
+            $clase = 'warning'; // Advertencia: 6-20 días
         } else {
             $estado = 'VIGENTE';
-            $clase = 'success';
+            $clase = 'success'; // Vigente: > 20 días
         }
 
         return [
@@ -246,15 +251,20 @@ class Vehiculo extends Model
         $vencimiento = \Carbon\Carbon::parse($tecno->fecha_vencimiento);
         $dias = $hoy->diffInDays($vencimiento, false);
 
+        // Determinar estado y clase según días restantes
+        // Rojo (danger): VENCIDO o 0-5 días | Amarillo (warning): 6-20 días | Verde (success): > 20 días
         if ($dias < 0) {
             $estado = 'VENCIDO';
             $clase = 'danger';
-        } elseif ($dias <= 30) {
+        } elseif ($dias <= 5) {
             $estado = 'POR_VENCER';
-            $clase = 'warning';
+            $clase = 'danger'; // Crítico: 0-5 días
+        } elseif ($dias <= 20) {
+            $estado = 'POR_VENCER';
+            $clase = 'warning'; // Advertencia: 6-20 días
         } else {
             $estado = 'VIGENTE';
-            $clase = 'success';
+            $clase = 'success'; // Vigente: > 20 días
         }
 
         return [

@@ -180,7 +180,7 @@ $sinPadding = true;
                                     </td>
                                     <td>
                                         <div>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</div>
-                                        <small class="text-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }} fw-bold">
+                                        <small class="text-{{ $diasRestantes < 0 || $diasRestantes <= 5 ? 'danger' : 'warning' }} fw-bold">
                                             @if($diasRestantes < 0)
                                                 Vencido hace {{ abs($diasRestantes) }} días
                                                 @else
@@ -188,8 +188,9 @@ $sinPadding = true;
                                                 @endif
                                                 </small>
                                     </td>
+                                    {{-- Semáforo: Rojo (0-5 días o vencido), Amarillo (6-20 días), Verde (> 20 días) --}}
                                     <td class="text-center">
-                                        <span class="semaforo semaforo-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }}"></span>
+                                        <span class="semaforo semaforo-{{ $diasRestantes < 0 || $diasRestantes <= 5 ? 'danger' : ($diasRestantes <= 20 ? 'warning' : 'success') }}"></span>
                                     </td>
                                 </tr>
                                 @empty
@@ -244,7 +245,7 @@ $sinPadding = true;
                                     </td>
                                     <td>
                                         <div>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</div>
-                                        <small class="text-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }} fw-bold">
+                                        <small class="text-{{ $diasRestantes < 0 || $diasRestantes <= 5 ? 'danger' : 'warning' }} fw-bold">
                                             @if($diasRestantes < 0)
                                                 Vencido hace {{ abs($diasRestantes) }} días
                                                 @else
@@ -252,8 +253,9 @@ $sinPadding = true;
                                                 @endif
                                                 </small>
                                     </td>
+                                    {{-- Semáforo: Rojo (0-5 días o vencido), Amarillo (6-20 días), Verde (> 20 días) --}}
                                     <td class="text-center">
-                                        <span class="semaforo semaforo-{{ $doc->estado == 'VENCIDO' ? 'danger' : 'warning' }}"></span>
+                                        <span class="semaforo semaforo-{{ $diasRestantes < 0 || $diasRestantes <= 5 ? 'danger' : ($diasRestantes <= 20 ? 'warning' : 'success') }}"></span>
                                     </td>
                                 </tr>
                                 @empty
@@ -319,15 +321,15 @@ $sinPadding = true;
             <div class="d-flex flex-wrap gap-4">
                 <div class="d-flex align-items-center">
                     <span class="semaforo semaforo-success me-2"></span>
-                    <span>Vigente (más de 30 días)</span>
+                    <span>Vigente (más de 20 días)</span>
                 </div>
                 <div class="d-flex align-items-center">
                     <span class="semaforo semaforo-warning me-2"></span>
-                    <span>Por vencer (menos de 30 días)</span>
+                    <span>Por vencer (6-20 días)</span>
                 </div>
                 <div class="d-flex align-items-center">
                     <span class="semaforo semaforo-danger me-2"></span>
-                    <span>Vencido</span>
+                    <span>Crítico/Vencido (0-5 días o vencido)</span>
                 </div>
             </div>
         </div>

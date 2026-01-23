@@ -86,7 +86,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
             <div class="card shadow border-0 text-center">
                 <div class="card-body">
                     <h2 class="mb-0 fw-bold text-warning">{{ $porVencer }}</h2>
-                    <small class="text-muted">Por Vencer (≤30 días)</small>
+                    <small class="text-muted">Por Vencer (≤20 días)</small>
                 </div>
             </div>
         </div>

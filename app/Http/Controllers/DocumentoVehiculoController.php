@@ -107,7 +107,7 @@ class DocumentoVehiculoController extends Controller
                         $dias = Carbon::today()->diffInDays($fechaVencimiento, false);
                         if ($dias < 0) {
                             $estado = 'VENCIDO';
-                        } elseif ($dias <= 30) {
+                        } elseif ($dias <= 20) {
                             $estado = 'POR_VENCER';
                         } else {
                             $estado = 'VIGENTE';
@@ -273,7 +273,7 @@ class DocumentoVehiculoController extends Controller
 
                         if ($dias < 0) {
                             $estado = 'VENCIDO';
-                        } elseif ($dias <= 30) {
+                        } elseif ($dias <= 20) {
                             $estado = 'POR_VENCER';
                         } else {
                             $estado = 'VIGENTE';

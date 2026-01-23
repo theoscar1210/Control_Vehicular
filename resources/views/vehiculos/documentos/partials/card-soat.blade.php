@@ -1,29 +1,23 @@
 @php
 $dias = \Carbon\Carbon::today()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento)->startOfDay(), false);
 $modalId = 'modalRenovarSOAT_' . $doc->id_doc_vehiculo;
+// Colores: Rojo (danger): VENCIDO o 0-5 días | Amarillo (warning): 6-20 días | Verde (success): > 20 días
+$claseColor = $dias < 0 || $dias <= 5 ? 'danger' : ($dias <= 20 ? 'warning' : 'success');
+$textoColor = $claseColor === 'warning' ? 'text-dark' : 'text-white';
 @endphp
 
 <div class="col-md-6 col-lg-4 mb-3">
-    <div class="card h-100 
-        @if($doc->estado == 'VIGENTE') border-success
-        @elseif($doc->estado == 'POR_VENCER') border-warning  
-        @else border-danger
-        @endif"
-        style="border-width: 2px;">
+    <div class="card h-100 border-{{ $claseColor }}" style="border-width: 2px;">
 
         {{-- HEADER --}}
-        <div class="card-header 
-            @if($doc->estado == 'VIGENTE') bg-success text-white
-            @elseif($doc->estado == 'POR_VENCER') bg-warning text-dark
-            @else bg-danger text-white
-            @endif">
+        <div class="card-header bg-{{ $claseColor }} {{ $textoColor }}">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="mb-0 fw-bold">
                     <i class="fa-solid fa-shield-halved me-1"></i> SOAT
                 </h6>
-                <span class="badge 
-                    @if($doc->estado == 'VIGENTE') bg-white text-success
-                    @elseif($doc->estado == 'POR_VENCER') bg-dark text-warning
+                <span class="badge
+                    @if($claseColor == 'success') bg-white text-success
+                    @elseif($claseColor == 'warning') bg-dark text-warning
                     @else bg-white text-danger
                     @endif">
                     v{{ $doc->version }}
@@ -54,9 +48,9 @@ $modalId = 'modalRenovarSOAT_' . $doc->id_doc_vehiculo;
                 <strong><i class="fa-solid fa-calendar-xmark me-1 text-muted"></i>Vencimiento:</strong><br>
                 <span class="ms-3">{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</span>
                 <br>
-                <span class="badge mt-1 
-                    @if($dias > 30) bg-success
-                    @elseif($dias > 0) bg-warning text-dark
+                <span class="badge mt-1
+                    @if($dias > 20) bg-success
+                    @elseif($dias > 5) bg-warning text-dark
                     @else bg-danger
                     @endif">
                     @if($dias > 0)
