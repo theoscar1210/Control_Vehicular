@@ -165,7 +165,7 @@ $sinPadding = true;
                             <tbody>
                                 @forelse($documentosVehiculos as $doc)
                                 @php
-                                $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
+                                $diasRestantes = (int) \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento)->startOfDay(), false);
                                 @endphp
                                 <tr>
                                     <td class="px-3">
@@ -231,7 +231,7 @@ $sinPadding = true;
                             <tbody>
                                 @forelse($documentosConductores as $doc)
                                 @php
-                                $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false);
+                                $diasRestantes = (int) \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento)->startOfDay(), false);
                                 @endphp
                                 <tr>
                                     <td class="px-3">
