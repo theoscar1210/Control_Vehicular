@@ -33,6 +33,7 @@ class DocumentoVehiculoController extends Controller
         | VALIDACIÓN DINÁMICA
         |--------------------------------------------------------------------------
         | Si el documento tiene vencimiento, fecha_emision es obligatoria
+        | Si es Tarjeta Propiedad, fecha_matricula es obligatoria
         */
         $rules = [
             'tipo_documento'   => 'required|string',
@@ -47,13 +48,31 @@ class DocumentoVehiculoController extends Controller
             $rules['fecha_emision'] = 'nullable|date';
         }
 
+        // Tarjeta de Propiedad requiere fecha de matrícula
+        if ($request->tipo_documento === 'Tarjeta Propiedad') {
+            $rules['fecha_matricula'] = 'required|date|before_or_equal:today';
+        }
+
         $validated = $request->validate($rules);
 
         $vehiculo = Vehiculo::with(['propietario'])->findOrFail($idVehiculo);
         $tipo = $validated['tipo_documento'];
 
         try {
-            $result = DB::transaction(function () use ($validated, $vehiculo, $tipo) {
+            $result = DB::transaction(function () use ($validated, $vehiculo, $tipo, $request) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | GUARDAR FECHA DE MATRÍCULA (Si es Tarjeta de Propiedad)
+                |--------------------------------------------------------------------------
+                */
+                if ($tipo === 'Tarjeta Propiedad' && !empty($validated['fecha_matricula'])) {
+                    $vehiculo->update([
+                        'fecha_matricula' => Carbon::parse($validated['fecha_matricula'])->startOfDay()
+                    ]);
+                    // Refrescar el modelo para obtener la fecha actualizada
+                    $vehiculo->refresh();
+                }
 
                 /*
                 |--------------------------------------------------------------------------
@@ -69,15 +88,30 @@ class DocumentoVehiculoController extends Controller
 
                 // Solo calcular vencimiento para documentos que lo requieren
                 if (in_array($tipo, $this->documentosConVencimiento) && $fechaEmision) {
-                    $fechaVencimiento = $fechaEmision->copy()->addYear();
-
-                    $dias = Carbon::today()->diffInDays($fechaVencimiento, false);
-                    if ($dias < 0) {
-                        $estado = 'VENCIDO';
-                    } elseif ($dias <= 30) {
-                        $estado = 'POR_VENCER';
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CÁLCULO ESPECIAL PARA TECNOMECÁNICA
+                    |--------------------------------------------------------------------------
+                    | - Vehículos nuevos (Carro): Primera revisión a los 5 años
+                    | - Motos/Motocarros: Primera revisión a los 2 años
+                    | - Después de la primera revisión: Renovación anual
+                    */
+                    if ($tipo === 'Tecnomecanica') {
+                        $fechaVencimiento = $vehiculo->calcularVencimientoTecnomecanica($fechaEmision);
                     } else {
-                        $estado = 'VIGENTE';
+                        // SOAT y otros: vencimiento a 1 año desde emisión
+                        $fechaVencimiento = $fechaEmision->copy()->addYear();
+                    }
+
+                    if ($fechaVencimiento) {
+                        $dias = Carbon::today()->diffInDays($fechaVencimiento, false);
+                        if ($dias < 0) {
+                            $estado = 'VENCIDO';
+                        } elseif ($dias <= 30) {
+                            $estado = 'POR_VENCER';
+                        } else {
+                            $estado = 'VIGENTE';
+                        }
                     }
                 }
 
@@ -221,15 +255,29 @@ class DocumentoVehiculoController extends Controller
                 $estado = 'VIGENTE';
 
                 if (in_array($documentoAnterior->tipo_documento, $this->documentosConVencimiento)) {
-                    $fechaVencimiento = $fechaEmision->copy()->addYear();
-                    $dias = Carbon::today()->diffInDays($fechaVencimiento, false);
-
-                    if ($dias < 0) {
-                        $estado = 'VENCIDO';
-                    } elseif ($dias <= 30) {
-                        $estado = 'POR_VENCER';
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CÁLCULO ESPECIAL PARA TECNOMECÁNICA (Renovación)
+                    |--------------------------------------------------------------------------
+                    | En renovaciones siempre es anual porque ya pasó la primera revisión
+                    */
+                    if ($documentoAnterior->tipo_documento === 'Tecnomecanica') {
+                        // Para renovaciones, usar el método del vehículo que considera la lógica
+                        $fechaVencimiento = $vehiculo->calcularVencimientoTecnomecanica($fechaEmision);
                     } else {
-                        $estado = 'VIGENTE';
+                        $fechaVencimiento = $fechaEmision->copy()->addYear();
+                    }
+
+                    if ($fechaVencimiento) {
+                        $dias = Carbon::today()->diffInDays($fechaVencimiento, false);
+
+                        if ($dias < 0) {
+                            $estado = 'VENCIDO';
+                        } elseif ($dias <= 30) {
+                            $estado = 'POR_VENCER';
+                        } else {
+                            $estado = 'VIGENTE';
+                        }
                     }
                 }
 

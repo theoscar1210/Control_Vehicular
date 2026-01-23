@@ -469,9 +469,13 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-md-6">
                                 <label class="form-label">
                                     Fecha de Matrícula <span class="text-danger">*</span>
+                                    <i class="fa-solid fa-circle-info text-primary ms-1"
+                                        data-bs-toggle="tooltip"
+                                        title="Importante para calcular cuándo vence la primera Tecnomecánica"></i>
                                 </label>
                                 <input type="date"
                                     name="fecha_matricula"
+                                    id="fecha_matricula_input"
                                     class="form-control @error('fecha_matricula') is-invalid @enderror"
                                     value="{{ old('fecha_matricula') }}"
                                     max="{{ now()->toDateString() }}"
@@ -482,7 +486,9 @@ $vehiculoId = request()->query('vehiculo');
                                 @enderror
 
                                 <small class="text-muted">
-                                    Fecha en la que el vehículo fue matriculado por primera vez.
+                                    <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                                    Esta fecha determina cuándo vence la primera Tecnomecánica
+                                    (Carros: 5 años, Motos: 2 años).
                                 </small>
                             </div>
 
@@ -597,10 +603,49 @@ $vehiculoId = request()->query('vehiculo');
                         Registra primero el vehículo para agregar documentos.
                     </div>
                     @else
+                    @php
+                        $vehiculoActual = \App\Models\Vehiculo::find($vehiculoId);
+                        $fechaMatricula = $vehiculoActual?->fecha_matricula;
+                        $tipoVehiculo = $vehiculoActual?->tipo ?? 'Carro';
+                        $requiereTecno = $vehiculoActual?->requiereTecnomecanica() ?? true;
+                        $fechaPrimeraRevision = $vehiculoActual?->fechaPrimeraTecnomecanica();
+                        $anosPrimeraRevision = $tipoVehiculo === 'Moto' ? 2 : 5;
+                    @endphp
+
+                    {{-- Información sobre regla de Tecnomecánica --}}
+                    @if($fechaMatricula)
+                        @if(!$requiereTecno)
+                        <div class="alert alert-success mb-3">
+                            <i class="fa-solid fa-clock me-2"></i>
+                            <strong>Vehículo nuevo:</strong> La primera revisión técnico-mecánica es obligatoria a partir del
+                            <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
+                            ({{ $anosPrimeraRevision }} años desde la matrícula para {{ $tipoVehiculo === 'Moto' ? 'motocicletas' : 'vehículos' }}).
+                        </div>
+                        @else
+                        <div class="alert alert-warning mb-3">
+                            <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                            <strong>Revisión requerida:</strong> El vehículo ya superó los {{ $anosPrimeraRevision }} años desde su matrícula.
+                            La tecnomecánica se renueva anualmente.
+                        </div>
+                        @endif
+                    @else
+                    <div class="alert alert-info mb-3">
+                        <i class="fa-solid fa-info-circle me-2"></i>
+                        <strong>Nota:</strong> Registra primero la Licencia de Tránsito con la fecha de matrícula
+                        para calcular correctamente el vencimiento de la tecnomecánica.
+                        <br><small class="text-muted">Regla: Carros nuevos (5 años), Motos nuevas (2 años), luego renovación anual.</small>
+                    </div>
+                    @endif
+
                     <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
                         <input type="hidden" name="tipo_documento" value="Tecnomecanica">
+                        {{-- Datos para JavaScript --}}
+                        <input type="hidden" id="vehiculo_fecha_matricula" value="{{ $fechaMatricula?->format('Y-m-d') ?? '' }}">
+                        <input type="hidden" id="vehiculo_tipo" value="{{ $tipoVehiculo }}">
+                        <input type="hidden" id="vehiculo_requiere_tecno" value="{{ $requiereTecno ? '1' : '0' }}">
+                        <input type="hidden" id="vehiculo_fecha_primera_revision" value="{{ $fechaPrimeraRevision?->format('Y-m-d') ?? '' }}">
 
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -642,8 +687,14 @@ $vehiculoId = request()->query('vehiculo');
                                 </label>
                                 <input type="date" name="fecha_vencimiento" id="fecha_vencimiento_tecno"
                                     class="form-control @error('fecha_vencimiento') is-invalid @enderror" readonly style="pointer-events:none; background-color:#e8f0e9;"
-                                    value="{{ session('fecha_venc_tecnomecanica') ?? session('fecha_venc_tecnomecanica') ?? old('fecha_vencimiento') }}">
-                                <small class="text-muted">Se calcula automáticamente (+1 año)</small>
+                                    value="{{ session('fecha_venc_tecnomecanica') ?? old('fecha_vencimiento') }}">
+                                <small class="text-muted" id="tecno_vencimiento_info">
+                                    @if($fechaMatricula && !$requiereTecno)
+                                        Vence en la fecha de primera revisión obligatoria
+                                    @else
+                                        Se calcula automáticamente (+1 año desde emisión)
+                                    @endif
+                                </small>
                                 @error('fecha_vencimiento')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -815,6 +866,81 @@ $vehiculoId = request()->query('vehiculo');
                 e.returnValue = "Has creado un propietario pero no un vehículo. ¿Deseas salir?";
                 return e.returnValue;
             });
+        }
+
+        /* --------------------------------------------------------------------
+         * 9. Cálculo automático de fecha de vencimiento SOAT (+1 año)
+         * ------------------------------------------------------------------ */
+        const fechaEmisionSoat = document.getElementById('fecha_emision_soat');
+        const fechaVencimientoSoat = document.getElementById('fecha_vencimiento_soat');
+
+        if (fechaEmisionSoat && fechaVencimientoSoat) {
+            fechaEmisionSoat.addEventListener('change', function() {
+                if (this.value) {
+                    const fecha = new Date(this.value);
+                    fecha.setFullYear(fecha.getFullYear() + 1);
+                    fechaVencimientoSoat.value = fecha.toISOString().split('T')[0];
+                } else {
+                    fechaVencimientoSoat.value = '';
+                }
+            });
+        }
+
+        /* --------------------------------------------------------------------
+         * 10. Cálculo automático de fecha de vencimiento TECNOMECÁNICA
+         *     Regla:
+         *     - Vehículos nuevos (Carro): Primera revisión a los 5 años
+         *     - Motos nuevas: Primera revisión a los 2 años
+         *     - Después de primera revisión: Renovación anual
+         * ------------------------------------------------------------------ */
+        const fechaEmisionTecno = document.getElementById('fecha_emision_tecno');
+        const fechaVencimientoTecno = document.getElementById('fecha_vencimiento_tecno');
+        const fechaMatriculaHidden = document.getElementById('vehiculo_fecha_matricula');
+        const tipoVehiculoHidden = document.getElementById('vehiculo_tipo');
+        const requiereTecnoHidden = document.getElementById('vehiculo_requiere_tecno');
+        const fechaPrimeraRevisionHidden = document.getElementById('vehiculo_fecha_primera_revision');
+        const tecnoInfoText = document.getElementById('tecno_vencimiento_info');
+
+        if (fechaEmisionTecno && fechaVencimientoTecno) {
+            fechaEmisionTecno.addEventListener('change', function() {
+                if (!this.value) {
+                    fechaVencimientoTecno.value = '';
+                    return;
+                }
+
+                const fechaEmision = new Date(this.value);
+                const fechaMatricula = fechaMatriculaHidden?.value ? new Date(fechaMatriculaHidden.value) : null;
+                const tipoVehiculo = tipoVehiculoHidden?.value || 'Carro';
+                const requiereTecno = requiereTecnoHidden?.value === '1';
+                const fechaPrimeraRevision = fechaPrimeraRevisionHidden?.value ? new Date(fechaPrimeraRevisionHidden.value) : null;
+
+                let fechaVencimiento;
+
+                // Si no tiene fecha de matrícula o ya requiere tecnomecánica, +1 año
+                if (!fechaMatricula || requiereTecno) {
+                    fechaVencimiento = new Date(fechaEmision);
+                    fechaVencimiento.setFullYear(fechaVencimiento.getFullYear() + 1);
+                    if (tecnoInfoText) {
+                        tecnoInfoText.textContent = 'Se calcula automáticamente (+1 año desde emisión)';
+                    }
+                } else {
+                    // Vehículo nuevo: usar fecha de primera revisión
+                    fechaVencimiento = fechaPrimeraRevision;
+                    if (tecnoInfoText) {
+                        const anos = tipoVehiculo === 'Moto' ? 2 : 5;
+                        tecnoInfoText.textContent = `Vence en la fecha de primera revisión (${anos} años desde matrícula)`;
+                    }
+                }
+
+                if (fechaVencimiento) {
+                    fechaVencimientoTecno.value = fechaVencimiento.toISOString().split('T')[0];
+                }
+            });
+
+            // Disparar cálculo inicial si ya hay fecha de emisión
+            if (fechaEmisionTecno.value) {
+                fechaEmisionTecno.dispatchEvent(new Event('change'));
+            }
         }
 
     });

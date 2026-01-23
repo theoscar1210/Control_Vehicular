@@ -32,12 +32,13 @@ class Vehiculo extends Model
         'estado',
         'creado_por',
         'fecha_registro',
+        'fecha_matricula',
     ];
 
     protected $casts = [
         'fecha_registro' => 'datetime',
-        'deleted_at',
-
+        'fecha_matricula' => 'date',
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -62,40 +63,80 @@ class Vehiculo extends Model
             }
         });
     }
-    /*************  primera tecnomecánica *************/
+    /*************  Primera Tecnomecánica *************/
     /**
-     * Calcula la fecha de primera tecnomecánica del vehículo
-     * - Carros: 5 años desde la fecha de matrícula
-     * - Motos: 2 años desde la fecha de matrícula
+     * Calcula la fecha de primera tecnomecánica del vehículo según normativa:
+     * - Carros: Primera revisión a los 5 años desde la fecha de matrícula
+     * - Motos/Motocarros: Primera revisión a los 2 años desde la fecha de matrícula
      *
-     * @return Carbon|null Fecha de primera tecnomecánica del vehículo, o null si no tiene fecha de matrícula
+     * @return Carbon|null Fecha de primera tecnomecánica, o null si no tiene fecha de matrícula
      */
-    /*******    *******/
     public function fechaPrimeraTecnomecanica(): ?Carbon
     {
         if (!$this->fecha_matricula) {
             return null;
         }
 
-        $base = $this->fecha_matricula->copy()->startOffDay();
+        $fechaMatricula = Carbon::parse($this->fecha_matricula)->startOfDay();
 
         return match ($this->tipo) {
-            'Carro' => $this->fecha_matricula->copy()->addYears(5),
-            'Moto' => $this->fecha_matricula->copy()->addYears(2),
-            default => null,
+            'Carro' => $fechaMatricula->copy()->addYears(5),
+            'Moto' => $fechaMatricula->copy()->addYears(2),
+            default => $fechaMatricula->copy()->addYears(5), // Por defecto 5 años
         };
     }
 
     /**
-     * Comprueba si la fecha actual es mayor o igual que la fecha de primera tecnomecánica del vehículo
+     * Calcula la fecha de vencimiento de la Tecnomecánica considerando:
+     * - Si es vehículo nuevo: fecha de primera revisión según tipo
+     * - Si ya requiere revisión: fecha de emisión + 1 año (renovación anual)
      *
-     * @return bool Verdadero si la fecha actual es mayor o igual que la fecha de primera tecnomecánica, o false en caso contrario
+     * @param Carbon|null $fechaEmision Fecha de emisión del certificado (para renovaciones)
+     * @return Carbon|null Fecha de vencimiento calculada
+     */
+    public function calcularVencimientoTecnomecanica(?Carbon $fechaEmision = null): ?Carbon
+    {
+        // Si no tiene fecha de matrícula, usar cálculo estándar (+1 año)
+        if (!$this->fecha_matricula) {
+            return $fechaEmision ? $fechaEmision->copy()->addYear() : null;
+        }
+
+        $fechaPrimeraRevision = $this->fechaPrimeraTecnomecanica();
+        $hoy = Carbon::today();
+
+        // Si la fecha de primera revisión aún no ha llegado
+        if ($fechaPrimeraRevision && $hoy->lt($fechaPrimeraRevision)) {
+            // El vencimiento es la fecha de primera revisión obligatoria
+            return $fechaPrimeraRevision;
+        }
+
+        // Si ya pasó la fecha de primera revisión, el vencimiento es anual
+        return $fechaEmision ? $fechaEmision->copy()->addYear() : null;
+    }
+
+    /**
+     * Verifica si el vehículo ya requiere tener Tecnomecánica vigente
+     *
+     * @return bool True si ya pasó la fecha de primera revisión obligatoria
      */
     public function requiereTecnomecanica(): bool
     {
         $fecha = $this->fechaPrimeraTecnomecanica();
 
-        return $fecha ? now()->startOfDay()->greaterThanOrEqualTo($fecha) : false;
+        return $fecha ? Carbon::today()->gte($fecha) : true;
+    }
+
+    /**
+     * Obtiene los años para primera revisión según tipo de vehículo
+     *
+     * @return int Años hasta primera revisión (5 para carros, 2 para motos)
+     */
+    public function getAnosPrimeraRevisionAttribute(): int
+    {
+        return match ($this->tipo) {
+            'Moto' => 2,
+            default => 5,
+        };
     }
 
     /**
