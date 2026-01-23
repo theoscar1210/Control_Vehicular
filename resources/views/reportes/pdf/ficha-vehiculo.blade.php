@@ -127,6 +127,11 @@
             color: #6c757d;
         }
 
+        .estado-exento {
+            color: #28a745;
+            font-weight: bold;
+        }
+
         .doc-card {
             border: 1px solid #ddd;
             padding: 10px;
@@ -277,12 +282,27 @@
             </thead>
             <tbody>
                 @foreach($estadosDocumentos as $tipo => $info)
-                @php $nombreTipo = str_replace('conductor_', 'Conductor - ', $tipo); @endphp
+                @php
+                    $nombreTipo = str_replace('conductor_', 'Conductor - ', $tipo);
+                    $esExentoPdf = false;
+                    $fechaPrimeraRevPdf = null;
+                    if ($tipo === 'Tecnomecanica' && !$info['documento']) {
+                        $requiereTecnoPdf = $vehiculo->requiereTecnomecanica();
+                        $fechaPrimeraRevPdf = $vehiculo->fechaPrimeraTecnomecanica();
+                        $esExentoPdf = $vehiculo->fecha_matricula && !$requiereTecnoPdf;
+                    }
+                @endphp
                 <tr>
                     <td><strong>{{ $nombreTipo }}</strong></td>
+                    @if($esExentoPdf)
+                    <td>-</td>
+                    <td>{{ $fechaPrimeraRevPdf?->format('d/m/Y') }}</td>
+                    <td class="estado-exento">Vehículo "Nuevo" (Exención)</td>
+                    @else
                     <td>{{ $info['documento']->numero_documento ?? '-' }}</td>
                     <td>{{ $info['documento'] ? \Carbon\Carbon::parse($info['documento']->fecha_vencimiento)->format('d/m/Y') : '-' }}</td>
                     <td class="estado-{{ strtolower($info['estado']) }}">{{ $info['mensaje'] }}</td>
+                    @endif
                 </tr>
                 @endforeach
             </tbody>

@@ -187,17 +187,35 @@ $sinPadding = true;
 
                 {{-- Tecnomecánica --}}
                 <div class="col-6 col-md-3 mb-3">
-                    <div class="card h-100 border-{{ $estadosDocumentos['vehiculo_Tecnomecanica']['clase'] ?? 'secondary' }}">
+                    @php
+                        $tecnoEstado = $estadosDocumentos['vehiculo_Tecnomecanica'] ?? null;
+                        $requiereTecnoPort = $vehiculo->requiereTecnomecanica();
+                        $fechaPrimeraRevPort = $vehiculo->fechaPrimeraTecnomecanica();
+                        $esVehiculoNuevoExento = $vehiculo->fecha_matricula && !$requiereTecnoPort && (!$tecnoEstado || ($tecnoEstado['mensaje'] ?? '') === 'Sin registro');
+                    @endphp
+                    <div class="card h-100 border-{{ $esVehiculoNuevoExento ? 'success' : ($tecnoEstado['clase'] ?? 'secondary') }}">
                         <div class="card-body text-center py-3">
-                            <i class="fas fa-tools fa-2x mb-2 text-{{ $estadosDocumentos['vehiculo_Tecnomecanica']['clase'] ?? 'secondary' }}"></i>
+                            <i class="fas fa-{{ $esVehiculoNuevoExento ? 'shield-alt' : 'tools' }} fa-2x mb-2 text-{{ $esVehiculoNuevoExento ? 'success' : ($tecnoEstado['clase'] ?? 'secondary') }}"></i>
                             <h6 class="card-title mb-1">Tecnomecánica</h6>
-                            <span class="badge bg-{{ $estadosDocumentos['vehiculo_Tecnomecanica']['clase'] ?? 'secondary' }}">
-                                {{ $estadosDocumentos['vehiculo_Tecnomecanica']['mensaje'] ?? 'Sin registro' }}
+                            @if($esVehiculoNuevoExento)
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Vehículo "Nuevo"
                             </span>
-                            @if(isset($estadosDocumentos['vehiculo_Tecnomecanica']['fecha']))
-                            <p class="small text-muted mb-0 mt-1">
-                                Vence: {{ $estadosDocumentos['vehiculo_Tecnomecanica']['fecha'] }}
+                            <p class="small text-success mb-0 mt-1">
+                                (Exención por tiempo)
                             </p>
+                            <p class="small text-muted mb-0">
+                                Hasta: {{ $fechaPrimeraRevPort?->format('d/m/Y') }}
+                            </p>
+                            @else
+                            <span class="badge bg-{{ $tecnoEstado['clase'] ?? 'secondary' }}">
+                                {{ $tecnoEstado['mensaje'] ?? 'Sin registro' }}
+                            </span>
+                            @if(isset($tecnoEstado['fecha']))
+                            <p class="small text-muted mb-0 mt-1">
+                                Vence: {{ $tecnoEstado['fecha'] }}
+                            </p>
+                            @endif
                             @endif
                         </div>
                     </div>

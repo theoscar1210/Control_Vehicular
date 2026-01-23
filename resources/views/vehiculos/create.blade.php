@@ -612,30 +612,58 @@ $vehiculoId = request()->query('vehiculo');
                         $anosPrimeraRevision = $tipoVehiculo === 'Moto' ? 2 : 5;
                     @endphp
 
-                    {{-- Información sobre regla de Tecnomecánica --}}
-                    @if($fechaMatricula)
-                        @if(!$requiereTecno)
-                        <div class="alert alert-success mb-3">
-                            <i class="fa-solid fa-clock me-2"></i>
-                            <strong>Vehículo nuevo:</strong> La primera revisión técnico-mecánica es obligatoria a partir del
-                            <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
-                            ({{ $anosPrimeraRevision }} años desde la matrícula para {{ $tipoVehiculo === 'Moto' ? 'motocicletas' : 'vehículos' }}).
+                    {{-- VEHÍCULO NUEVO: Exención por tiempo - BLOQUEAR FORMULARIO --}}
+                    @if($fechaMatricula && !$requiereTecno)
+                        <div class="alert alert-success border-0 shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <span class="badge bg-success rounded-pill px-3 py-2">
+                                        <i class="fa-solid fa-shield-check me-1"></i> EXENTO
+                                    </span>
+                                </div>
+                                <div>
+                                    <h6 class="alert-heading mb-1">
+                                        <i class="fa-solid fa-car me-1"></i>
+                                        Vehículo "Nuevo" (Exención por tiempo)
+                                    </h6>
+                                    <p class="mb-0 small">
+                                        Este {{ $tipoVehiculo === 'Moto' ? 'motocicleta' : 'vehículo' }} no requiere Tecnomecánica hasta el
+                                        <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
+                                        ({{ $anosPrimeraRevision }} años desde la matrícula).
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        @else
+
+                        <div class="text-center py-4">
+                            <i class="fa-solid fa-clock fa-3x text-success mb-3" style="opacity: 0.5;"></i>
+                            <p class="text-muted mb-2">
+                                <strong>Días restantes para primera revisión:</strong>
+                            </p>
+                            <h3 class="text-success">
+                                {{ now()->diffInDays($fechaPrimeraRevision) }} días
+                            </h3>
+                            <p class="text-muted small">
+                                Fecha de matrícula: {{ $fechaMatricula->format('d/m/Y') }}
+                            </p>
+                        </div>
+
+                    {{-- VEHÍCULO QUE YA REQUIERE TECNOMECÁNICA --}}
+                    @else
+                        @if($fechaMatricula)
                         <div class="alert alert-warning mb-3">
                             <i class="fa-solid fa-exclamation-triangle me-2"></i>
                             <strong>Revisión requerida:</strong> El vehículo ya superó los {{ $anosPrimeraRevision }} años desde su matrícula.
                             La tecnomecánica se renueva anualmente.
                         </div>
+                        @else
+                        <div class="alert alert-info mb-3">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            <strong>Nota:</strong> Registra primero la Licencia de Tránsito con la fecha de matrícula
+                            para calcular correctamente el vencimiento de la tecnomecánica.
+                            <br><small class="text-muted">Regla: Carros nuevos (5 años), Motos nuevas (2 años), luego renovación anual.</small>
+                        </div>
                         @endif
-                    @else
-                    <div class="alert alert-info mb-3">
-                        <i class="fa-solid fa-info-circle me-2"></i>
-                        <strong>Nota:</strong> Registra primero la Licencia de Tránsito con la fecha de matrícula
-                        para calcular correctamente el vencimiento de la tecnomecánica.
-                        <br><small class="text-muted">Regla: Carros nuevos (5 años), Motos nuevas (2 años), luego renovación anual.</small>
-                    </div>
-                    @endif
 
                     <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
                         @csrf
@@ -689,11 +717,7 @@ $vehiculoId = request()->query('vehiculo');
                                     class="form-control @error('fecha_vencimiento') is-invalid @enderror" readonly style="pointer-events:none; background-color:#e8f0e9;"
                                     value="{{ session('fecha_venc_tecnomecanica') ?? old('fecha_vencimiento') }}">
                                 <small class="text-muted" id="tecno_vencimiento_info">
-                                    @if($fechaMatricula && !$requiereTecno)
-                                        Vence en la fecha de primera revisión obligatoria
-                                    @else
-                                        Se calcula automáticamente (+1 año desde emisión)
-                                    @endif
+                                    Se calcula automáticamente (+1 año desde emisión)
                                 </small>
                                 @error('fecha_vencimiento')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -708,7 +732,8 @@ $vehiculoId = request()->query('vehiculo');
 
                         </div>
                     </form>
-                    @endif
+                    @endif {{-- Fin de @else (vehículo que requiere tecnomecánica) --}}
+                    @endif {{-- Fin de @if(!$vehiculoId) --}}
                 </div>
             </div>
         </div>
