@@ -1,62 +1,226 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Control Vehicular - Club Campestre Altos del Chicala
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de gestion y control documental vehicular desarrollado para el Club Campestre Altos del Chicala.
 
-## About Laravel
+## Descripcion
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Control Vehicular es una aplicacion web que permite gestionar el control documental de vehiculos y conductores, con alertas automaticas de vencimiento, generacion de reportes y control de acceso vehicular.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Caracteristicas Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Gestion de Vehiculos
+- Registro completo de vehiculos (placa, marca, modelo, color, tipo)
+- Asignacion de propietarios y conductores
+- Control de documentos (SOAT, Tecnomecanica, Tarjeta de Propiedad)
+- Semaforo de estados (Vigente, Por vencer, Vencido)
 
-## Learning Laravel
+### Gestion de Conductores
+- Registro de conductores con informacion personal
+- Control de licencias de conduccion
+- Historial de asignaciones a vehiculos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Sistema de Alertas
+- Alertas automaticas de documentos proximos a vencer
+- Notificaciones en tiempo real
+- Clasificacion por tipo de documento y urgencia
+- Marcado de alertas como leidas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Centro de Reportes
+- Reporte general de vehiculos
+- Reporte de alertas y vencimientos
+- Reporte por propietario
+- Reporte historico de renovaciones
+- Ficha individual por vehiculo
+- Exportacion a PDF y Excel
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Modulo Porteria
+- Busqueda rapida de vehiculos por placa
+- Verificacion de estado documental
+- Registro de entradas y salidas
 
-## Laravel Sponsors
+### Control de Acceso por Roles
+- **ADMIN**: Acceso completo al sistema
+- **SST**: Gestion de vehiculos, conductores y reportes
+- **PORTERIA**: Acceso solo al modulo de porteria
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Tecnologias
 
-### Premium Partners
+- **Framework**: Laravel 11
+- **Base de Datos**: MySQL
+- **Frontend**: Blade, Bootstrap 5, Font Awesome
+- **Contenedores**: Docker (Laravel Sail)
+- **Reportes PDF**: DomPDF
+- **Exportacion Excel**: Maatwebsite/Laravel-Excel
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Requisitos del Sistema
 
-## Contributing
+- PHP >= 8.2
+- Composer
+- Docker y Docker Compose (si usa Sail)
+- MySQL 8.0 o MariaDB 10.x
+- Node.js >= 18 (para assets)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Instalacion
 
-## Code of Conduct
+### Con Laravel Sail (Docker)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Clonar el repositorio
+git clone <url-repositorio>
+cd Control_Vehicular
 
-## Security Vulnerabilities
+# Instalar dependencias
+composer install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Copiar archivo de entorno
+cp .env.example .env
 
-## License
+# Generar clave de aplicacion
+./vendor/bin/sail artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# Control_Vehicular
+# Levantar contenedores
+./vendor/bin/sail up -d
+
+# Ejecutar migraciones
+./vendor/bin/sail artisan migrate
+
+# (Opcional) Ejecutar seeders
+./vendor/bin/sail artisan db:seed
+```
+
+### Instalacion Local
+
+```bash
+# Clonar el repositorio
+git clone <url-repositorio>
+cd Control_Vehicular
+
+# Instalar dependencias
+composer install
+
+# Copiar archivo de entorno
+cp .env.example .env
+
+# Configurar base de datos en .env
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=control_vehicular
+# DB_USERNAME=tu_usuario
+# DB_PASSWORD=tu_password
+
+# Generar clave de aplicacion
+php artisan key:generate
+
+# Ejecutar migraciones
+php artisan migrate
+
+# (Opcional) Ejecutar seeders
+php artisan db:seed
+
+# Iniciar servidor de desarrollo
+php artisan serve
+```
+
+## Configuracion
+
+### Variables de Entorno Importantes
+
+```env
+APP_NAME="Control Vehicular"
+APP_LOCALE=es
+APP_FALLBACK_LOCALE=es
+APP_FAKER_LOCALE=es_CO
+
+# Configuracion de correo para alertas (opcional)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.ejemplo.com
+MAIL_PORT=587
+MAIL_USERNAME=correo@ejemplo.com
+MAIL_PASSWORD=password
+```
+
+## Estructura del Proyecto
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── AlertaController.php      # Gestion de alertas
+│   │   ├── ConductorController.php   # Gestion de conductores
+│   │   ├── DashboardController.php   # Dashboard principal
+│   │   ├── PorteriaController.php    # Modulo porteria
+│   │   ├── ReporteController.php     # Centro de reportes
+│   │   └── VehiculoController.php    # Gestion de vehiculos
+│   └── Middleware/
+│       └── CheckRole.php             # Control de acceso por rol
+├── Models/
+│   ├── Alerta.php
+│   ├── Conductor.php
+│   ├── DocumentoConductor.php
+│   ├── DocumentoVehiculo.php
+│   ├── Propietario.php
+│   ├── User.php
+│   └── Vehiculo.php
+└── Exports/                          # Exportaciones Excel
+    └── ...
+
+resources/views/
+├── alertas/                          # Vistas de alertas
+├── auth/                             # Vistas de autenticacion
+├── conductores/                      # Vistas de conductores
+├── dashboard.blade.php               # Dashboard principal
+├── layouts/                          # Layouts principales
+├── porteria/                         # Modulo porteria
+├── reportes/                         # Centro de reportes
+│   ├── alertas.blade.php
+│   ├── centro.blade.php
+│   ├── ficha.blade.php
+│   ├── historico.blade.php
+│   ├── propietarios.blade.php
+│   └── vehiculos.blade.php
+└── vehiculos/                        # Vistas de vehiculos
+```
+
+## Uso del Sistema
+
+### Acceso Inicial
+
+1. Acceder a la URL del sistema
+2. Iniciar sesion con credenciales de administrador
+3. Navegar por el menu lateral segun el rol asignado
+
+### Flujo de Trabajo Tipico
+
+1. **Registrar Propietario**: Agregar datos del propietario del vehiculo
+2. **Registrar Vehiculo**: Crear registro con placa, marca, modelo
+3. **Cargar Documentos**: Subir SOAT, Tecnomecanica, etc. con fechas de vencimiento
+4. **Asignar Conductor**: Vincular conductor al vehiculo
+5. **Monitorear Alertas**: Revisar alertas de vencimiento en el dashboard
+6. **Generar Reportes**: Exportar informacion en PDF/Excel segun necesidad
+
+## Tipos de Documentos
+
+### Documentos de Vehiculo
+- SOAT (Seguro Obligatorio)
+- Tecnomecanica (Revision Tecnico-Mecanica)
+- Tarjeta de Propiedad
+
+### Documentos de Conductor
+- Licencia de Conduccion
+
+## Estados de Documentos
+
+| Estado | Descripcion | Color |
+|--------|-------------|-------|
+| VIGENTE | Mas de 30 dias para vencer | Verde |
+| POR_VENCER | Menos de 30 dias para vencer | Amarillo |
+| VENCIDO | Fecha de vencimiento superada | Rojo |
+
+## Soporte
+
+Para reportar problemas o solicitar funcionalidades, contactar al equipo de desarrollo.
+
+## Licencia
+
+Todos los derechos reservados - Club Campestre Altos del Chicala 2025

@@ -14,7 +14,7 @@ $rol = $user->rol ?? 'N/A';
     <h4 class="fw-bold">Bienvenido a la página principal</h4>
     <p class="text-muted mb-0">
         Resumen del estado del cumplimiento documental y actividad del sistema <br>
-        <small>Última actualización: {{ $ultima_actualizacion ?? now()->format('d M, H:i') }}</small>
+        <small>Última actualización: {{ $ultima_actualizacion ?? now()->translatedFormat('d F Y, H:i:s') }}</small>
     </p>
     <div class="mt-2">
         <span class="badge bg-secondary">Rol: {{ $rol }}</span>
