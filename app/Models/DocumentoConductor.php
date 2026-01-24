@@ -25,54 +25,48 @@ class DocumentoConductor extends Model
     /**
      * Categorías de Licencia de Conducción en Colombia
      * Según Ley 769 de 2002 y Resolución 3245 de 2009
+     * Nota: La vigencia depende de la edad del conductor, por lo que
+     * el usuario debe ingresar la fecha de vencimiento manualmente.
      */
     public const CATEGORIAS_LICENCIA = [
         'A1' => [
             'nombre' => 'A1 - Motocicletas hasta 125cc',
             'descripcion' => 'Motocicletas, motociclos y mototriciclos con cilindrada hasta 125 c.c.',
-            'vigencia_anios' => 10,
             'servicio' => 'particular'
         ],
         'A2' => [
             'nombre' => 'A2 - Motocicletas más de 125cc',
             'descripcion' => 'Motocicletas, motociclos y mototriciclos con cilindrada mayor a 125 c.c.',
-            'vigencia_anios' => 10,
             'servicio' => 'particular'
         ],
         'B1' => [
             'nombre' => 'B1 - Automóviles y Camionetas',
             'descripcion' => 'Automóviles, motocarros, cuatrimotos, camperos, camionetas y microbuses hasta 10 pasajeros',
-            'vigencia_anios' => 10,
             'servicio' => 'particular'
         ],
         'B2' => [
             'nombre' => 'B2 - Camiones y Buses',
             'descripcion' => 'Camiones rígidos, buses y busetas',
-            'vigencia_anios' => 3,
             'servicio' => 'particular'
         ],
         'B3' => [
             'nombre' => 'B3 - Vehículos Articulados',
             'descripcion' => 'Vehículos articulados de carga',
-            'vigencia_anios' => 3,
             'servicio' => 'particular'
         ],
         'C1' => [
             'nombre' => 'C1 - Taxi',
             'descripcion' => 'Servicio público individual de pasajeros (taxi)',
-            'vigencia_anios' => 3,
             'servicio' => 'publico'
         ],
         'C2' => [
             'nombre' => 'C2 - Bus/Buseta Público',
             'descripcion' => 'Servicio público colectivo de pasajeros (bus, buseta)',
-            'vigencia_anios' => 3,
             'servicio' => 'publico'
         ],
         'C3' => [
             'nombre' => 'C3 - Carga Pública',
             'descripcion' => 'Servicio público de carga',
-            'vigencia_anios' => 3,
             'servicio' => 'publico'
         ],
     ];
@@ -155,44 +149,6 @@ class DocumentoConductor extends Model
             $value = 'VIGENTE';
         }
         $this->attributes['estado'] = $value;
-    }
-
-    /**
-     * Obtener la vigencia en años según la categoría de licencia
-     * Según leyes colombianas (Ley 769 de 2002)
-     */
-    public static function getVigenciaCategoria(string $categoria): int
-    {
-        if (isset(self::CATEGORIAS_LICENCIA[$categoria])) {
-            return self::CATEGORIAS_LICENCIA[$categoria]['vigencia_anios'];
-        }
-        return 10; // Por defecto 10 años para categorías no especificadas
-    }
-
-    /**
-     * Calcular fecha de vencimiento basada en categoría y fecha de emisión
-     * Considera las reglas especiales por edad del conductor
-     */
-    public static function calcularFechaVencimiento(
-        string $fechaEmision,
-        string $categoria,
-        ?int $edadConductor = null
-    ): string {
-        $fecha = Carbon::parse($fechaEmision);
-        $vigenciaAnios = self::getVigenciaCategoria($categoria);
-
-        // Reglas especiales por edad (Resolución 217 de 2014)
-        if ($edadConductor !== null) {
-            if ($edadConductor >= 80) {
-                // Mayores de 80 años: vigencia de 1 año
-                $vigenciaAnios = 1;
-            } elseif ($edadConductor >= 60 && $vigenciaAnios == 10) {
-                // Mayores de 60 años con categorías de 10 años: vigencia de 5 años
-                $vigenciaAnios = 5;
-            }
-        }
-
-        return $fecha->addYears($vigenciaAnios)->format('Y-m-d');
     }
 
     /**

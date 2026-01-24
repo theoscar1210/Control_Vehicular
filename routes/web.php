@@ -116,10 +116,13 @@ Route::middleware(['auth'])->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::prefix('conductores')->name('conductores.')->group(function () {
+            Route::get('/', [ConductorController::class, 'index'])->name('index');
             Route::get('/create', [ConductorController::class, 'create'])->name('create');
             Route::post('/', [ConductorController::class, 'store'])->name('store');
             Route::get('/{conductor}/edit', [ConductorController::class, 'edit'])->name('edit');
             Route::put('/{conductor}', [ConductorController::class, 'update'])->name('update');
+            Route::delete('/{conductor}', [ConductorController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [ConductorController::class, 'restore'])->name('restore');
         });
 
         /*
