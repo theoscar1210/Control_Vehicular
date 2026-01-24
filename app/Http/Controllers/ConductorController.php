@@ -13,6 +13,30 @@ use Illuminate\Support\Facades\DB;
 class ConductorController extends Controller
 {
     /**
+     * Mostrar listado de conductores.
+     */
+    public function index(Request $request)
+    {
+        $query = Conductor::with(['vehiculos', 'documentosConductor'])
+            ->orderBy('nombre');
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('apellido', 'like', "%{$search}%")
+                    ->orWhere('identificacion', 'like', "%{$search}%")
+                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$search}%"]);
+            });
+        }
+
+        $conductores = $query->paginate(15)->withQueryString();
+
+        return view('conductores.index', compact('conductores'));
+    }
+
+    /**
      * Mostrar formulario de creación de conductor.
      */
     public function create()
@@ -117,7 +141,7 @@ class ConductorController extends Controller
             ]);
         }
 
-        return redirect()->route('conductores.create')->with('success', 'Conductor creado correctamente.');
+        return redirect()->route('conductores.index')->with('success', 'Conductor creado correctamente.');
     }
 
     /**
@@ -256,5 +280,56 @@ class ConductorController extends Controller
         });
 
         return redirect()->route('conductores.edit', $conductor)->with('success', 'Conductor actualizado correctamente.');
+    }
+
+    /**
+     * Eliminar conductor (soft delete).
+     * El conductor y sus documentos permanecen 6 meses antes de ser eliminados definitivamente.
+     */
+    public function destroy(Conductor $conductor)
+    {
+        try {
+            DB::transaction(function () use ($conductor) {
+                // 1) Desasignar vehículos del conductor
+                Vehiculo::where('id_conductor', $conductor->id_conductor)
+                    ->update(['id_conductor' => null]);
+
+                // 2) Soft delete de documentos del conductor
+                $conductor->documentosConductor()->delete();
+
+                // 3) Soft delete del conductor
+                $conductor->delete();
+            });
+
+            return redirect()->route('conductores.index')
+                ->with('success', 'Conductor eliminado correctamente. Permanecerá en el sistema por 6 meses antes de ser eliminado definitivamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('conductores.index')
+                ->with('error', 'Error al eliminar el conductor: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Restaurar conductor eliminado.
+     */
+    public function restore($id)
+    {
+        try {
+            $conductor = Conductor::onlyTrashed()->findOrFail($id);
+
+            DB::transaction(function () use ($conductor) {
+                // 1) Restaurar conductor
+                $conductor->restore();
+
+                // 2) Restaurar documentos del conductor
+                $conductor->documentosConductor()->onlyTrashed()->restore();
+            });
+
+            return redirect()->route('conductores.index')
+                ->with('success', 'Conductor restaurado correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('conductores.index')
+                ->with('error', 'Error al restaurar el conductor: ' . $e->getMessage());
+        }
     }
 }

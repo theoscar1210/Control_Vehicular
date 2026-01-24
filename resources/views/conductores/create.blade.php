@@ -181,23 +181,20 @@
                                                 <select name="categoria_licencia" id="categoria_licencia" class="form-select rounded-3 border-success-subtle">
                                                     <option value="">Seleccionar categoría</option>
                                                     <optgroup label="Motocicletas">
-                                                        <option value="A1" {{ old('categoria_licencia')=='A1'?'selected':'' }}>A1 - Motocicletas hasta 125cc (10 años)</option>
-                                                        <option value="A2" {{ old('categoria_licencia')=='A2'?'selected':'' }}>A2 - Motocicletas más de 125cc (10 años)</option>
+                                                        <option value="A1" {{ old('categoria_licencia')=='A1'?'selected':'' }}>A1 - Motocicletas hasta 125cc</option>
+                                                        <option value="A2" {{ old('categoria_licencia')=='A2'?'selected':'' }}>A2 - Motocicletas más de 125cc</option>
                                                     </optgroup>
                                                     <optgroup label="Vehículos Particulares">
-                                                        <option value="B1" {{ old('categoria_licencia')=='B1'?'selected':'' }}>B1 - Automóviles, Camperos, Camionetas (10 años)</option>
-                                                        <option value="B2" {{ old('categoria_licencia')=='B2'?'selected':'' }}>B2 - Camiones, Buses (3 años)</option>
-                                                        <option value="B3" {{ old('categoria_licencia')=='B3'?'selected':'' }}>B3 - Vehículos Articulados (3 años)</option>
+                                                        <option value="B1" {{ old('categoria_licencia')=='B1'?'selected':'' }}>B1 - Automóviles, Camperos, Camionetas</option>
+                                                        <option value="B2" {{ old('categoria_licencia')=='B2'?'selected':'' }}>B2 - Camiones, Buses</option>
+                                                        <option value="B3" {{ old('categoria_licencia')=='B3'?'selected':'' }}>B3 - Vehículos Articulados</option>
                                                     </optgroup>
                                                     <optgroup label="Servicio Público">
-                                                        <option value="C1" {{ old('categoria_licencia')=='C1'?'selected':'' }}>C1 - Taxi (3 años)</option>
-                                                        <option value="C2" {{ old('categoria_licencia')=='C2'?'selected':'' }}>C2 - Bus/Buseta Público (3 años)</option>
-                                                        <option value="C3" {{ old('categoria_licencia')=='C3'?'selected':'' }}>C3 - Carga Pública (3 años)</option>
+                                                        <option value="C1" {{ old('categoria_licencia')=='C1'?'selected':'' }}>C1 - Taxi</option>
+                                                        <option value="C2" {{ old('categoria_licencia')=='C2'?'selected':'' }}>C2 - Bus/Buseta Público</option>
+                                                        <option value="C3" {{ old('categoria_licencia')=='C3'?'selected':'' }}>C3 - Carga Pública</option>
                                                     </optgroup>
                                                 </select>
-                                                <small class="text-muted">
-                                                    <i class="bi bi-info-circle me-1"></i>La vigencia se calcula automáticamente según la ley colombiana
-                                                </small>
                                             </div>
 
                                             {{-- Categorías Adicionales --}}
@@ -236,7 +233,9 @@
                                                 <input type="date" name="documento_fecha_vencimiento" id="documento_fecha_vencimiento"
                                                     class="form-control rounded-3 border-success-subtle"
                                                     value="{{ old('documento_fecha_vencimiento') }}">
-                                                <small class="text-muted" id="info_vencimiento"></small>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>Ingrese la fecha de vencimiento según su licencia
+                                                </small>
                                             </div>
 
                                             <div class="col-12">
@@ -283,13 +282,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // Vigencias de categorías de licencia según ley colombiana (en años)
-    const vigenciasCategoria = {
-        'A1': 10, 'A2': 10, 'B1': 10,
-        'B2': 3, 'B3': 3,
-        'C1': 3, 'C2': 3, 'C3': 3
-    };
-
     // Mostrar/ocultar sección de categorías según tipo de documento
     function toggleSeccionCategorias() {
         const tipoDoc = document.getElementById('documento_tipo').value;
@@ -305,37 +297,8 @@
         }
     }
 
-    // Calcular fecha de vencimiento basada en categoría y fecha de emisión
-    function calcularFechaVencimiento() {
-        const tipoDoc = document.getElementById('documento_tipo').value;
-        const fechaEmision = document.getElementById('documento_fecha_emision').value;
-        const categoria = document.getElementById('categoria_licencia').value;
-        const fechaVencimiento = document.getElementById('documento_fecha_vencimiento');
-        const infoVencimiento = document.getElementById('info_vencimiento');
-
-        if (tipoDoc === 'Licencia Conducción' && fechaEmision && categoria) {
-            const vigencia = vigenciasCategoria[categoria] || 10;
-            const fecha = new Date(fechaEmision);
-            fecha.setFullYear(fecha.getFullYear() + vigencia);
-
-            // Formatear fecha para input date (YYYY-MM-DD)
-            const año = fecha.getFullYear();
-            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-            const dia = String(fecha.getDate()).padStart(2, '0');
-
-            fechaVencimiento.value = `${año}-${mes}-${dia}`;
-            infoVencimiento.innerHTML = `<i class="bi bi-info-circle me-1"></i>Vigencia ${vigencia} años para categoría ${categoria}`;
-        }
-    }
-
     // Event listeners
-    document.getElementById('documento_tipo').addEventListener('change', function() {
-        toggleSeccionCategorias();
-        calcularFechaVencimiento();
-    });
-
-    document.getElementById('categoria_licencia').addEventListener('change', calcularFechaVencimiento);
-    document.getElementById('documento_fecha_emision').addEventListener('change', calcularFechaVencimiento);
+    document.getElementById('documento_tipo').addEventListener('change', toggleSeccionCategorias);
 
     // Deshabilitar categoría principal si está seleccionada como adicional
     document.querySelectorAll('.categoria-adicional').forEach(function(checkbox) {

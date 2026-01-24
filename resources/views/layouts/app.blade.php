@@ -225,9 +225,24 @@
             </ul>
         </div>
 
-        <a class="nav-link" href="{{ route('conductores.create') }}">
-            <i class="fas fa-id-card me-2"></i>Registro de Conductores
+        <a class="nav-link" data-bs-toggle="collapse" href="#conductoresSubmenu" role="button">
+            <i class="fas fa-id-card-clip me-2"></i>Gestión de Conductores
+            <i class="fas fa-chevron-down float-end"></i>
         </a>
+        <div class="collapse" id="conductoresSubmenu">
+            <ul class="list-unstyled ps-3">
+                <li>
+                    <a class="nav-link" href="{{ route('conductores.index') }}">
+                        <i class="fas fa-list me-2"></i>Listado de Conductores
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{{ route('conductores.create') }}">
+                        <i class="fas fa-user-plus me-2"></i>Nuevo Conductor
+                    </a>
+                </li>
+            </ul>
+        </div>
 
         <a class="nav-link" href="{{ route('reportes.centro') }}">
             <i class="fas fa-chart-bar me-2"></i>Centro de Reportes

@@ -32,17 +32,23 @@
                     <ul class="dropdown-menu" aria-labelledby="vehiculosDropdown">
                         <li>
                             <a class="dropdown-item" href="{{ route('vehiculos.index') }}">
-                                Listado de Vehículos
+                                <i class="fa-solid fa-car me-2 text-muted"></i>Listado de Vehículos
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('vehiculos.create') }}">
-                                Nuevo Vehículo
+                                <i class="fa-solid fa-plus me-2 text-muted"></i>Nuevo Vehículo
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('conductores.index') }}">
+                                <i class="fa-solid fa-id-card-clip me-2 text-muted"></i>Listado de Conductores
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('conductores.create') }}">
-                                Registrar Conductor
+                                <i class="fa-solid fa-user-plus me-2 text-muted"></i>Registrar Conductor
                             </a>
                         </li>
                     </ul>

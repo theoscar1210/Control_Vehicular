@@ -153,7 +153,14 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Tipo</label>
-                                <input name="documento_tipo" value="{{ old('documento_tipo') }}" class="form-control border-success-subtle" placeholder="Ej: Licencia Conducción">
+                                <select name="documento_tipo" class="form-select border-success-subtle">
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="Licencia Conducción" {{ old('documento_tipo') == 'Licencia Conducción' ? 'selected' : '' }}>Licencia Conducción</option>
+                                    <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }}>EPS</option>
+                                    <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }}>ARL</option>
+                                    <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }}>Certificado Médico</option>
+                                    <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
