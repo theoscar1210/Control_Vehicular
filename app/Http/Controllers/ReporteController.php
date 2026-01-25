@@ -205,12 +205,12 @@ class ReporteController extends Controller
 
         $documentosConductores = $queryConductores->orderBy('fecha_vencimiento')->get();
 
-        // Estadísticas usando el accessor 'estado' en la colección (ya obtenida)
+        // Estadísticas usando el accessor 'estado' para consistencia
         $estadisticas = [
             'vehiculos_por_vencer' => $documentosVehiculos->filter(fn($d) => $d->estado === 'POR_VENCER')->count(),
             'vehiculos_vencidos' => $documentosVehiculos->filter(fn($d) => $d->estado === 'VENCIDO')->count(),
-            'conductores_por_vencer' => $documentosConductores->filter(fn($d) => Carbon::parse($d->fecha_vencimiento)->gte($hoy) && Carbon::parse($d->fecha_vencimiento)->lte($limiteDias))->count(),
-            'conductores_vencidos' => $documentosConductores->filter(fn($d) => Carbon::parse($d->fecha_vencimiento)->lt($hoy))->count(),
+            'conductores_por_vencer' => $documentosConductores->filter(fn($d) => $d->estado === 'POR_VENCER')->count(),
+            'conductores_vencidos' => $documentosConductores->filter(fn($d) => $d->estado === 'VENCIDO')->count(),
         ];
 
         $lineaTiempo = $this->generarLineaTiempo($documentosVehiculos, $documentosConductores);
