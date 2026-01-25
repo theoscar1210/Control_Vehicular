@@ -103,6 +103,7 @@
                                 <thead class="table-success">
                                     <tr>
                                         <th>Tipo</th>
+                                        <th>Categoría</th>
                                         <th>Número</th>
                                         <th>Versión</th>
                                         <th>Fecha Registro</th>
@@ -113,6 +114,16 @@
                                     @forelse($documentos as $doc)
                                     <tr class="{{ $doc->activo ? 'fw-semibold' : 'text-muted' }}">
                                         <td>{{ $doc->tipo_documento }}</td>
+                                        <td>
+                                            @if($doc->categoria_licencia)
+                                                <span class="badge bg-info">{{ $doc->categoria_licencia }}</span>
+                                                @if($doc->categorias_adicionales)
+                                                    <small class="text-muted d-block">+{{ $doc->categorias_adicionales }}</small>
+                                                @endif
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $doc->numero_documento }}</td>
                                         <td>{{ $doc->version }}</td>
                                         <td>{{ optional($doc->fecha_registro)->format('Y-m-d H:i') }}</td>
@@ -120,7 +131,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted">No hay documentos registrados.</td>
+                                        <td colspan="6" class="text-center text-muted">No hay documentos registrados.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -153,13 +164,34 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Tipo</label>
-                                <select name="documento_tipo" class="form-select border-success-subtle">
+                                <select name="documento_tipo" id="documento_tipo_edit" class="form-select border-success-subtle">
                                     <option value="">-- Seleccionar --</option>
                                     <option value="Licencia Conducción" {{ old('documento_tipo') == 'Licencia Conducción' ? 'selected' : '' }}>Licencia Conducción</option>
                                     <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }}>EPS</option>
                                     <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }}>ARL</option>
                                     <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }}>Certificado Médico</option>
                                     <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3" id="seccion_categoria_edit" style="display: none;">
+                                <label class="form-label fw-semibold">Categoría de Licencia</label>
+                                <select name="categoria_licencia" id="categoria_licencia_edit" class="form-select border-success-subtle">
+                                    <option value="">-- Seleccionar --</option>
+                                    <optgroup label="Motocicletas">
+                                        <option value="A1" {{ old('categoria_licencia') == 'A1' ? 'selected' : '' }}>A1 - Motocicletas hasta 125cc</option>
+                                        <option value="A2" {{ old('categoria_licencia') == 'A2' ? 'selected' : '' }}>A2 - Motocicletas más de 125cc</option>
+                                    </optgroup>
+                                    <optgroup label="Vehículos Particulares">
+                                        <option value="B1" {{ old('categoria_licencia') == 'B1' ? 'selected' : '' }}>B1 - Automóviles, Camperos, Camionetas</option>
+                                        <option value="B2" {{ old('categoria_licencia') == 'B2' ? 'selected' : '' }}>B2 - Camiones, Buses</option>
+                                        <option value="B3" {{ old('categoria_licencia') == 'B3' ? 'selected' : '' }}>B3 - Vehículos Articulados</option>
+                                    </optgroup>
+                                    <optgroup label="Servicio Público">
+                                        <option value="C1" {{ old('categoria_licencia') == 'C1' ? 'selected' : '' }}>C1 - Taxi</option>
+                                        <option value="C2" {{ old('categoria_licencia') == 'C2' ? 'selected' : '' }}>C2 - Bus/Buseta Público</option>
+                                        <option value="C3" {{ old('categoria_licencia') == 'C3' ? 'selected' : '' }}>C3 - Carga Pública</option>
+                                    </optgroup>
                                 </select>
                             </div>
 
@@ -194,4 +226,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoDocSelect = document.getElementById('documento_tipo_edit');
+        const seccionCategoria = document.getElementById('seccion_categoria_edit');
+
+        function toggleCategoriaLicencia() {
+            if (tipoDocSelect.value === 'Licencia Conducción') {
+                seccionCategoria.style.display = 'block';
+            } else {
+                seccionCategoria.style.display = 'none';
+            }
+        }
+
+        tipoDocSelect.addEventListener('change', toggleCategoriaLicencia);
+        toggleCategoriaLicencia(); // Initial check
+    });
+</script>
 @endsection

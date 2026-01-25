@@ -122,12 +122,26 @@ $sinPadding = true;
                     @php
                         $esExentoTecno = false;
                         $fechaPrimeraRevFicha = null;
+                        $esTarjetaPropiedad = ($tipo === 'Tarjeta Propiedad');
+
                         if ($tipo === 'Tecnomecanica' && !$info['documento']) {
                             $requiereTecnoFicha = $vehiculo->requiereTecnomecanica();
                             $fechaPrimeraRevFicha = $vehiculo->fechaPrimeraTecnomecanica();
                             $esExentoTecno = $vehiculo->fecha_matricula && !$requiereTecnoFicha;
                         }
-                        $claseCard = $esExentoTecno ? 'success' : $info['clase'];
+
+                        // Tarjeta de Propiedad no tiene vencimiento - siempre verde si existe
+                        if ($esTarjetaPropiedad && $info['documento']) {
+                            $claseCard = 'success';
+                        } else {
+                            $claseCard = $esExentoTecno ? 'success' : $info['clase'];
+                        }
+
+                        // Calcular días restantes como entero
+                        $diasRestantesFicha = null;
+                        if ($info['documento'] && $info['documento']->fecha_vencimiento && !$esTarjetaPropiedad) {
+                            $diasRestantesFicha = (int) \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($info['documento']->fecha_vencimiento)->startOfDay(), false);
+                        }
                     @endphp
                     <div class="col-md-6 col-lg-4 mb-3">
                         <div class="card h-100 border-{{ $claseCard }} border-2">
@@ -162,12 +176,14 @@ $sinPadding = true;
                                         <td class="text-muted">Emisión:</td>
                                         <td>{{ \Carbon\Carbon::parse($info['documento']->fecha_emision)->format('d/m/Y') }}</td>
                                     </tr>
+                                    @if(!$esTarjetaPropiedad)
                                     <tr>
                                         <td class="text-muted">Vencimiento:</td>
                                         <td class="fw-bold text-{{ $info['clase'] }}">
                                             {{ \Carbon\Carbon::parse($info['documento']->fecha_vencimiento)->format('d/m/Y') }}
                                         </td>
                                     </tr>
+                                    @endif
                                     @if($info['documento']->entidad_emisora)
                                     <tr>
                                         <td class="text-muted">Entidad:</td>
@@ -176,9 +192,25 @@ $sinPadding = true;
                                     @endif
                                 </table>
                                 <div class="mt-2">
-                                    <span class="badge bg-{{ $info['clase'] }}">
-                                        {{ $info['mensaje'] }}
+                                    @if($esTarjetaPropiedad)
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-infinity me-1"></i>Sin vencimiento
                                     </span>
+                                    @else
+                                    <span class="badge bg-{{ $info['clase'] }}">
+                                        @if($diasRestantesFicha !== null)
+                                            @if($diasRestantesFicha < 0)
+                                                Vencido hace {{ abs($diasRestantesFicha) }} días
+                                            @elseif($diasRestantesFicha == 0)
+                                                Vence hoy
+                                            @else
+                                                {{ $diasRestantesFicha }} días restantes
+                                            @endif
+                                        @else
+                                            {{ $info['mensaje'] }}
+                                        @endif
+                                    </span>
+                                    @endif
                                 </div>
                                 @elseif($esExentoTecno)
                                 {{-- Vehículo Nuevo - Exención por tiempo --}}

@@ -187,6 +187,7 @@ class ConductorController extends Controller
             'documento_numero' => 'nullable|string|max:100',
             'documento_fecha_emision' => 'nullable|date',
             'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',
+            'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
         ];
 
         $validated = $request->validate($rules);
@@ -233,7 +234,7 @@ class ConductorController extends Controller
                 // Actualizar documento existente
                 $doc = DocumentoConductor::find($validated['documento_id']);
                 if ($doc && $doc->id_conductor == $conductor->id_conductor) {
-                    $doc->update([
+                    $updateData = [
                         'tipo_documento' => $validated['documento_tipo'] ?? $doc->tipo_documento,
                         'numero_documento' => $validated['documento_numero'] ?? $doc->numero_documento,
                         'fecha_emision' => $validated['documento_fecha_emision'] ?? $doc->fecha_emision,
@@ -241,7 +242,12 @@ class ConductorController extends Controller
                         'estado' => ($doc->fecha_vencimiento && now()->greaterThan($doc->fecha_vencimiento))
                             ? 'VENCIDO'
                             : 'VIGENTE',
-                    ]);
+                    ];
+                    // Add category if document is a license
+                    if (($validated['documento_tipo'] ?? $doc->tipo_documento) === 'Licencia Conducción' && !empty($validated['categoria_licencia'])) {
+                        $updateData['categoria_licencia'] = $validated['categoria_licencia'];
+                    }
+                    $doc->update($updateData);
                 }
             } elseif ($action === 'create_version') {
                 // Crear nueva versión del documento (sin archivo)
@@ -254,7 +260,7 @@ class ConductorController extends Controller
 
                 $newVersion = $last ? $last->version + 1 : 1;
 
-                $newDoc = DocumentoConductor::create([
+                $newDocData = [
                     'id_conductor' => $conductor->id_conductor,
                     'tipo_documento' => $tipo,
                     'numero_documento' => $validated['documento_numero'] ?? null,
@@ -267,7 +273,12 @@ class ConductorController extends Controller
                     'creado_por' => Auth::id(),
                     'fecha_registro' => now(),
                     'version' => $newVersion,
-                ]);
+                ];
+                // Add category if document is a license
+                if ($tipo === 'Licencia Conducción' && !empty($validated['categoria_licencia'])) {
+                    $newDocData['categoria_licencia'] = $validated['categoria_licencia'];
+                }
+                $newDoc = DocumentoConductor::create($newDocData);
 
                 // Marcar anterior como histórico
                 if ($last) {
