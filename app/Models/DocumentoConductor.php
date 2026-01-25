@@ -140,15 +140,53 @@ class DocumentoConductor extends Model
     }
 
     /**
-     * Mutador: normaliza el estado antes de guardar
+     * Accessor: calcula el estado dinámicamente basado en fecha de vencimiento
+     * Esto asegura que el estado siempre esté actualizado
      */
-    public function setEstadoAttribute($value)
+    public function getEstadoAttribute(): string
     {
-        $value = strtoupper(str_replace(' ', '_', (string) $value));
-        if (!in_array($value, self::ESTADOS)) {
-            $value = 'VIGENTE';
+        // Si no está activo, está reemplazado
+        if (!$this->activo) {
+            return 'REEMPLAZADO';
         }
-        $this->attributes['estado'] = $value;
+
+        // Si no tiene fecha de vencimiento, está vigente
+        if (!$this->fecha_vencimiento) {
+            return 'VIGENTE';
+        }
+
+        $hoy = Carbon::today();
+        $vence = Carbon::parse($this->fecha_vencimiento)->startOfDay();
+        $dias = (int) $hoy->diffInDays($vence, false);
+
+        // Estado basado en días: VENCIDO si < 0, POR_VENCER si <= 20, VIGENTE si > 20
+        return match (true) {
+            $dias < 0 => 'VENCIDO',
+            $dias <= 20 => 'POR_VENCER',
+            default => 'VIGENTE',
+        };
+    }
+
+    /**
+     * Obtener estado legible para mostrar en la interfaz
+     */
+    public function getEstadoLegibleAttribute(): string
+    {
+        return str_replace('_', ' ', $this->estado);
+    }
+
+    /**
+     * Obtener clase CSS de Bootstrap para el badge del estado
+     */
+    public function getClaseBadgeAttribute(): string
+    {
+        return match ($this->estado) {
+            'VIGENTE' => 'success',
+            'POR_VENCER' => 'warning',
+            'VENCIDO' => 'danger',
+            'REEMPLAZADO' => 'secondary',
+            default => 'secondary',
+        };
     }
 
     /**
@@ -203,12 +241,16 @@ class DocumentoConductor extends Model
 
     /**
      * Calcular días restantes hasta el vencimiento
+     * Usa startOfDay() para evitar decimales y asegurar consistencia
      */
     public function diasRestantes(): int
     {
         if (!$this->fecha_vencimiento) {
             return 0;
         }
-        return Carbon::now()->diffInDays(Carbon::parse($this->fecha_vencimiento), false);
+        return (int) Carbon::today()->diffInDays(
+            Carbon::parse($this->fecha_vencimiento)->startOfDay(),
+            false
+        );
     }
 }
