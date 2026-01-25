@@ -297,9 +297,7 @@ $sinPadding = true;
                                         <i class="fas fa-{{ $evento['tipo'] == 'vehiculo' ? 'car' : 'user' }} me-1"></i>
                                         {{ $evento['referencia'] }}
                                     </span>
-                                    <small class="text-{{ $evento['estado'] == 'VENCIDO' ? 'danger' : 'warning' }} fw-bold">
-                                        {{ $evento['dias'] >= 0 ? $evento['dias'] . 'd' : 'Vencido' }}
-                                    </small>
+
                                 </div>
                                 <small class="text-muted d-block">{{ $evento['documento'] }}</small>
                                 <small class="fw-medium">{{ \Carbon\Carbon::parse($evento['fecha'])->format('d/m/Y') }}</small>

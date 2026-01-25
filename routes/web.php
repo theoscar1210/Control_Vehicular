@@ -30,7 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | RUTAS PROTEGIDAS (REQUIEREN AUTENTICACIÓN)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'nocache'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------

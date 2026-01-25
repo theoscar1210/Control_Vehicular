@@ -110,6 +110,7 @@
 <body>
     <div class="container">
         <div class="header">
+            <img src="{{ url('imagenes/Logo_navbar.png') }}" alt="Logo" style="max-height: 60px; margin-bottom: 10px;">
             <h1>Resumen Semanal de Alertas</h1>
             <p style="margin: 5px 0 0 0;">Control Vehicular - Club Campestre Altos del Chicalá</p>
         </div>

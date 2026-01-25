@@ -221,18 +221,22 @@ $sinPadding = true;
                     </div>
                 </div>
 
-                {{-- Tarjeta de Propiedad --}}
+                {{-- Tarjeta de Propiedad (No tiene vencimiento) --}}
+                @php
+                    $tarjetaPropiedad = $estadosDocumentos['vehiculo_Tarjeta Propiedad'] ?? null;
+                    $tieneTarjeta = $tarjetaPropiedad && ($tarjetaPropiedad['estado'] ?? 'SIN_REGISTRO') !== 'SIN_REGISTRO';
+                @endphp
                 <div class="col-6 col-md-3 mb-3">
-                    <div class="card h-100 border-{{ $estadosDocumentos['vehiculo_Tarjeta Propiedad']['clase'] ?? 'secondary' }}">
+                    <div class="card h-100 border-{{ $tieneTarjeta ? 'success' : 'secondary' }}">
                         <div class="card-body text-center py-3">
-                            <i class="fas fa-credit-card fa-2x mb-2 text-{{ $estadosDocumentos['vehiculo_Tarjeta Propiedad']['clase'] ?? 'secondary' }}"></i>
+                            <i class="fas fa-credit-card fa-2x mb-2 text-{{ $tieneTarjeta ? 'success' : 'secondary' }}"></i>
                             <h6 class="card-title mb-1">Tarjeta Propiedad</h6>
-                            <span class="badge bg-{{ $estadosDocumentos['vehiculo_Tarjeta Propiedad']['clase'] ?? 'secondary' }}">
-                                {{ $estadosDocumentos['vehiculo_Tarjeta Propiedad']['mensaje'] ?? 'Sin registro' }}
+                            <span class="badge bg-{{ $tieneTarjeta ? 'success' : 'secondary' }}">
+                                {{ $tieneTarjeta ? 'Registrada' : 'Sin registro' }}
                             </span>
-                            @if(isset($estadosDocumentos['vehiculo_Tarjeta Propiedad']['fecha']))
-                            <p class="small text-muted mb-0 mt-1">
-                                Vence: {{ $estadosDocumentos['vehiculo_Tarjeta Propiedad']['fecha'] }}
+                            @if($tieneTarjeta)
+                            <p class="small text-success mb-0 mt-1">
+                                <i class="fas fa-infinity me-1"></i>Sin vencimiento
                             </p>
                             @endif
                         </div>
