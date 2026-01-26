@@ -53,4 +53,51 @@ class Alerta extends Model
     {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
+
+    /**
+     * Relacion: usuarios que han leido esta alerta
+     */
+    public function usuariosQueLeyeron()
+    {
+        return $this->belongsToMany(Usuario::class, 'alerta_usuario_leida', 'id_alerta', 'id_usuario')
+            ->withPivot('fecha_lectura');
+    }
+
+    /**
+     * Verificar si un usuario especifico ha leido esta alerta
+     */
+    public function leidaPorUsuario($userId): bool
+    {
+        return $this->usuariosQueLeyeron()->where('id_usuario', $userId)->exists();
+    }
+
+    /**
+     * Marcar como leida para un usuario especifico
+     */
+    public function marcarLeidaPara($userId): void
+    {
+        if (!$this->leidaPorUsuario($userId)) {
+            $this->usuariosQueLeyeron()->attach($userId, ['fecha_lectura' => now()]);
+        }
+    }
+
+    /**
+     * Scope para obtener alertas no leidas por un usuario
+     */
+    public function scopeNoLeidasPor($query, $userId)
+    {
+        return $query->whereDoesntHave('usuariosQueLeyeron', function ($q) use ($userId) {
+            $q->where('id_usuario', $userId);
+        });
+    }
+
+    /**
+     * Scope para obtener alertas leidas por un usuario
+     */
+    public function scopeLeidasPor($query, $userId)
+    {
+        return $query->whereHas('usuariosQueLeyeron', function ($q) use ($userId) {
+            $q->where('id_usuario', $userId);
+        });
+    }
 }

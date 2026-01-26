@@ -20,9 +20,17 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-
         // Aquí asumimos que en users table hay columna 'usuario' o usamos email.
         $loginField = filter_var($request->usuario, FILTER_VALIDATE_EMAIL) ? 'email' : 'usuario';
+
+        // Verificar si el usuario existe y está activo antes de intentar login
+        $usuario = \App\Models\Usuario::where($loginField, $request->usuario)->first();
+
+        if ($usuario && !$usuario->activo) {
+            return back()->withErrors([
+                'usuario' => 'Tu cuenta está desactivada. Contacta al administrador.',
+            ])->withInput($request->only('usuario'));
+        }
 
         if (Auth::attempt([$loginField => $request->usuario, 'password' => $request->password], $request->filled('remember'))) {
             $request->session()->regenerate();

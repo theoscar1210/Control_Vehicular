@@ -25,7 +25,10 @@
                 <i class="fas fa-bell me-2"></i>Centro de Alertas
             </h5>
             @php
-                $alertasNoLeidas = $alertas->where('leida', 0)->count();
+                // Contar alertas no leidas por el usuario actual
+                $alertasNoLeidas = $alertas->filter(function($a) use ($userId) {
+                    return !$a->leidaPorUsuario($userId);
+                })->count();
             @endphp
             @if($alertasNoLeidas > 0)
             <form method="POST" action="{{ route('alertas.mark_all_read') }}" class="d-inline">
@@ -54,7 +57,8 @@
                                 'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                             ];
                             $config = $iconos[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
-                            $esNoLeida = !$alerta->leida;
+                            // Verificar si el usuario actual ha leido esta alerta
+                            $esNoLeida = !$alerta->leidaPorUsuario($userId);
 
                             // Obtener placa y conductor
                             $placaAlerta = null;

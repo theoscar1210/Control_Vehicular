@@ -190,15 +190,18 @@ $sinPadding = true;
                             <div class="col-md-6 mb-3">
                                 <label for="fecha_matricula" class="form-label fw-semibold">
                                     Fecha de Matrícula
+                                    <i class="fa-solid fa-lock text-muted ms-1" title="Campo no editable"></i>
                                 </label>
                                 <input type="date"
-                                    class="form-control @error('fecha_matricula') is-invalid @enderror"
+                                    class="form-control"
                                     id="fecha_matricula"
-                                    name="fecha_matricula"
-                                    value="{{ old('fecha_matricula', $vehiculo->fecha_matricula) }}">
-                                @error('fecha_matricula')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                    value="{{ $vehiculo->fecha_matricula ? \Carbon\Carbon::parse($vehiculo->fecha_matricula)->format('Y-m-d') : '' }}"
+                                    readonly
+                                    style="background-color: #e9ecef; cursor: not-allowed;">
+                                <small class="text-muted">
+                                    <i class="fa-solid fa-info-circle me-1"></i>
+                                    Este campo no es editable por el sistema
+                                </small>
                             </div>
                         </div>
 

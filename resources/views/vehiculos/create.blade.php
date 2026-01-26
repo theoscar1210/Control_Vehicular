@@ -135,16 +135,35 @@ $vehiculoId = request()->query('vehiculo');
             if ($propietario) { $progreso = 33; }
 
             if ($vehiculoId) {
-            $progreso = 66;
-            $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
+                $progreso = 66;
+                $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
 
-            if ($vehiculo
-            && $vehiculo->documentos()
-            ->activos()
-            ->whereIn('tipo_documento', ['SOAT','Tecnomecanica'])
-            ->count() === 2) {
-            $progreso = 100;
-            }
+                if ($vehiculo) {
+                    $tieneSoat = $vehiculo->documentos()
+                        ->activos()
+                        ->where('tipo_documento', 'SOAT')
+                        ->exists();
+
+                    $tieneTecno = $vehiculo->documentos()
+                        ->activos()
+                        ->where('tipo_documento', 'Tecnomecanica')
+                        ->exists();
+
+                    // Si el vehículo está exento de tecnomecánica (nuevo), solo requiere SOAT
+                    $requiereTecno = $vehiculo->requiereTecnomecanica();
+
+                    if ($requiereTecno) {
+                        // Vehículo normal: requiere SOAT + Tecnomecánica
+                        if ($tieneSoat && $tieneTecno) {
+                            $progreso = 100;
+                        }
+                    } else {
+                        // Vehículo nuevo/exento: solo requiere SOAT
+                        if ($tieneSoat) {
+                            $progreso = 100;
+                        }
+                    }
+                }
             }
             @endphp
 
@@ -157,7 +176,11 @@ $vehiculoId = request()->query('vehiculo');
 
         <small class="text-muted">
             @if($progreso === 100)
-            ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos registrados
+                @if(isset($requiereTecno) && !$requiereTecno)
+                ✓ Propietario creado | ✓ Vehículo creado | ✓ SOAT registrado (Exento de Tecnomecánica)
+                @else
+                ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos registrados
+                @endif
             @elseif($vehiculoId)
             ✓ Propietario creado | ✓ Vehículo creado | Registra documentos
             @elseif($propietario)
@@ -641,7 +664,7 @@ $vehiculoId = request()->query('vehiculo');
                                 <strong>Días restantes para primera revisión:</strong>
                             </p>
                             <h3 class="text-success">
-                                {{ now()->diffInDays($fechaPrimeraRevision) }} días
+                                {{ (int) now()->diffInDays($fechaPrimeraRevision) }} días
                             </h3>
                             <p class="text-muted small">
                                 Fecha de matrícula: {{ $fechaMatricula->format('d/m/Y') }}

@@ -33,7 +33,32 @@ class ConductorController extends Controller
 
         $conductores = $query->paginate(15)->withQueryString();
 
-        return view('conductores.index', compact('conductores'));
+        // Contar conductores eliminados para mostrar badge
+        $eliminadosCount = Conductor::onlyTrashed()->count();
+
+        return view('conductores.index', compact('conductores', 'eliminadosCount'));
+    }
+
+    /**
+     * Mostrar conductores eliminados (papelera)
+     */
+    public function trashed(Request $request)
+    {
+        $query = Conductor::onlyTrashed();
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('apellido', 'like', "%{$search}%")
+                    ->orWhere('identificacion', 'like', "%{$search}%");
+            });
+        }
+
+        $conductores = $query->orderBy('deleted_at', 'desc')->paginate(15);
+
+        return view('conductores.trashed', compact('conductores'));
     }
 
     /**

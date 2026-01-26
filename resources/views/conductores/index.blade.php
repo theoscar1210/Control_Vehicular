@@ -27,11 +27,28 @@ $sinPadding = true;
         </div>
 
         @if (Auth::user()->rol === 'ADMIN' || Auth::user()->rol === 'SST')
-        <a href="{{ route('conductores.create') }}"
-            class="btn px-4 py-2 shadow-sm"
-            style="background-color:#5B8238;color:white;border-radius:12px;">
-            <i class="fa-solid fa-plus-circle me-2"></i>Nuevo Conductor
-        </a>
+        <div class="d-flex gap-2">
+            {{-- Boton Papelera --}}
+            @if(isset($eliminadosCount) && $eliminadosCount > 0)
+            <a href="{{ route('conductores.trashed') }}"
+                class="btn btn-outline-danger px-3 py-2 shadow-sm position-relative"
+                style="border-radius:12px;"
+                data-bs-toggle="tooltip"
+                title="Ver conductores eliminados">
+                <i class="fa-solid fa-trash-can me-1"></i>Papelera
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ $eliminadosCount }}
+                </span>
+            </a>
+            @endif
+
+            {{-- Boton Nuevo --}}
+            <a href="{{ route('conductores.create') }}"
+                class="btn px-4 py-2 shadow-sm"
+                style="background-color:#5B8238;color:white;border-radius:12px;">
+                <i class="fa-solid fa-plus-circle me-2"></i>Nuevo Conductor
+            </a>
+        </div>
         @endif
     </div>
 
