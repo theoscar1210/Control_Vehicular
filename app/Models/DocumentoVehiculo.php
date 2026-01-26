@@ -160,18 +160,40 @@ class DocumentoVehiculo extends Model
 
     /**
      * Devuelve el color de la clase badge correspondiente al estado del documento vehículo
+     * Incluye nivel crítico (0-5 días) que muestra rojo en lugar de amarillo
+     *
+     * Colores:
+     * - danger (rojo): VENCIDO o 0-5 días para vencer (crítico)
+     * - warning (amarillo): 6-20 días para vencer
+     * - success (verde): más de 20 días para vencer
+     * - secondary (gris): reemplazado o sin fecha
      *
      * @return string success|warning|danger|secondary
      */
     public function getClaseBadgeAttribute(): string
     {
-        return match ($this->estado) {
-            'VIGENTE' => 'success',
-            'POR_VENCER' => 'warning',
-            'VENCIDO' => 'danger',
-            'REEMPLAZADO' => 'secondary',
-            default => 'secondary',
-        };
+        if (!$this->activo) {
+            return 'secondary';
+        }
+
+        if (!$this->fecha_vencimiento) {
+            return 'success';
+        }
+
+        $dias = $this->diasRestantes();
+
+        // Rojo: vencido o crítico (0-5 días)
+        if ($dias === null || $dias < 0 || $dias <= 5) {
+            return 'danger';
+        }
+
+        // Amarillo: por vencer (6-20 días)
+        if ($dias <= 20) {
+            return 'warning';
+        }
+
+        // Verde: vigente (más de 20 días)
+        return 'success';
     }
 
     public function getIcono(): string

@@ -110,7 +110,6 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ url('imagenes/Logo_navbar.png') }}" alt="Logo" style="max-height: 60px; margin-bottom: 10px;">
             <h1>Resumen Semanal de Alertas</h1>
             <p style="margin: 5px 0 0 0;">Control Vehicular - Club Campestre Altos del Chicalá</p>
         </div>
@@ -190,7 +189,7 @@
 
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
                 <p style="font-size: 14px; color: #666;">
-                    <strong>Nota:</strong> Este correo se envía automáticamente cada lunes a las 01:00 AM.
+                    <strong>Nota:</strong> Este correo se envía automáticamente cada lunes a las 04:00 AM.
                     Para más detalles, ingresa al sistema de Control Vehicular.
                 </p>
             </div>

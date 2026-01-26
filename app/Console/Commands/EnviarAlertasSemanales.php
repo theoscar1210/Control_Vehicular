@@ -33,9 +33,9 @@ class EnviarAlertasSemanales extends Command
 
         // Obtener todas las alertas no leídas con relaciones
         $alertas = Alerta::with([
-                'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor'
-            ])
+            'documentoVehiculo.vehiculo.conductor',
+            'documentoConductor.conductor'
+        ])
             ->where('leida', 0)
             ->whereNull('deleted_at')
             ->orderBy('tipo_vencimiento')
@@ -50,8 +50,8 @@ class EnviarAlertasSemanales extends Command
         // Agrupar alertas por tipo de vencimiento
         $alertasPorTipo = $alertas->groupBy('tipo_vencimiento');
 
-        // Obtener usuarios ADMIN y SST activos para enviar correos
-        $destinatarios = Usuario::whereIn('rol', ['ADMIN', 'SST'])
+        // Obtener usuarios ADMIN y SST PORTERIA activos para enviar correos
+        $destinatarios = Usuario::whereIn('rol', ['ADMIN', 'SST', 'PORTERIA'])
             ->where('activo', 1)
             ->whereNotNull('email')
             ->get();

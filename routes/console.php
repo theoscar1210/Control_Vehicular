@@ -14,15 +14,15 @@ Artisan::command('inspire', function () {
 |--------------------------------------------------------------------------
 */
 
-// Verificar vencimiento de documentos (diariamente a las 6:00 AM)
+// Verificar vencimiento de documentos (diariamente a las 3:00 AM)
 Schedule::command('documentos:check-expirations')
-    ->dailyAt('06:00')
+    ->dailyAt('03:00')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/check-expirations.log'));
 
-// Enviar alertas semanales (lunes a las 8:00 AM)
+// Enviar alertas semanales (lunes a las 4:00 AM)
 Schedule::command('alertas:enviar-semanales')
-    ->weeklyOn(1, '08:00')
+    ->weeklyOn(1, '04:00')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/alertas-semanales.log'));
 

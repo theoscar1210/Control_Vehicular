@@ -127,7 +127,20 @@
                                         <td>{{ $doc->numero_documento }}</td>
                                         <td>{{ $doc->version }}</td>
                                         <td>{{ optional($doc->fecha_registro)->format('Y-m-d H:i') }}</td>
-                                        <td>{{ $doc->estado }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ $doc->clase_badge }}">
+                                                @if($doc->estado === 'VIGENTE')
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                @elseif($doc->estado === 'POR_VENCER')
+                                                <i class="bi bi-clock me-1"></i>
+                                                @elseif($doc->estado === 'VENCIDO')
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                @else
+                                                <i class="bi bi-arrow-repeat me-1"></i>
+                                                @endif
+                                                {{ $doc->estado_legible }}
+                                            </span>
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>
