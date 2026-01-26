@@ -80,4 +80,17 @@ class UserController extends Controller
         $usuario->delete();
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado.');
     }
+
+    /**
+     * Activa o desactiva un usuario.
+     */
+    public function toggleActivo($id)
+    {
+        $usuario = Usuario::findOrFail($id);
+        $usuario->activo = !$usuario->activo;
+        $usuario->save();
+
+        $estado = $usuario->activo ? 'activado' : 'desactivado';
+        return redirect()->route('usuarios.index')->with('success', "Usuario {$estado} correctamente.");
+    }
 }

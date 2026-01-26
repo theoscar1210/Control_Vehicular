@@ -39,6 +39,9 @@
                 <button type="button" id="btnEditar" class="btn btn-warning btn-sm" disabled>
                     <i class="fas fa-edit me-1"></i>Editar
                 </button>
+                <button type="button" id="btnToggleActivo" class="btn btn-info btn-sm" disabled>
+                    <i class="fas fa-power-off me-1"></i><span id="btnToggleTexto">Activar/Desactivar</span>
+                </button>
                 <button type="button" id="btnEliminar" class="btn btn-danger btn-sm" disabled>
                     <i class="fas fa-trash-alt me-1"></i>Eliminar
                 </button>
@@ -51,6 +54,12 @@
     <form id="formEliminar" method="POST" style="display: none;">
         @csrf
         @method('DELETE')
+    </form>
+
+    {{-- Formulario oculto para toggle activo --}}
+    <form id="formToggleActivo" method="POST" style="display: none;">
+        @csrf
+        @method('PATCH')
     </form>
 
     {{-- Tarjeta contenedora --}}
@@ -75,7 +84,7 @@
                     </thead>
                     <tbody class="table-usuarios-body">
                         @forelse($usuarios as $u)
-                        <tr class="fila-usuario" data-id="{{ $u->id_usuario }}" data-nombre="{{ $u->nombre }} {{ $u->apellido }}">
+                        <tr class="fila-usuario" data-id="{{ $u->id_usuario }}" data-nombre="{{ $u->nombre }} {{ $u->apellido }}" data-activo="{{ $u->activo ? '1' : '0' }}">
                             <td class="text-center">
                                 <input type="radio" name="usuario_seleccionado" value="{{ $u->id_usuario }}" class="form-check-input radio-usuario" style="cursor: pointer;">
                             </td>
@@ -163,14 +172,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const radios = document.querySelectorAll('.radio-usuario');
     const btnEditar = document.getElementById('btnEditar');
     const btnEliminar = document.getElementById('btnEliminar');
+    const btnToggleActivo = document.getElementById('btnToggleActivo');
+    const btnToggleTexto = document.getElementById('btnToggleTexto');
     const seleccionInfo = document.getElementById('seleccionInfo');
     const formEliminar = document.getElementById('formEliminar');
+    const formToggleActivo = document.getElementById('formToggleActivo');
     const modalEliminar = new bootstrap.Modal(document.getElementById('modalEliminar'));
     const nombreUsuarioEliminar = document.getElementById('nombreUsuarioEliminar');
     const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
 
     let usuarioSeleccionado = null;
     let nombreSeleccionado = '';
+    let usuarioActivo = false;
 
     // Seleccionar fila completa al hacer clic
     document.querySelectorAll('.fila-usuario').forEach(function(fila) {
@@ -191,10 +204,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 usuarioSeleccionado = this.value;
                 const fila = this.closest('.fila-usuario');
                 nombreSeleccionado = fila.dataset.nombre;
+                usuarioActivo = fila.dataset.activo === '1';
 
                 // Habilitar botones
                 btnEditar.disabled = false;
                 btnEliminar.disabled = false;
+                btnToggleActivo.disabled = false;
+
+                // Actualizar texto del botón toggle
+                if (usuarioActivo) {
+                    btnToggleTexto.textContent = 'Desactivar';
+                    btnToggleActivo.classList.remove('btn-success');
+                    btnToggleActivo.classList.add('btn-secondary');
+                } else {
+                    btnToggleTexto.textContent = 'Activar';
+                    btnToggleActivo.classList.remove('btn-secondary');
+                    btnToggleActivo.classList.add('btn-success');
+                }
 
                 // Mostrar info de selección
                 seleccionInfo.innerHTML = '<i class="fas fa-user-check text-success me-1"></i>Seleccionado: <strong>' + nombreSeleccionado + '</strong>';
@@ -210,6 +236,14 @@ document.addEventListener('DOMContentLoaded', function() {
     btnEditar.addEventListener('click', function() {
         if (usuarioSeleccionado) {
             window.location.href = '{{ url("usuarios") }}/' + usuarioSeleccionado + '/edit';
+        }
+    });
+
+    // Botón Toggle Activo
+    btnToggleActivo.addEventListener('click', function() {
+        if (usuarioSeleccionado) {
+            formToggleActivo.action = '{{ url("usuarios") }}/' + usuarioSeleccionado + '/toggle-activo';
+            formToggleActivo.submit();
         }
     });
 

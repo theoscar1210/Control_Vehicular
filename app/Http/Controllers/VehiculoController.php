@@ -35,7 +35,32 @@ class VehiculoController extends Controller
 
         $vehiculos = $query->paginate(15);
 
-        return view('vehiculos.index', compact('vehiculos'));
+        // Contar vehículos eliminados para mostrar badge
+        $eliminadosCount = Vehiculo::onlyTrashed()->count();
+
+        return view('vehiculos.index', compact('vehiculos', 'eliminadosCount'));
+    }
+
+    /**
+     * Mostrar vehículos eliminados (papelera)
+     */
+    public function trashed(Request $request)
+    {
+        $query = Vehiculo::onlyTrashed()->with(['propietario']);
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('placa', 'like', "%{$search}%")
+                    ->orWhere('marca', 'like', "%{$search}%")
+                    ->orWhere('modelo', 'like', "%{$search}%");
+            });
+        }
+
+        $vehiculos = $query->orderBy('deleted_at', 'desc')->paginate(15);
+
+        return view('vehiculos.trashed', compact('vehiculos'));
     }
 
     /**

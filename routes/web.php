@@ -84,10 +84,12 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::prefix('vehiculos')->name('vehiculos.')->group(function () {
             Route::get('/', [VehiculoController::class, 'index'])->name('index');
             Route::get('/create', [VehiculoController::class, 'create'])->name('create');
+            Route::get('/eliminados', [VehiculoController::class, 'trashed'])->name('trashed');
             Route::post('/', [VehiculoController::class, 'store'])->name('store');
             Route::get('/{id}/edit', [VehiculoController::class, 'edit'])->name('edit');
             Route::put('/{id}', [VehiculoController::class, 'update'])->name('update');
             Route::delete('/{id}', [VehiculoController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [VehiculoController::class, 'restore'])->name('restore');
 
             /*
             |--------------------------------------------------------------------------
@@ -118,6 +120,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         Route::prefix('conductores')->name('conductores.')->group(function () {
             Route::get('/', [ConductorController::class, 'index'])->name('index');
             Route::get('/create', [ConductorController::class, 'create'])->name('create');
+            Route::get('/eliminados', [ConductorController::class, 'trashed'])->name('trashed');
             Route::post('/', [ConductorController::class, 'store'])->name('store');
             Route::get('/{conductor}/edit', [ConductorController::class, 'edit'])->name('edit');
             Route::put('/{conductor}', [ConductorController::class, 'update'])->name('update');
@@ -204,6 +207,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::resource('usuarios', UserController::class)->except(['show']);
+        Route::patch('usuarios/{usuario}/toggle-activo', [UserController::class, 'toggleActivo'])->name('usuarios.toggle-activo');
 
         /*
         |--------------------------------------------------------------------------

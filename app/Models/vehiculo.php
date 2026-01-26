@@ -43,24 +43,26 @@ class Vehiculo extends Model
 
     /**
      * Hook de Eloquent: al eliminar un vehículo
-     * - Si es soft delete, se eliminan (soft) documentos y propietario asociado
-     * - Si es force delete, se eliminan físicamente
+     * - Si es soft delete, se desactivan los documentos asociados (activo = false)
+     * - Si es force delete, se eliminan físicamente los documentos
      */
     protected static function booted()
     {
         static::deleting(function ($veh) {
             if (!$veh->isForceDeleting()) {
-                // Soft delete documentos del vehículo
-                $veh->documentos()->delete();
-
-                //  En vez de borrar propietario, desasignar
-                if ($veh->propietario) {
-                    $veh->forceFill(['id_propietario' => null])->saveQuietly();
-                }
+                // Desactivar documentos del vehículo (no usa SoftDeletes)
+                $veh->documentos()->update(['activo' => false]);
             } else {
-                // Force delete documentos y propietario
-                $veh->documentos()->withTrashed()->forceDelete();
+                // Force delete: eliminar documentos físicamente
+                $veh->documentos()->delete();
             }
+        });
+
+        // Al restaurar, reactivar documentos
+        static::restoring(function ($veh) {
+            // Reactivar todos los documentos del vehículo
+            \App\Models\DocumentoVehiculo::where('id_vehiculo', $veh->id_vehiculo)
+                ->update(['activo' => true]);
         });
     }
     /*************  Primera Tecnomecánica *************/

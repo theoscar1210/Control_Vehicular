@@ -40,7 +40,9 @@
                                 <i class="fa-solid fa-plus me-2 text-muted"></i>Nuevo Vehículo
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('conductores.index') }}">
                                 <i class="fa-solid fa-id-card-clip me-2 text-muted"></i>Listado de Conductores
@@ -58,29 +60,29 @@
 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('documentos.consultar') }}">Consultas y Reportes</a>
+                    <a class="nav-link" href="{{ route('reportes.centro') }}">Consultas y Reportes</a>
                 </li>
             </ul>
         </div>
 
         @php
-            $alertasMenuEspecial = \App\Models\Alerta::with([
-                    'documentoVehiculo.vehiculo.conductor',
-                    'documentoConductor.conductor'
-                ])
-                ->where('leida', 0)
-                ->whereNull('deleted_at')
-                ->where(function($q){
-                    $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
-                })
-                ->orderByDesc('fecha_alerta')
-                ->take(5)
-                ->get();
-            $totalAlertasNoLeidasEspecial = \App\Models\Alerta::where('leida',0)
-                ->whereNull('deleted_at')
-                ->where(function($q){
-                    $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
-                })->count();
+        $alertasMenuEspecial = \App\Models\Alerta::with([
+        'documentoVehiculo.vehiculo.conductor',
+        'documentoConductor.conductor'
+        ])
+        ->where('leida', 0)
+        ->whereNull('deleted_at')
+        ->where(function($q){
+        $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
+        })
+        ->orderByDesc('fecha_alerta')
+        ->take(5)
+        ->get();
+        $totalAlertasNoLeidasEspecial = \App\Models\Alerta::where('leida',0)
+        ->whereNull('deleted_at')
+        ->where(function($q){
+        $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
+        })->count();
         @endphp
         <ul class="navbar-nav ms-auto align-items-center">
             {{-- Notificaciones con Dropdown --}}
@@ -101,69 +103,71 @@
                         @endif
                     </li>
                     @if($alertasMenuEspecial->isEmpty())
-                        <li class="text-center py-4">
-                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                            <p class="text-muted mb-0 small">No hay alertas pendientes</p>
-                        </li>
+                    <li class="text-center py-4">
+                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                        <p class="text-muted mb-0 small">No hay alertas pendientes</p>
+                    </li>
                     @else
-                        @foreach($alertasMenuEspecial as $alerta)
-                            @php
-                                $iconosMenuE = [
-                                    'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
-                                    'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
-                                    'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
-                                    'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
-                                ];
-                                $configMenuE = $iconosMenuE[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
+                    @foreach($alertasMenuEspecial as $alerta)
+                    @php
+                    $iconosMenuE = [
+                    'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
+                    'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
+                    'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
+                    'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
+                    ];
+                    $configMenuE = $iconosMenuE[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
 
-                                // Obtener placa y conductor
-                                $placaMenuE = null;
-                                $conductorMenuE = null;
-                                if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
-                                    $placaMenuE = $alerta->documentoVehiculo->vehiculo->placa;
-                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                                        $conductorMenuE = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
-                                    }
-                                }
-                                if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
-                                    $conductorMenuE = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
-                                }
-                            @endphp
-                            <li>
-                                <div class="dropdown-item py-2 border-bottom">
-                                    <div class="d-flex align-items-start">
-                                        <div class="me-2">
-                                            <i class="{{ $configMenuE['icon'] }} text-{{ $configMenuE['color'] }}"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between">
-                                                <strong class="small">{{ $alerta->tipo_vencimiento }}</strong>
-                                                <small class="text-muted">{{ optional($alerta->fecha_alerta)->format('d/m') }}</small>
-                                            </div>
-                                            @if($placaMenuE || $conductorMenuE)
-                                            <div class="small mb-1">
-                                                @if($placaMenuE)
-                                                <span class="badge bg-dark me-1"><i class="fas fa-car me-1"></i>{{ $placaMenuE }}</span>
-                                                @endif
-                                                @if($conductorMenuE)
-                                                <span class="text-primary"><i class="fas fa-user me-1"></i>{{ Str::limit($conductorMenuE, 20) }}</span>
-                                                @endif
-                                            </div>
-                                            @endif
-                                            <p class="mb-1 small text-muted text-truncate" style="max-width: 250px;">{{ $alerta->mensaje }}</p>
-                                            <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-link text-success p-0 small">
-                                                    <i class="fas fa-check me-1"></i>Marcar leída
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                    // Obtener placa y conductor
+                    $placaMenuE = null;
+                    $conductorMenuE = null;
+                    if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
+                    $placaMenuE = $alerta->documentoVehiculo->vehiculo->placa;
+                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                    $conductorMenuE = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                    }
+                    }
+                    if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
+                    $conductorMenuE = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                    }
+                    @endphp
+                    <li>
+                        <div class="dropdown-item py-2 border-bottom">
+                            <div class="d-flex align-items-start">
+                                <div class="me-2">
+                                    <i class="{{ $configMenuE['icon'] }} text-{{ $configMenuE['color'] }}"></i>
                                 </div>
-                            </li>
-                        @endforeach
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong class="small">{{ $alerta->tipo_vencimiento }}</strong>
+                                        <small class="text-muted">{{ optional($alerta->fecha_alerta)->format('d/m') }}</small>
+                                    </div>
+                                    @if($placaMenuE || $conductorMenuE)
+                                    <div class="small mb-1">
+                                        @if($placaMenuE)
+                                        <span class="badge bg-dark me-1"><i class="fas fa-car me-1"></i>{{ $placaMenuE }}</span>
+                                        @endif
+                                        @if($conductorMenuE)
+                                        <span class="text-primary"><i class="fas fa-user me-1"></i>{{ Str::limit($conductorMenuE, 20) }}</span>
+                                        @endif
+                                    </div>
+                                    @endif
+                                    <p class="mb-1 small text-muted text-truncate" style="max-width: 250px;">{{ $alerta->mensaje }}</p>
+                                    <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-link text-success p-0 small">
+                                            <i class="fas fa-check me-1"></i>Marcar leída
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @endforeach
                     @endif
-                    <li><hr class="dropdown-divider my-0"></li>
+                    <li>
+                        <hr class="dropdown-divider my-0">
+                    </li>
                     <li class="text-center py-2">
                         <a href="{{ route('alertas.index') }}" class="text-decoration-none small" style="color: #5B8238;">
                             <i class="fas fa-list me-1"></i>Ver todas las alertas

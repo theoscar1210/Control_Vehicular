@@ -149,7 +149,7 @@ return [
     'starts_with' => 'El campo :attribute debe comenzar con: :values.',
     'string' => 'El campo :attribute debe ser una cadena de texto.',
     'timezone' => 'El campo :attribute debe ser una zona horaria válida.',
-    'unique' => 'El :attribute ya ha sido tomado.',
+    'unique' => 'El :attribute ya está registrado en el sistema.',
     'uploaded' => 'El campo :attribute falló al subirse.',
     'uppercase' => 'El campo :attribute debe estar en mayúsculas.',
     'url' => 'El campo :attribute debe ser una URL válida.',
@@ -163,8 +163,24 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'placa' => [
+            'unique' => 'Esta placa ya está registrada en el sistema.',
+            'required' => 'La placa es obligatoria.',
+        ],
+        'email' => [
+            'unique' => 'Este correo electrónico ya está registrado.',
+            'required' => 'El correo electrónico es obligatorio.',
+        ],
+        'usuario' => [
+            'unique' => 'Este nombre de usuario ya está en uso.',
+            'required' => 'El nombre de usuario es obligatorio.',
+        ],
+        'identificacion' => [
+            'unique' => 'Este número de identificación ya está registrado.',
+            'required' => 'El número de identificación es obligatorio.',
+        ],
+        'numero_documento' => [
+            'unique' => 'Este número de documento ya está registrado.',
         ],
     ],
 
