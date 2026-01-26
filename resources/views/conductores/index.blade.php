@@ -138,34 +138,11 @@ $sinPadding = true;
                             // Obtener vehículo asignado
                             $vehiculoAsignado = $conductor->vehiculos->first();
 
-                            // Obtener licencia activa
+                            // Obtener licencia activa - usar accessors del modelo para estado y clase
                             $licencia = $conductor->documentosConductor
                                 ->where('tipo_documento', 'Licencia Conducción')
                                 ->where('activo', true)
                                 ->first();
-
-                            // Calcular estado de licencia
-                            $licenciaEstado = null;
-                            $licenciaClase = 'secondary';
-                            if ($licencia && $licencia->fecha_vencimiento) {
-                                $diasLicencia = \Carbon\Carbon::today()->diffInDays(
-                                    \Carbon\Carbon::parse($licencia->fecha_vencimiento)->startOfDay(),
-                                    false
-                                );
-                                if ($diasLicencia < 0) {
-                                    $licenciaEstado = 'VENCIDO';
-                                    $licenciaClase = 'danger';
-                                } elseif ($diasLicencia <= 5) {
-                                    $licenciaEstado = 'CRÍTICO';
-                                    $licenciaClase = 'danger';
-                                } elseif ($diasLicencia <= 20) {
-                                    $licenciaEstado = 'POR_VENCER';
-                                    $licenciaClase = 'warning';
-                                } else {
-                                    $licenciaEstado = 'VIGENTE';
-                                    $licenciaClase = 'success';
-                                }
-                            }
                         @endphp
 
                         <tr class="conductor-row">
@@ -230,14 +207,14 @@ $sinPadding = true;
                                 @endif
                             </td>
 
-                            {{-- LICENCIA --}}
+                            {{-- LICENCIA - Usa accessors del modelo: $licencia->estado y $licencia->clase_badge --}}
                             <td class="text-center">
                                 @if($licencia)
                                 <div class="d-flex flex-column align-items-center gap-1">
-                                    <span class="badge bg-{{ $licenciaClase }} px-3 py-2">
-                                        @if($licenciaEstado === 'VIGENTE')
+                                    <span class="badge bg-{{ $licencia->clase_badge }} px-3 py-2">
+                                        @if($licencia->estado === 'VIGENTE')
                                         <i class="fa-solid fa-check-circle me-1"></i>
-                                        @elseif($licenciaEstado === 'POR_VENCER' || $licenciaEstado === 'CRÍTICO')
+                                        @elseif($licencia->estado === 'POR_VENCER')
                                         <i class="fa-solid fa-clock me-1"></i>
                                         @else
                                         <i class="fa-solid fa-times-circle me-1"></i>
