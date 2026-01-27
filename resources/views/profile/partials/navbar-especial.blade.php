@@ -62,27 +62,37 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('reportes.centro') }}">Consultas y Reportes</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('alertas.index') }}">
+                        <i class="fas fa-bell me-1"></i>Alertas
+                    </a>
+                </li>
             </ul>
         </div>
 
         @php
+        $user = auth()->user();
         $alertasMenuEspecial = \App\Models\Alerta::with([
-        'documentoVehiculo.vehiculo.conductor',
-        'documentoConductor.conductor'
+            'documentoVehiculo.vehiculo.conductor',
+            'documentoConductor.conductor',
+            'usuariosQueLeyeron'
         ])
-        ->where('leida', 0)
         ->whereNull('deleted_at')
-        ->where(function($q){
-        $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
+        ->where(function($q) use ($user) {
+            $q->where('visible_para','TODOS')->orWhere('visible_para', $user->rol);
         })
+        ->noLeidasPor($user->id_usuario)
         ->orderByDesc('fecha_alerta')
         ->take(5)
         ->get();
-        $totalAlertasNoLeidasEspecial = \App\Models\Alerta::where('leida',0)
-        ->whereNull('deleted_at')
-        ->where(function($q){
-        $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
-        })->count();
+
+        $totalAlertasNoLeidasEspecial = \App\Models\Alerta::whereNull('deleted_at')
+        ->where(function($q) use ($user) {
+            $q->where('visible_para','TODOS')->orWhere('visible_para', $user->rol);
+        })
+        ->noLeidasPor($user->id_usuario)
+        ->count();
         @endphp
         <ul class="navbar-nav ms-auto align-items-center">
             {{-- Notificaciones con Dropdown --}}

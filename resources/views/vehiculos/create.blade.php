@@ -135,35 +135,35 @@ $vehiculoId = request()->query('vehiculo');
             if ($propietario) { $progreso = 33; }
 
             if ($vehiculoId) {
-                $progreso = 66;
-                $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
+            $progreso = 66;
+            $vehiculo = \App\Models\Vehiculo::find($vehiculoId);
 
-                if ($vehiculo) {
-                    $tieneSoat = $vehiculo->documentos()
-                        ->activos()
-                        ->where('tipo_documento', 'SOAT')
-                        ->exists();
+            if ($vehiculo) {
+            $tieneSoat = $vehiculo->documentos()
+            ->activos()
+            ->where('tipo_documento', 'SOAT')
+            ->exists();
 
-                    $tieneTecno = $vehiculo->documentos()
-                        ->activos()
-                        ->where('tipo_documento', 'Tecnomecanica')
-                        ->exists();
+            $tieneTecno = $vehiculo->documentos()
+            ->activos()
+            ->where('tipo_documento', 'Tecnomecanica')
+            ->exists();
 
-                    // Si el vehículo está exento de tecnomecánica (nuevo), solo requiere SOAT
-                    $requiereTecno = $vehiculo->requiereTecnomecanica();
+            // Si el vehículo está exento de tecnomecánica (nuevo), solo requiere SOAT
+            $requiereTecno = $vehiculo->requiereTecnomecanica();
 
-                    if ($requiereTecno) {
-                        // Vehículo normal: requiere SOAT + Tecnomecánica
-                        if ($tieneSoat && $tieneTecno) {
-                            $progreso = 100;
-                        }
-                    } else {
-                        // Vehículo nuevo/exento: solo requiere SOAT
-                        if ($tieneSoat) {
-                            $progreso = 100;
-                        }
-                    }
-                }
+            if ($requiereTecno) {
+            // Vehículo normal: requiere SOAT + Tecnomecánica
+            if ($tieneSoat && $tieneTecno) {
+            $progreso = 100;
+            }
+            } else {
+            // Vehículo nuevo/exento: solo requiere SOAT
+            if ($tieneSoat) {
+            $progreso = 100;
+            }
+            }
+            }
             }
             @endphp
 
@@ -176,11 +176,11 @@ $vehiculoId = request()->query('vehiculo');
 
         <small class="text-muted">
             @if($progreso === 100)
-                @if(isset($requiereTecno) && !$requiereTecno)
-                ✓ Propietario creado | ✓ Vehículo creado | ✓ SOAT registrado (Exento de Tecnomecánica)
-                @else
-                ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos registrados
-                @endif
+            @if(isset($requiereTecno) && !$requiereTecno)
+            ✓ Propietario creado | ✓ Vehículo creado | ✓ SOAT registrado (Exento de Tecnomecánica)
+            @else
+            ✓ Propietario creado | ✓ Vehículo creado | ✓ Documentos registrados
+            @endif
             @elseif($vehiculoId)
             ✓ Propietario creado | ✓ Vehículo creado | Registra documentos
             @elseif($propietario)
@@ -579,6 +579,7 @@ $vehiculoId = request()->query('vehiculo');
                                 <input type="date" name="fecha_emision" id="fecha_emision_soat"
                                     class="form-control @error('fecha_emision') is-invalid @enderror"
                                     value="{{ old('tipo_documento') == 'SOAT' ? old('fecha_emision') : '' }}" required>
+                                <small class="text-muted">Fecha en la que inicia la vigencia </small>
                                 @error('fecha_emision')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -627,66 +628,66 @@ $vehiculoId = request()->query('vehiculo');
                     </div>
                     @else
                     @php
-                        $vehiculoActual = \App\Models\Vehiculo::find($vehiculoId);
-                        $fechaMatricula = $vehiculoActual?->fecha_matricula;
-                        $tipoVehiculo = $vehiculoActual?->tipo ?? 'Carro';
-                        $requiereTecno = $vehiculoActual?->requiereTecnomecanica() ?? true;
-                        $fechaPrimeraRevision = $vehiculoActual?->fechaPrimeraTecnomecanica();
-                        $anosPrimeraRevision = $tipoVehiculo === 'Moto' ? 2 : 5;
+                    $vehiculoActual = \App\Models\Vehiculo::find($vehiculoId);
+                    $fechaMatricula = $vehiculoActual?->fecha_matricula;
+                    $tipoVehiculo = $vehiculoActual?->tipo ?? 'Carro';
+                    $requiereTecno = $vehiculoActual?->requiereTecnomecanica() ?? true;
+                    $fechaPrimeraRevision = $vehiculoActual?->fechaPrimeraTecnomecanica();
+                    $anosPrimeraRevision = $tipoVehiculo === 'Moto' ? 2 : 5;
                     @endphp
 
                     {{-- VEHÍCULO NUEVO: Exención por tiempo - BLOQUEAR FORMULARIO --}}
                     @if($fechaMatricula && !$requiereTecno)
-                        <div class="alert alert-success border-0 shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="me-3">
-                                    <span class="badge bg-success rounded-pill px-3 py-2">
-                                        <i class="fa-solid fa-shield-check me-1"></i> EXENTO
-                                    </span>
-                                </div>
-                                <div>
-                                    <h6 class="alert-heading mb-1">
-                                        <i class="fa-solid fa-car me-1"></i>
-                                        Vehículo "Nuevo" (Exención por tiempo)
-                                    </h6>
-                                    <p class="mb-0 small">
-                                        Este {{ $tipoVehiculo === 'Moto' ? 'motocicleta' : 'vehículo' }} no requiere Tecnomecánica hasta el
-                                        <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
-                                        ({{ $anosPrimeraRevision }} años desde la matrícula).
-                                    </p>
-                                </div>
+                    <div class="alert alert-success border-0 shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="fa-solid fa-shield-check me-1"></i> EXENTO
+                                </span>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading mb-1">
+                                    <i class="fa-solid fa-car me-1"></i>
+                                    Vehículo "Nuevo" (Exención por tiempo)
+                                </h6>
+                                <p class="mb-0 small">
+                                    Este {{ $tipoVehiculo === 'Moto' ? 'motocicleta' : 'vehículo' }} no requiere Tecnomecánica hasta el
+                                    <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
+                                    ({{ $anosPrimeraRevision }} años desde la matrícula).
+                                </p>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="text-center py-4">
-                            <i class="fa-solid fa-clock fa-3x text-success mb-3" style="opacity: 0.5;"></i>
-                            <p class="text-muted mb-2">
-                                <strong>Días restantes para primera revisión:</strong>
-                            </p>
-                            <h3 class="text-success">
-                                {{ (int) now()->diffInDays($fechaPrimeraRevision) }} días
-                            </h3>
-                            <p class="text-muted small">
-                                Fecha de matrícula: {{ $fechaMatricula->format('d/m/Y') }}
-                            </p>
-                        </div>
+                    <div class="text-center py-4">
+                        <i class="fa-solid fa-clock fa-3x text-success mb-3" style="opacity: 0.5;"></i>
+                        <p class="text-muted mb-2">
+                            <strong>Días restantes para primera revisión:</strong>
+                        </p>
+                        <h3 class="text-success">
+                            {{ (int) now()->diffInDays($fechaPrimeraRevision) }} días
+                        </h3>
+                        <p class="text-muted small">
+                            Fecha de matrícula: {{ $fechaMatricula->format('d/m/Y') }}
+                        </p>
+                    </div>
 
                     {{-- VEHÍCULO QUE YA REQUIERE TECNOMECÁNICA --}}
                     @else
-                        @if($fechaMatricula)
-                        <div class="alert alert-warning mb-3">
-                            <i class="fa-solid fa-exclamation-triangle me-2"></i>
-                            <strong>Revisión requerida:</strong> El vehículo ya superó los {{ $anosPrimeraRevision }} años desde su matrícula.
-                            La tecnomecánica se renueva anualmente.
-                        </div>
-                        @else
-                        <div class="alert alert-info mb-3">
-                            <i class="fa-solid fa-info-circle me-2"></i>
-                            <strong>Nota:</strong> Registra primero la Licencia de Tránsito con la fecha de matrícula
-                            para calcular correctamente el vencimiento de la tecnomecánica.
-                            <br><small class="text-muted">Regla: Carros nuevos (5 años), Motos nuevas (2 años), luego renovación anual.</small>
-                        </div>
-                        @endif
+                    @if($fechaMatricula)
+                    <div class="alert alert-warning mb-3">
+                        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                        <strong>Revisión requerida:</strong> El vehículo ya superó los {{ $anosPrimeraRevision }} años desde su matrícula.
+                        La tecnomecánica se renueva anualmente.
+                    </div>
+                    @else
+                    <div class="alert alert-info mb-3">
+                        <i class="fa-solid fa-info-circle me-2"></i>
+                        <strong>Nota:</strong> Registra primero la Licencia de Tránsito con la fecha de matrícula
+                        para calcular correctamente el vencimiento de la tecnomecánica.
+                        <br><small class="text-muted">Regla: Carros nuevos (5 años), Motos nuevas (2 años), luego renovación anual.</small>
+                    </div>
+                    @endif
 
                     <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
                         @csrf

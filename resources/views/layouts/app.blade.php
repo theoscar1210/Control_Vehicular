@@ -50,23 +50,27 @@
             </a>
 
             @php
+            $currentUser = auth()->user();
             $alertasMenu = \App\Models\Alerta::with([
-            'documentoVehiculo.vehiculo.conductor',
-            'documentoConductor.conductor'
+                'documentoVehiculo.vehiculo.conductor',
+                'documentoConductor.conductor',
+                'usuariosQueLeyeron'
             ])
-            ->where('leida', 0)
             ->whereNull('deleted_at')
-            ->where(function($q){
-            $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
+            ->where(function($q) use ($currentUser) {
+                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
             })
+            ->noLeidasPor($currentUser->id_usuario)
             ->orderByDesc('fecha_alerta')
             ->take(5)
             ->get();
-            $totalAlertasNoLeidas = \App\Models\Alerta::where('leida',0)
-            ->whereNull('deleted_at')
-            ->where(function($q){
-            $q->where('visible_para','TODOS')->orWhere('visible_para', auth()->user()->rol);
-            })->count();
+
+            $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
+            ->where(function($q) use ($currentUser) {
+                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
+            })
+            ->noLeidasPor($currentUser->id_usuario)
+            ->count();
             @endphp
             <ul class="navbar-nav ms-auto align-items-center">
                 {{-- Notificaciones con Dropdown --}}
@@ -253,6 +257,13 @@
 
         <a class="nav-link" href="{{ route('reportes.centro') }}">
             <i class="fas fa-chart-bar me-2"></i>Centro de Reportes
+        </a>
+
+        <a class="nav-link" href="{{ route('alertas.index') }}">
+            <i class="fas fa-bell me-2"></i>Centro de Alertas
+            @if(isset($totalAlertasNoLeidas) && $totalAlertasNoLeidas > 0)
+            <span class="badge bg-danger ms-2">{{ $totalAlertasNoLeidas }}</span>
+            @endif
         </a>
 
         @if(auth()->user()->rol === 'ADMIN')
