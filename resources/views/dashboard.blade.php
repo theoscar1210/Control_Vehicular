@@ -9,7 +9,7 @@ $rol = $user->rol ?? 'N/A';
 
 @endphp
 
-<br><br>
+
 <div class="contentor mb-4">
     <h4 class="fw-bold">Bienvenido a la página principal</h4>
     <p class="text-muted mb-0">
@@ -96,26 +96,26 @@ $rol = $user->rol ?? 'N/A';
     <div class="list-group mt-3">
         @forelse($alertas as $a)
         @php
-            $iconos = [
-                'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
-                'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
-                'Tecnomecanica' => ['icon' => 'bi-tools', 'color' => 'danger'],
-                'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
-            ];
-            $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
+        $iconos = [
+        'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
+        'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
+        'Tecnomecanica' => ['icon' => 'bi-tools', 'color' => 'danger'],
+        'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
+        ];
+        $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
 
-            // Obtener placa y conductor
-            $placaDash = null;
-            $conductorDash = null;
-            if ($a->documentoVehiculo && $a->documentoVehiculo->vehiculo) {
-                $placaDash = $a->documentoVehiculo->vehiculo->placa;
-                if ($a->documentoVehiculo->vehiculo->conductor) {
-                    $conductorDash = $a->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $a->documentoVehiculo->vehiculo->conductor->apellido;
-                }
-            }
-            if ($a->documentoConductor && $a->documentoConductor->conductor) {
-                $conductorDash = $a->documentoConductor->conductor->nombre . ' ' . $a->documentoConductor->conductor->apellido;
-            }
+        // Obtener placa y conductor
+        $placaDash = null;
+        $conductorDash = null;
+        if ($a->documentoVehiculo && $a->documentoVehiculo->vehiculo) {
+        $placaDash = $a->documentoVehiculo->vehiculo->placa;
+        if ($a->documentoVehiculo->vehiculo->conductor) {
+        $conductorDash = $a->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $a->documentoVehiculo->vehiculo->conductor->apellido;
+        }
+        }
+        if ($a->documentoConductor && $a->documentoConductor->conductor) {
+        $conductorDash = $a->documentoConductor->conductor->nombre . ' ' . $a->documentoConductor->conductor->apellido;
+        }
         @endphp
         <div class="list-group-item {{ $a->leida ? 'bg-light text-muted' : 'border-start border-warning border-3' }}">
             <div class="d-flex justify-content-between align-items-start">

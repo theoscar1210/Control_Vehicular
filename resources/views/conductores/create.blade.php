@@ -4,7 +4,7 @@
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
 @section('content')
-<br><br>
+
 <div class="inicio-conductor">
     <h3>
         <i class="bi bi-person-lines-fill"></i> Crear Conductor
@@ -101,6 +101,7 @@
                                             <input type="text" name="telefono_emergencia"
                                                 value="{{ old('telefono_emergencia') }}"
                                                 class="form-control rounded-3 border-success-subtle">
+                                            <small class="text-muted">Número de un familiar o contacto de emergencia</small>
                                         </div>
 
                                         <div class="col-md-6">
@@ -130,7 +131,7 @@
                                                     {{ old('id_vehiculo') == $veh->id_vehiculo ? 'selected' : '' }}>
                                                     {{ $veh->placa }} - {{ $veh->marca }} {{ $veh->modelo ?? '' }}
                                                     @if($veh->propietario)
-                                                        ({{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }})
+                                                    ({{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }})
                                                     @endif
                                                 </option>
                                                 @endforeach
@@ -343,21 +344,21 @@
 
             var $vehiculo = $(
                 '<div class="d-flex align-items-center py-2">' +
-                    '<div class="me-3">' +
-                        '<i class="bi bi-car-front-fill fs-4" style="color:#5B8238;"></i>' +
-                    '</div>' +
-                    '<div class="flex-grow-1">' +
-                        '<div class="fw-bold">' + $(vehiculo.element).data('placa') + '</div>' +
-                        '<small class="text-muted">' +
-                            $(vehiculo.element).data('marca') + ' ' +
-                            $(vehiculo.element).data('modelo') + ' - ' +
-                            $(vehiculo.element).data('color') +
-                        '</small><br>' +
-                        '<small class="text-muted">' +
-                            '<i class="bi bi-person-fill me-1"></i>' +
-                            $(vehiculo.element).data('propietario') +
-                        '</small>' +
-                    '</div>' +
+                '<div class="me-3">' +
+                '<i class="bi bi-car-front-fill fs-4" style="color:#5B8238;"></i>' +
+                '</div>' +
+                '<div class="flex-grow-1">' +
+                '<div class="fw-bold">' + $(vehiculo.element).data('placa') + '</div>' +
+                '<small class="text-muted">' +
+                $(vehiculo.element).data('marca') + ' ' +
+                $(vehiculo.element).data('modelo') + ' - ' +
+                $(vehiculo.element).data('color') +
+                '</small><br>' +
+                '<small class="text-muted">' +
+                '<i class="bi bi-person-fill me-1"></i>' +
+                $(vehiculo.element).data('propietario') +
+                '</small>' +
+                '</div>' +
                 '</div>'
             );
 

@@ -50,28 +50,41 @@
                 <div class="list-group list-group-flush">
                     @foreach($alertas as $alerta)
                         @php
+                            // Iconos por tipo de documento
                             $iconos = [
                                 'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
                                 'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
-                                'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
-                                'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
+                                'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'primary'],
+                                'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'secondary'],
+                                'EPS' => ['icon' => 'fas fa-hospital', 'color' => 'info'],
+                                'ARL' => ['icon' => 'fas fa-hard-hat', 'color' => 'warning'],
+                                'Certificado Médico' => ['icon' => 'fas fa-notes-medical', 'color' => 'success'],
                             ];
-                            $config = $iconos[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
-                            // Verificar si el usuario actual ha leido esta alerta
-                            $esNoLeida = !$alerta->leidaPorUsuario($userId);
 
-                            // Obtener placa y conductor
+                            // Obtener tipo de documento del documento relacionado
+                            $tipoDocumento = null;
                             $placaAlerta = null;
                             $conductorAlerta = null;
-                            if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
-                                $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
-                                if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                                    $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+
+                            if ($alerta->documentoVehiculo) {
+                                $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
+                                if ($alerta->documentoVehiculo->vehiculo) {
+                                    $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                        $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                    }
                                 }
                             }
-                            if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
-                                $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+
+                            if ($alerta->documentoConductor) {
+                                $tipoDocumento = $alerta->documentoConductor->tipo_documento;
+                                if ($alerta->documentoConductor->conductor) {
+                                    $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                }
                             }
+
+                            $config = $iconos[$tipoDocumento] ?? ['icon' => 'fas fa-file-alt', 'color' => 'secondary'];
+                            $esNoLeida = !$alerta->leidaPorUsuario($userId);
                         @endphp
                         <div class="list-group-item {{ $esNoLeida ? 'bg-light border-start border-4 border-warning' : '' }}">
                             <div class="d-flex align-items-start">
@@ -84,7 +97,7 @@
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                         <h6 class="mb-0 {{ $esNoLeida ? 'fw-bold' : 'text-muted' }}">
-                                            {{ $alerta->tipo_vencimiento }}
+                                            {{ $tipoDocumento ?? 'Documento' }}
                                             @if($esNoLeida)
                                                 <span class="badge bg-warning text-dark ms-2">Nueva</span>
                                             @endif
@@ -123,8 +136,11 @@
                                                 <i class="fas fa-file-alt me-1"></i>Doc. Conductor
                                             </span>
                                         @endif
-                                        <span class="badge bg-{{ $alerta->tipo_alerta === 'VENCIDO' ? 'danger' : 'warning' }}">
-                                            {{ $alerta->tipo_alerta === 'VENCIDO' ? 'Vencido' : 'Próximo a vencer' }}
+                                        @php
+                                            $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
+                                        @endphp
+                                        <span class="badge bg-{{ $esVencido ? 'danger' : 'warning' }}">
+                                            {{ $esVencido ? 'Vencido' : 'Próximo a vencer' }}
                                         </span>
 
                                         @if($esNoLeida)

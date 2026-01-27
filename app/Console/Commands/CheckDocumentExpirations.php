@@ -57,8 +57,26 @@ class CheckDocumentExpirations extends Command
         $all = $docsV->concat($docsC);
 
         //crear alertas y notificar
+        $creadas = 0;
         foreach ($all as $d) {
-            $tipo_v = $d->fecha_vencimiento < $hoy ? 'VENCIDO' : 'POR VENCER';
+            // Usar valores correctos del enum: VENCIDO o PROXIMO_VENCER
+            $tipo_v = $d->fecha_vencimiento < $hoy ? 'VENCIDO' : 'PROXIMO_VENCER';
+
+            // Verificar si ya existe una alerta activa para este documento
+            $alertaExistente = Alerta::where('tipo_vencimiento', $tipo_v)
+                ->whereNull('deleted_at');
+
+            if ($d instanceof DocumentoVehiculo) {
+                $alertaExistente->where('id_doc_vehiculo', $d->id_doc_vehiculo);
+            } else {
+                $alertaExistente->where('id_doc_conductor', $d->id_doc_conductor);
+            }
+
+            // Si ya existe una alerta del mismo tipo para este documento, saltar
+            if ($alertaExistente->exists()) {
+                continue;
+            }
+
             $mensaje = sprintf("Documento %s (%s) - vence: %s", $d->tipo_documento, $d->numero_documento, $d->fecha_vencimiento ? $d->fecha_vencimiento->format('Y-m-d') : 'Sin fecha');
 
             $alert = Alerta::create([
@@ -73,15 +91,17 @@ class CheckDocumentExpirations extends Command
                 'creado_por' => null,
             ]);
 
-            // Notificar a usuarios por rol
-            $users = Usuario::whereIn('rol', ['ADMIN', 'SST', 'PORTERIA'])->where('activo', 1)->get();
+            $creadas++;
 
-            foreach ($users as $u) {
-                $u->notify(new DocumentoVencidoNotification($alert));
-            }
+            // TODO: Descomentar cuando se cree la tabla notifications
+            // Notificar a usuarios por rol
+            // $users = Usuario::whereIn('rol', ['ADMIN', 'SST', 'PORTERIA'])->where('activo', 1)->get();
+            // foreach ($users as $u) {
+            //     $u->notify(new DocumentoVencidoNotification($alert));
+            // }
         }
 
-        $this->info('Check completed - alerts created: ' . $all->count());
+        $this->info("Check completed - documents checked: {$all->count()}, alerts created: {$creadas}");
         return 0;
     }
 }

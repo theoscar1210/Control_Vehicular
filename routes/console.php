@@ -15,7 +15,7 @@ Artisan::command('inspire', function () {
 */
 
 // Verificar vencimiento de documentos (diariamente a las 3:00 AM)
-Schedule::command('documentos:check-expirations')
+Schedule::command('check:document-expirations')
     ->dailyAt('03:00')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/check-expirations.log'));

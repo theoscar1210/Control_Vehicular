@@ -43,12 +43,15 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ALERTAS BÁSICAS - Acceso: ADMIN, SST, PORTERIA (para marcar leídas)
+    | ALERTAS - Acceso: ADMIN, SST, PORTERIA (ver y marcar leídas)
     |--------------------------------------------------------------------------
     */
     Route::prefix('alertas')->name('alertas.')->group(function () {
+        Route::get('/', [AlertaController::class, 'index'])->name('index');
+        Route::get('/unread-count', [AlertaController::class, 'unreadCount'])->name('unread_count');
         Route::post('/mark-all-read', [AlertaController::class, 'markAllRead'])->name('mark_all_read');
         Route::post('/{alerta}/read', [AlertaController::class, 'markAsRead'])->name('read');
+        Route::get('/{alerta}', [AlertaController::class, 'show'])->name('show');
     });
 
     /*
@@ -182,13 +185,10 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
         /*
         |--------------------------------------------------------------------------
-        | ALERTAS COMPLETAS
+        | ALERTAS - Solo ADMIN/SST (crear y eliminar)
         |--------------------------------------------------------------------------
         */
         Route::prefix('alertas')->name('alertas.')->group(function () {
-            Route::get('/', [AlertaController::class, 'index'])->name('index');
-            Route::get('/unread-count', [AlertaController::class, 'unreadCount'])->name('unread_count');
-            Route::get('/{alerta}', [AlertaController::class, 'show'])->name('show');
             Route::post('/', [AlertaController::class, 'store'])->name('store');
             Route::delete('/{alerta}', [AlertaController::class, 'destroy'])->name('destroy');
         });

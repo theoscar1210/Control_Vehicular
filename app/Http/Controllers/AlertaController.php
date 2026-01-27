@@ -12,8 +12,9 @@ use App\Notifications\DocumentoVencidoNotification;
 class AlertaController extends Controller
 {
     /**
-     * Lista las alertas visibles para el usuario (no eliminadas) paginadas.
-     * El estado de lectura es por usuario (cada usuario ve su propio estado).
+     * Lista TODAS las alertas visibles para el usuario (no eliminadas) paginadas.
+     * Muestra alertas leídas y no leídas - las alertas permanecen hasta que se solucionen.
+     * El filtro de "leídas desaparecen" solo aplica en el dashboard, no aquí.
      */
     public function index(Request $request)
     {
@@ -28,8 +29,12 @@ class AlertaController extends Controller
             ->where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')
                     ->orWhere('visible_para', $user->rol);
-            })
-            ->orderByDesc('fecha_alerta')
+            });
+
+        // NO filtrar por leídas aquí - mostrar todas las alertas
+        // El filtro de leídas solo aplica en el dashboard
+
+        $query->orderByDesc('fecha_alerta')
             ->orderByDesc('fecha_registro');
 
         $perPage = (int) $request->input('per_page', 20);

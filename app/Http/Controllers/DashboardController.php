@@ -68,16 +68,18 @@ class DashboardController extends Controller
         $ultima_actualizacion = Carbon::now()->format('d M Y, H:i:s');
 
         // Alertas: visibles para el rol del usuario o para TODOS, no borradas (softDelete),
-        // solo mostrar las NO LEÍDAS (leida = 0).
+        // Solo mostrar alertas NO LEÍDAS por este usuario específico.
+        // ADMIN/SST: las leídas desaparecen del dashboard
+        // PORTERIA: ve todas las alertas (no se filtran por leídas)
         $user = Auth::user();
         $role = $user ? $user->rol : null;
 
         $alertasQuery = Alerta::with([
                 'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor'
+                'documentoConductor.conductor',
+                'usuariosQueLeyeron'
             ])
-            ->whereNull('deleted_at')
-            ->where('leida', 0); // Solo mostrar alertas no leídas
+            ->whereNull('deleted_at');
 
         if ($role) {
             $alertasQuery->where(function ($q) use ($role) {
@@ -86,6 +88,12 @@ class DashboardController extends Controller
             });
         } else {
             $alertasQuery->where('visible_para', 'TODOS');
+        }
+
+        // ADMIN y SST: filtrar solo alertas no leídas (las leídas desaparecen del dashboard)
+        // PORTERIA: ver todas las alertas
+        if ($user && $role !== 'PORTERIA') {
+            $alertasQuery->noLeidasPor($user->id_usuario);
         }
 
         // ordenar por fecha desc
