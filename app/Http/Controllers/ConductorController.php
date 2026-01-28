@@ -311,6 +311,12 @@ class ConductorController extends Controller
                         'activo' => 0,
                         'reemplazado_por' => $newDoc->id_doc_conductor,
                     ]);
+
+                    // Marcar alertas del documento anterior como solucionadas
+                    \App\Models\Alerta::solucionarPorDocumentoConductor(
+                        $last->id_doc_conductor,
+                        'DOCUMENTO_RENOVADO'
+                    );
                 }
             }
         });

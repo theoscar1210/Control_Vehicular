@@ -31,15 +31,19 @@ class Alerta extends Model
         'mensaje',
         'fecha_alerta',
         'leida',
+        'solucionada',
+        'fecha_solucion',
+        'motivo_solucion',
         'visible_para',
         'creado_por',
         'fecha_registro',
-
     ];
 
     protected $casts = [
         'leida' => 'boolean',
+        'solucionada' => 'boolean',
         'fecha_alerta' => 'date',
+        'fecha_solucion' => 'datetime',
         'fecha_registro' => 'datetime',
     ];
 
@@ -136,5 +140,61 @@ class Alerta extends Model
         return $query->whereHas('usuariosQueLeyeron', function ($q) use ($userId) {
             $q->where('alerta_usuario_leida.id_usuario', $userId);
         });
+    }
+
+    /**
+     * Scope para obtener solo alertas activas (no solucionadas)
+     */
+    public function scopeActivas($query)
+    {
+        return $query->where('solucionada', false);
+    }
+
+    /**
+     * Scope para obtener alertas solucionadas
+     */
+    public function scopeSolucionadas($query)
+    {
+        return $query->where('solucionada', true);
+    }
+
+    /**
+     * Marcar alerta como solucionada (documento renovado)
+     */
+    public function marcarComoSolucionada(string $motivo = 'DOCUMENTO_RENOVADO'): void
+    {
+        $this->update([
+            'solucionada' => true,
+            'fecha_solucion' => now(),
+            'motivo_solucion' => $motivo,
+        ]);
+    }
+
+    /**
+     * Marcar todas las alertas de un documento de vehículo como solucionadas
+     */
+    public static function solucionarPorDocumentoVehiculo(int $idDocVehiculo, string $motivo = 'DOCUMENTO_RENOVADO'): int
+    {
+        return self::where('id_doc_vehiculo', $idDocVehiculo)
+            ->where('solucionada', false)
+            ->update([
+                'solucionada' => true,
+                'fecha_solucion' => now(),
+                'motivo_solucion' => $motivo,
+            ]);
+    }
+
+    /**
+     * Marcar todas las alertas de un documento de conductor como solucionadas
+     */
+    public static function solucionarPorDocumentoConductor(int $idDocConductor, string $motivo = 'DOCUMENTO_RENOVADO'): int
+    {
+        return self::where('id_doc_conductor', $idDocConductor)
+            ->where('solucionada', false)
+            ->update([
+                'solucionada' => true,
+                'fecha_solucion' => now(),
+                'motivo_solucion' => $motivo,
+            ]);
     }
 }

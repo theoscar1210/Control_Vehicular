@@ -79,7 +79,8 @@ class DashboardController extends Controller
                 'documentoConductor.conductor',
                 'usuariosQueLeyeron'
             ])
-            ->whereNull('deleted_at');
+            ->whereNull('deleted_at')
+            ->activas(); // Solo alertas no solucionadas
 
         if ($role) {
             $alertasQuery->where(function ($q) use ($role) {
