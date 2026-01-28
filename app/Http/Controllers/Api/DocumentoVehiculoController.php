@@ -70,7 +70,7 @@ class DocumentoVehiculoController extends Controller
             'activo' => 'nullable|boolean',
         ]);
         $documentoVehiculo->update($data);
-        return response()->json($$documentoVehiculo);
+        return response()->json($documentoVehiculo);
     }
 
     /**
