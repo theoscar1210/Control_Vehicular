@@ -3,19 +3,23 @@
 ## Funcionalidad Implementada
 
 ### 1. Alertas Desaparecen al Marcarlas como Leídas
+
 - Las alertas marcadas como leídas (`leida = 1`) ya NO aparecen en el dashboard
 - Solo se muestran alertas pendientes (no leídas)
 - Al marcar una alerta como leída, desaparece automáticamente de la vista
 
 **Archivos modificados:**
+
 - `app/Http/Controllers/DashboardController.php` (línea 77)
 
 ### 2. Envío Semanal de Alertas por Email
-- Se envía un resumen de alertas cada **Lunes a las 01:00 AM**
+
+- Se envía un resumen de alertas cada **Lunes a las 04:00 AM**
 - El sistema usa la hora de la red (timezone configurado en el servidor)
 - Los correos se envían SOLO a usuarios con rol **ADMIN** y **SST** que estén activos
 
 **Archivos creados:**
+
 - `app/Console/Commands/EnviarAlertasSemanales.php` - Comando para envío de emails
 - `resources/views/emails/alertas-semanales.blade.php` - Plantilla HTML del email
 - `app/Console/kernel.php` - Programación del comando (líneas 23-27)
@@ -36,6 +40,7 @@ Editar el archivo `config/app.php` y cambiar la línea 68:
 ```
 
 **Zonas horarias comunes:**
+
 - Colombia: `America/Bogota`
 - Argentina: `America/Argentina/Buenos_Aires`
 - México: `America/Mexico_City`
@@ -82,11 +87,13 @@ Para que los comandos programados se ejecuten automáticamente, debes configurar
 ### En Linux/macOS:
 
 1. Abrir el crontab:
+
 ```bash
 crontab -e
 ```
 
 2. Agregar esta línea:
+
 ```bash
 * * * * * cd /ruta/al/proyecto && php artisan schedule:run >> /dev/null 2>&1
 ```
@@ -123,6 +130,7 @@ php artisan schedule:list
 ```
 
 Deberías ver:
+
 - `check:document-expirations` - Todos los días a las 08:00
 - `alertas:enviar-semanales` - Lunes a las 01:00
 
@@ -143,10 +151,10 @@ El correo electrónico incluye:
 - Total de alertas pendientes
 - Fecha del reporte
 - Listado agrupado por tipo de documento:
-  - SOAT
-  - Tecnomecánica
-  - Licencia Conducción
-  - Tarjeta Propiedad
+    - SOAT
+    - Tecnomecánica
+    - Licencia Conducción
+    - Tarjeta Propiedad
 - Mensaje de cada alerta
 - Fecha de vencimiento
 - Tipo de documento (Vehículo o Conductor)
@@ -180,7 +188,7 @@ Si no hay alertas pendientes, el comando termina sin enviar correos.
 
 ### No se envían los correos
 
-1. Verificar configuración de `.env` (MAIL_*)
+1. Verificar configuración de `.env` (MAIL\_\*)
 2. Probar manualmente: `php artisan alertas:enviar-semanales`
 3. Revisar logs: `storage/logs/laravel.log`
 4. Verificar que hay usuarios ADMIN/SST con email
@@ -231,6 +239,7 @@ $schedule->command('alertas:enviar-semanales')->monthlyOn(1, '01:00');
 ```
 
 **Días de la semana:**
+
 - 0 = Domingo
 - 1 = Lunes
 - 2 = Martes

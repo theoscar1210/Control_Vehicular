@@ -52,13 +52,14 @@
             @php
             $currentUser = auth()->user();
             $alertasMenu = \App\Models\Alerta::with([
-                'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor',
-                'usuariosQueLeyeron'
+            'documentoVehiculo.vehiculo.conductor',
+            'documentoConductor.conductor',
+            'usuariosQueLeyeron'
             ])
             ->whereNull('deleted_at')
+            ->activas() // Solo alertas no solucionadas
             ->where(function($q) use ($currentUser) {
-                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
+            $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
             })
             ->noLeidasPor($currentUser->id_usuario)
             ->orderByDesc('fecha_alerta')
@@ -66,8 +67,9 @@
             ->get();
 
             $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
+            ->activas() // Solo alertas no solucionadas
             ->where(function($q) use ($currentUser) {
-                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
+            $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
             })
             ->noLeidasPor($currentUser->id_usuario)
             ->count();
@@ -262,7 +264,7 @@
         <a class="nav-link" href="{{ route('alertas.index') }}">
             <i class="fas fa-bell me-2"></i>Centro de Alertas
             @if(isset($totalAlertasNoLeidas) && $totalAlertasNoLeidas > 0)
-            <span class="badge bg-danger ms-2">{{ $totalAlertasNoLeidas }}</span>
+
             @endif
         </a>
 

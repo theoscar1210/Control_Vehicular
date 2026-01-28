@@ -26,12 +26,13 @@ class AlertaController extends Controller
                 'usuariosQueLeyeron' // Cargar relacion para verificar lectura
             ])
             ->whereNull('deleted_at')
+            ->activas() // Solo alertas no solucionadas
             ->where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')
                     ->orWhere('visible_para', $user->rol);
             });
 
-        // NO filtrar por leídas aquí - mostrar todas las alertas
+        // NO filtrar por leídas aquí - mostrar todas las alertas activas
         // El filtro de leídas solo aplica en el dashboard
 
         $query->orderByDesc('fecha_alerta')
@@ -195,6 +196,7 @@ class AlertaController extends Controller
                 $q->where('visible_para', 'TODOS')->orWhere('visible_para', $user->rol);
             })
             ->whereNull('deleted_at')
+            ->activas() // Solo alertas no solucionadas
             ->noLeidasPor($user->id_usuario)
             ->count();
 

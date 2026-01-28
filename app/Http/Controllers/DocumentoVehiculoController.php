@@ -158,6 +158,12 @@ class DocumentoVehiculoController extends Controller
                         'reemplazado_por'  => $nuevoDocumento->id_doc_vehiculo,
                         'activo'           => 0,
                     ]);
+
+                    // Marcar alertas del documento anterior como solucionadas
+                    Alerta::solucionarPorDocumentoVehiculo(
+                        $ultimoDocumento->id_doc_vehiculo,
+                        'DOCUMENTO_RENOVADO'
+                    );
                 }
 
                 /*
@@ -313,13 +319,13 @@ class DocumentoVehiculoController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | MARCAR ALERTAS ANTERIORES COMO LEÍDAS (SIN updated_at)
+                | MARCAR ALERTAS ANTERIORES COMO SOLUCIONADAS (Documento Renovado)
                 |--------------------------------------------------------------------------
                 */
-                // CORRECCIÓN: No intentar actualizar updated_at
-                Alerta::where('id_doc_vehiculo', $documentoAnterior->id_doc_vehiculo)
-                    ->where('leida', 0)
-                    ->update(['leida' => 1]); // ✅ Sin updated_at
+                Alerta::solucionarPorDocumentoVehiculo(
+                    $documentoAnterior->id_doc_vehiculo,
+                    'DOCUMENTO_RENOVADO'
+                );
 
                 /*
                 |--------------------------------------------------------------------------

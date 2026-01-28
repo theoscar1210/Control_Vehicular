@@ -24,20 +24,30 @@
             <h5 class="mb-0 text-white">
                 <i class="fas fa-bell me-2"></i>Centro de Alertas
             </h5>
-            @php
-                // Contar alertas no leidas por el usuario actual
-                $alertasNoLeidas = $alertas->filter(function($a) use ($userId) {
-                    return !$a->leidaPorUsuario($userId);
-                })->count();
-            @endphp
-            @if($alertasNoLeidas > 0)
-            <form method="POST" action="{{ route('alertas.mark_all_read') }}" class="d-inline">
-                @csrf
-                <button type="submit" class="btn btn-light btn-sm">
-                    <i class="fas fa-check-double me-1"></i>Marcar todas como leídas
-                </button>
-            </form>
-            @endif
+            <div class="d-flex gap-2 align-items-center">
+                @php
+                    // Contar alertas no leidas por el usuario actual
+                    $alertasNoLeidas = $alertas->filter(function($a) use ($userId) {
+                        return !$a->leidaPorUsuario($userId);
+                    })->count();
+                @endphp
+
+                {{-- Botón para usuario PORTERIA: ir a vista principal de portería --}}
+                @if(auth()->user()->rol === 'PORTERIA')
+                <a href="{{ route('porteria.index') }}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-door-open me-1"></i>Ir a Portería
+                </a>
+                @endif
+
+                @if($alertasNoLeidas > 0)
+                <form method="POST" action="{{ route('alertas.mark_all_read') }}" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-light btn-sm">
+                        <i class="fas fa-check-double me-1"></i>Marcar todas como leídas
+                    </button>
+                </form>
+                @endif
+            </div>
         </div>
 
         <div class="card-body p-0">
