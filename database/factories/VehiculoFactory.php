@@ -16,7 +16,7 @@ class VehiculoFactory extends Factory
 
     public function definition()
     {
-        $tipos = ['carro', 'moto', 'camion', 'otro'];
+        $tipos = ['Carro', 'Moto', 'Camion', 'Otro'];
         return [
             'placa' => strtoupper($this->faker->bothify('???-####')),
             'marca' => $this->faker->company(),
