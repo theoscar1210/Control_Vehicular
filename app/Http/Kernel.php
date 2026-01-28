@@ -6,11 +6,7 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
-
-    //globales
     protected $middleware = [];
-
-    // por grupo
 
     protected $middlewareGroups = [
         'web' => [
@@ -20,26 +16,18 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\SecurityHeaders::class, // Headers de seguridad
+            \App\Http\Middleware\SecurityHeaders::class,
         ],
         'api' => [
-            \App\Http\Middleware\SecurityHeaders::class, // Headers de seguridad
+            \App\Http\Middleware\SecurityHeaders::class,
         ],
     ];
-
-    //rutas indicviduales
-
 
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        // ... otras entradas ...
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'is.admin' => \App\Http\Middleware\IsAdmin::class,
-
-
         'role.sst.admin' => \App\Http\Middleware\SstOrAdmin::class,
-        // Añadir aquí:
-        //'role.exists' => \App\Http\Middleware\EnsureRoleExists::class,
     ];
 }

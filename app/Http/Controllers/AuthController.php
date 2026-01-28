@@ -62,7 +62,6 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        // $user = Auth::user(); -> para usar en la vista
         return view('dashboard');
     }
 }

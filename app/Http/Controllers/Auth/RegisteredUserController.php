@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Usuario;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,15 +30,21 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'usuario' => ['required', 'string', 'max:50', 'unique:usuarios,usuario'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:usuarios,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
+        $user = Usuario::create([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'usuario' => $request->usuario,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'rol' => 'PORTERIA', // Rol por defecto para nuevos registros
+            'activo' => true,
         ]);
 
         event(new Registered($user));
