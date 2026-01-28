@@ -22,7 +22,7 @@ class EnviarAlertasSemanales extends Command
      *
      * @var string
      */
-    protected $description = 'Envía resumen semanal de alertas por correo electrónico todos los lunes a las 01:00 AM';
+    protected $description = 'Envía resumen semanal de alertas pendientes (documentos no renovados) por correo electrónico';
 
     /**
      * Execute the console command.
@@ -31,19 +31,20 @@ class EnviarAlertasSemanales extends Command
     {
         $this->info('Iniciando envío de alertas semanales...');
 
-        // Obtener todas las alertas no leídas con relaciones
+        // Obtener todas las alertas activas (documentos no renovados)
+        // Se envían hasta que el documento sea renovado (solucionada = true)
         $alertas = Alerta::with([
             'documentoVehiculo.vehiculo.conductor',
             'documentoConductor.conductor'
         ])
-            ->where('leida', 0)
+            ->activas() // Solo alertas no solucionadas (documento no renovado)
             ->whereNull('deleted_at')
             ->orderBy('tipo_vencimiento')
             ->orderByDesc('fecha_alerta')
             ->get();
 
         if ($alertas->isEmpty()) {
-            $this->info('No hay alertas pendientes para enviar.');
+            $this->info('No hay alertas pendientes. Todos los documentos están al día.');
             return 0;
         }
 
