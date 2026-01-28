@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Conductor;
 use App\Models\Vehiculo;
 use App\Models\DocumentoConductor;
+use App\Traits\SanitizesSearchInput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class ConductorController extends Controller
 {
+    use SanitizesSearchInput;
     /**
      * Mostrar listado de conductores.
      */
@@ -20,14 +22,15 @@ class ConductorController extends Controller
         $query = Conductor::with(['vehiculos', 'documentosConductor'])
             ->orderBy('nombre');
 
-        // Búsqueda
+        // Búsqueda (sanitizada contra caracteres especiales LIKE)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $searchSanitized = $this->sanitizeForLike($request->search);
+            $search = '%' . $searchSanitized . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('apellido', 'like', "%{$search}%")
-                    ->orWhere('identificacion', 'like', "%{$search}%")
-                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$search}%"]);
+                $q->where('nombre', 'like', $search)
+                    ->orWhere('apellido', 'like', $search)
+                    ->orWhere('identificacion', 'like', $search)
+                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", [$search]);
             });
         }
 
@@ -46,13 +49,13 @@ class ConductorController extends Controller
     {
         $query = Conductor::onlyTrashed();
 
-        // Búsqueda
+        // Búsqueda (sanitizada)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = $this->prepareLikeSearch($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('apellido', 'like', "%{$search}%")
-                    ->orWhere('identificacion', 'like', "%{$search}%");
+                $q->where('nombre', 'like', $search)
+                    ->orWhere('apellido', 'like', $search)
+                    ->orWhere('identificacion', 'like', $search);
             });
         }
 
