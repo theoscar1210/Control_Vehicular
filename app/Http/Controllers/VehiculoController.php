@@ -6,12 +6,14 @@ use App\Models\Vehiculo;
 use App\Models\Propietario;
 use App\Models\Conductor;
 use App\Models\DocumentoVehiculo;
+use App\Traits\SanitizesSearchInput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class VehiculoController extends Controller
 {
+    use SanitizesSearchInput;
     /**
      * Display a listing of the resource.
      */
@@ -19,16 +21,16 @@ class VehiculoController extends Controller
     {
         $query = Vehiculo::with(['propietario', 'conductor', 'documentosVehiculo']);
 
-        // Búsqueda
+        // Búsqueda (sanitizada contra caracteres especiales LIKE)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = $this->prepareLikeSearch($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('placa', 'like', "%{$search}%")
-                    ->orWhere('marca', 'like', "%{$search}%")
-                    ->orWhere('modelo', 'like', "%{$search}%")
+                $q->where('placa', 'like', $search)
+                    ->orWhere('marca', 'like', $search)
+                    ->orWhere('modelo', 'like', $search)
                     ->orWhereHas('propietario', function ($q2) use ($search) {
-                        $q2->where('nombre', 'like', "%{$search}%")
-                            ->orWhere('apellido', 'like', "%{$search}%");
+                        $q2->where('nombre', 'like', $search)
+                            ->orWhere('apellido', 'like', $search);
                     });
             });
         }
@@ -48,13 +50,13 @@ class VehiculoController extends Controller
     {
         $query = Vehiculo::onlyTrashed()->with(['propietario']);
 
-        // Búsqueda
+        // Búsqueda (sanitizada)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = $this->prepareLikeSearch($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('placa', 'like', "%{$search}%")
-                    ->orWhere('marca', 'like', "%{$search}%")
-                    ->orWhere('modelo', 'like', "%{$search}%");
+                $q->where('placa', 'like', $search)
+                    ->orWhere('marca', 'like', $search)
+                    ->orWhere('modelo', 'like', $search);
             });
         }
 

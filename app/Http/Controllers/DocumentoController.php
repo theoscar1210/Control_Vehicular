@@ -9,6 +9,7 @@ use App\Models\Conductor;
 use App\Models\Usuario;
 use App\Models\Vehiculo;
 use App\Models\Propietario;
+use App\Traits\SanitizesSearchInput;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,7 @@ use Carbon\Carbon;
 
 class DocumentoController extends Controller
 {
+    use SanitizesSearchInput;
     public function index(Request $request)
     {
         // -----------------------------
@@ -252,11 +254,12 @@ class DocumentoController extends Controller
         // FILTRO: CONDUCTOR (nombre, apellido, identificación)
         // -------------------------------------------------------
         if ($texto = $request->input('conductor')) {
-            $q->whereHas('conductor', function ($qr) use ($texto) {
-                $qr->where(function ($w) use ($texto) {
-                    $w->where('nombre', 'LIKE', "%{$texto}%")
-                        ->orWhere('apellido', 'LIKE', "%{$texto}%")
-                        ->orWhere('identificacion', 'LIKE', "%{$texto}%");
+            $textoSearch = $this->prepareLikeSearch($texto);
+            $q->whereHas('conductor', function ($qr) use ($textoSearch) {
+                $qr->where(function ($w) use ($textoSearch) {
+                    $w->where('nombre', 'LIKE', $textoSearch)
+                        ->orWhere('apellido', 'LIKE', $textoSearch)
+                        ->orWhere('identificacion', 'LIKE', $textoSearch);
                 });
             });
         }
@@ -279,12 +282,13 @@ class DocumentoController extends Controller
         // FILTRO: PROPIETARIO (con join optimizado)
         // -------------------------------------------------------
         if ($textoProp = $request->input('propietario')) {
+            $propSearch = $this->prepareLikeSearch($textoProp);
 
             // obtener IDs de propietarios filtrados
-            $propIds = Propietario::where(function ($qr) use ($textoProp) {
-                $qr->where('nombre', 'LIKE', "%{$textoProp}%")
-                    ->orWhere('apellido', 'LIKE', "%{$textoProp}%")
-                    ->orWhere('identificacion', 'LIKE', "%{$textoProp}%");
+            $propIds = Propietario::where(function ($qr) use ($propSearch) {
+                $qr->where('nombre', 'LIKE', $propSearch)
+                    ->orWhere('apellido', 'LIKE', $propSearch)
+                    ->orWhere('identificacion', 'LIKE', $propSearch);
             })->pluck('id_propietario');
 
             if ($propIds->isEmpty()) {
@@ -357,10 +361,11 @@ class DocumentoController extends Controller
         // FILTRO: POR CONDUCTOR (nombre/apellido/ID)
         // -------------------------------------------------------
         if ($texto = $request->input('conductor')) {
-            $conductorIds = Conductor::where(function ($qr) use ($texto) {
-                $qr->where('nombre', 'LIKE', "%{$texto}%")
-                    ->orWhere('apellido', 'LIKE', "%{$texto}%")
-                    ->orWhere('identificacion', 'LIKE', "%{$texto}%");
+            $textoSearch = $this->prepareLikeSearch($texto);
+            $conductorIds = Conductor::where(function ($qr) use ($textoSearch) {
+                $qr->where('nombre', 'LIKE', $textoSearch)
+                    ->orWhere('apellido', 'LIKE', $textoSearch)
+                    ->orWhere('identificacion', 'LIKE', $textoSearch);
             })->pluck('id_conductor');
 
             if ($conductorIds->isEmpty()) {
@@ -395,11 +400,12 @@ class DocumentoController extends Controller
         // FILTRO: POR PROPIETARIO (menos consultas)
         // -------------------------------------------------------
         if ($textoProp = $request->input('propietario')) {
+            $propSearch = $this->prepareLikeSearch($textoProp);
 
-            $propIds = Propietario::where(function ($qr) use ($textoProp) {
-                $qr->where('nombre', 'LIKE', "%{$textoProp}%")
-                    ->orWhere('apellido', 'LIKE', "%{$textoProp}%")
-                    ->orWhere('identificacion', 'LIKE', "%{$textoProp}%");
+            $propIds = Propietario::where(function ($qr) use ($propSearch) {
+                $qr->where('nombre', 'LIKE', $propSearch)
+                    ->orWhere('apellido', 'LIKE', $propSearch)
+                    ->orWhere('identificacion', 'LIKE', $propSearch);
             })->pluck('id_propietario');
 
             if ($propIds->isEmpty()) {
