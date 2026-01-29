@@ -14,21 +14,21 @@ use DB;
 class CheckDocumentExpirations extends Command
 {
     /**
-     * The name and signature of the console command.
+     *El nombre y la firma del comando de la consola.
      *
      * @var string
      */
     protected $signature = 'check:document-expirations';
 
     /**
-     * The console command description.
+     * La descripción del comando de consola.
      *
      * @var string
      */
     protected $description = 'Revisa documentos próximos a vencer y vencidos, crea alertas y nitifica.';
 
     /**
-     * Execute the console command.
+     * Ejecuta el comando de la consola.
      */
     public function handle()
     {

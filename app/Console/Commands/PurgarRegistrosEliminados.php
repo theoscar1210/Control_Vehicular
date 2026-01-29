@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 class PurgarRegistrosEliminados extends Command
 {
     /**
-     * The name and signature of the console command.
+     *El nombre y la firma del comando de la consola.
      *
      * @var string
      */
@@ -24,14 +24,14 @@ class PurgarRegistrosEliminados extends Command
                             {--dry-run : Simular sin eliminar realmente}';
 
     /**
-     * The console command description.
+     * Descripción del comando de la consola.
      *
      * @var string
      */
     protected $description = 'Eliminar permanentemente vehículos, conductores y propietarios que fueron eliminados hace más de 6 meses';
 
     /**
-     * Execute the console command.
+     * Ejecuta el comando de la consola.
      */
     public function handle()
     {

@@ -15,7 +15,7 @@ class VehiculoController extends Controller
 {
     use SanitizesSearchInput;
     /**
-     * Display a listing of the resource.
+     Mostrar una lista de los recursos.
      */
     public function index(Request $request)
     {
@@ -66,7 +66,7 @@ class VehiculoController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar el formulario para crear un nuevo recurso.
      */
     public function create(Request $request)
     {
@@ -82,7 +82,7 @@ class VehiculoController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacenar un recurso recién creado en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -126,7 +126,7 @@ class VehiculoController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostrar el formulario para editar el recurso especificado.
      */
     public function edit($id)
     {
@@ -144,7 +144,7 @@ class VehiculoController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, $id)
     {

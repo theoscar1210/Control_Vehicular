@@ -11,21 +11,21 @@ use Carbon\Carbon;
 class EnviarAlertasSemanales extends Command
 {
     /**
-     * The name and signature of the console command.
+     * El nombre y la firma del comando de la consola.
      *
      * @var string
      */
     protected $signature = 'alertas:enviar-semanales';
 
     /**
-     * The console command description.
+     * La descripción del comando de consola.
      *
      * @var string
      */
     protected $description = 'Envía resumen semanal de alertas pendientes (documentos no renovados) por correo electrónico';
 
     /**
-     * Execute the console command.
+     * Ejecuta el comando de la consola.
      */
     public function handle()
     {
