@@ -116,12 +116,12 @@
                                         <td>{{ $doc->tipo_documento }}</td>
                                         <td>
                                             @if($doc->categoria_licencia)
-                                                <span class="badge bg-info">{{ $doc->categoria_licencia }}</span>
-                                                @if($doc->categorias_adicionales)
-                                                    <small class="text-muted d-block">+{{ $doc->categorias_adicionales }}</small>
-                                                @endif
+                                            <span class="badge bg-info">{{ $doc->categoria_licencia }}</span>
+                                            @if($doc->categorias_adicionales)
+                                            <small class="text-muted d-block">+{{ $doc->categorias_adicionales }}</small>
+                                            @endif
                                             @else
-                                                <span class="text-muted">-</span>
+                                            <span class="text-muted">-</span>
                                             @endif
                                         </td>
                                         <td>{{ $doc->numero_documento }}</td>
@@ -180,10 +180,10 @@
                                 <select name="documento_tipo" id="documento_tipo_edit" class="form-select border-success-subtle">
                                     <option value="">-- Seleccionar --</option>
                                     <option value="Licencia Conducción" {{ old('documento_tipo') == 'Licencia Conducción' ? 'selected' : '' }}>Licencia Conducción</option>
-                                    <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }}>EPS</option>
-                                    <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }}>ARL</option>
-                                    <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }}>Certificado Médico</option>
-                                    <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                    <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }} disabled>EPS</option>
+                                    <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }} disabled>ARL</option>
+                                    <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }} disabled>Certificado Médico</option>
+                                    <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }} disabled>Otro</option>
                                 </select>
                             </div>
 
@@ -199,11 +199,6 @@
                                         <option value="B1" {{ old('categoria_licencia') == 'B1' ? 'selected' : '' }}>B1 - Automóviles, Camperos, Camionetas</option>
                                         <option value="B2" {{ old('categoria_licencia') == 'B2' ? 'selected' : '' }}>B2 - Camiones, Buses</option>
                                         <option value="B3" {{ old('categoria_licencia') == 'B3' ? 'selected' : '' }}>B3 - Vehículos Articulados</option>
-                                    </optgroup>
-                                    <optgroup label="Servicio Público">
-                                        <option value="C1" {{ old('categoria_licencia') == 'C1' ? 'selected' : '' }}>C1 - Taxi</option>
-                                        <option value="C2" {{ old('categoria_licencia') == 'C2' ? 'selected' : '' }}>C2 - Bus/Buseta Público</option>
-                                        <option value="C3" {{ old('categoria_licencia') == 'C3' ? 'selected' : '' }}>C3 - Carga Pública</option>
                                     </optgroup>
                                 </select>
                             </div>

@@ -167,10 +167,10 @@
                                                 <label class="form-label fw-semibold">Tipo de Documento</label>
                                                 <select name="documento_tipo" id="documento_tipo" class="form-select rounded-3 border-success-subtle">
                                                     <option value="Licencia Conducción">Licencia Conducción</option>
-                                                    <option value="Certificado Médico">Certificado Médico</option>
-                                                    <option value="ARL">ARL</option>
-                                                    <option value="EPS">EPS</option>
-                                                    <option value="Otro">Otro</option>
+                                                    <option value="Certificado Médico" disabled>Certificado Médico</option>
+                                                    <option value="ARL" disabled>ARL</option>
+                                                    <option value="EPS" disabled>EPS</option>
+                                                    <option value="Otro" disabled>Otro</option>
                                                 </select>
                                             </div>
 
