@@ -77,6 +77,7 @@ class DocumentoConductor extends Model
         'tipo_documento',
         'categoria_licencia',
         'categorias_adicionales',
+        'fechas_por_categoria',
         'numero_documento',
         'entidad_emisora',
         'fecha_emision',
@@ -97,6 +98,7 @@ class DocumentoConductor extends Model
         'fecha_emision' => 'date',
         'fecha_vencimiento' => 'date',
         'fecha_registro' => 'datetime',
+        'fechas_por_categoria' => 'array',
     ];
 
     /**
@@ -276,5 +278,80 @@ class DocumentoConductor extends Model
             Carbon::parse($this->fecha_vencimiento)->startOfDay(),
             false
         );
+    }
+
+    /**
+     * Obtener las fechas de una categoría específica
+     */
+    public function getFechasCategoria(string $categoria): ?array
+    {
+        $fechas = $this->fechas_por_categoria;
+        return $fechas[$categoria] ?? null;
+    }
+
+    /**
+     * Establecer fechas para una categoría específica
+     */
+    public function setFechasCategoria(string $categoria, ?string $fechaEmision, ?string $fechaVencimiento): void
+    {
+        $fechas = $this->fechas_por_categoria ?? [];
+        $fechas[$categoria] = [
+            'fecha_emision' => $fechaEmision,
+            'fecha_vencimiento' => $fechaVencimiento,
+        ];
+        $this->fechas_por_categoria = $fechas;
+    }
+
+    /**
+     * Calcular la fecha de vencimiento más próxima de todas las categorías
+     * Esta será usada como fecha_vencimiento principal del documento
+     */
+    public function calcularFechaVencimientoMasProxima(): ?Carbon
+    {
+        $fechas = $this->fechas_por_categoria;
+
+        if (empty($fechas)) {
+            return $this->fecha_vencimiento ? Carbon::parse($this->fecha_vencimiento) : null;
+        }
+
+        $fechaMinima = null;
+
+        foreach ($fechas as $categoria => $data) {
+            if (!empty($data['fecha_vencimiento'])) {
+                $fecha = Carbon::parse($data['fecha_vencimiento']);
+                if ($fechaMinima === null || $fecha->lt($fechaMinima)) {
+                    $fechaMinima = $fecha;
+                }
+            }
+        }
+
+        return $fechaMinima;
+    }
+
+    /**
+     * Obtener la categoría con el vencimiento más próximo
+     */
+    public function getCategoriaProximaAVencer(): ?string
+    {
+        $fechas = $this->fechas_por_categoria;
+
+        if (empty($fechas)) {
+            return $this->categoria_licencia;
+        }
+
+        $categoriaMinima = null;
+        $fechaMinima = null;
+
+        foreach ($fechas as $categoria => $data) {
+            if (!empty($data['fecha_vencimiento'])) {
+                $fecha = Carbon::parse($data['fecha_vencimiento']);
+                if ($fechaMinima === null || $fecha->lt($fechaMinima)) {
+                    $fechaMinima = $fecha;
+                    $categoriaMinima = $categoria;
+                }
+            }
+        }
+
+        return $categoriaMinima;
     }
 }

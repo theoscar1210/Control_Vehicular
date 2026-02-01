@@ -286,7 +286,122 @@ class ReporteController extends Controller
     }
 
     /**
-     * 5. REPORTE HISTÓRICO
+     * 5. REPORTE POR CONDUCTOR
+     */
+    public function conductores(Request $request)
+    {
+        $navbarEspecial = true;
+
+        $query = Conductor::with(['vehiculos' => function($q) {
+            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+                $q2->where('activo', 1);
+            }, 'propietario']);
+        }, 'documentosConductor' => function($q) {
+            $q->where('activo', 1);
+        }])->where('activo', 1);
+
+        if ($request->filled('conductor')) {
+            $query->where('id_conductor', $request->conductor);
+        }
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('apellido', 'LIKE', "%{$buscar}%")
+                  ->orWhere('identificacion', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        $conductores = $query->orderBy('nombre')->get();
+
+        // Calcular estado documental de cada conductor
+        $conductores = $conductores->map(function($conductor) {
+            // Estado de documentos del conductor (licencia)
+            $conductor->estado_documentos = $this->calcularEstadoDocumentosConductor($conductor);
+
+            // Calcular estado de cada vehículo asignado
+            $conductor->vehiculos = $conductor->vehiculos->map(function($vehiculo) {
+                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                return $vehiculo;
+            });
+
+            // Estadísticas del conductor
+            $conductor->stats = [
+                'total_vehiculos' => $conductor->vehiculos->count(),
+                'vehiculos_vigentes' => $conductor->vehiculos->where('estado_general.estado', 'VIGENTE')->count(),
+                'vehiculos_por_vencer' => $conductor->vehiculos->where('estado_general.estado', 'POR_VENCER')->count(),
+                'vehiculos_vencidos' => $conductor->vehiculos->where('estado_general.estado', 'VENCIDO')->count(),
+            ];
+
+            return $conductor;
+        });
+
+        // Estadísticas generales
+        $estadisticas = [
+            'total_conductores' => $conductores->count(),
+            'total_vehiculos' => $conductores->sum('stats.total_vehiculos'),
+            'vehiculos_vigentes' => $conductores->sum('stats.vehiculos_vigentes'),
+            'vehiculos_por_vencer' => $conductores->sum('stats.vehiculos_por_vencer'),
+            'vehiculos_vencidos' => $conductores->sum('stats.vehiculos_vencidos'),
+            'licencias_vigentes' => $conductores->where('estado_documentos.estado', 'VIGENTE')->count(),
+            'licencias_por_vencer' => $conductores->where('estado_documentos.estado', 'POR_VENCER')->count(),
+            'licencias_vencidas' => $conductores->where('estado_documentos.estado', 'VENCIDO')->count(),
+        ];
+
+        // Lista de todos los conductores para el filtro
+        $listaConductores = Conductor::where('activo', 1)->orderBy('nombre')->get();
+
+        return view('reportes.conductores', compact('conductores', 'estadisticas', 'listaConductores', 'navbarEspecial'));
+    }
+
+    /**
+     * Calcular estado documental del conductor (principalmente licencia)
+     */
+    private function calcularEstadoDocumentosConductor($conductor)
+    {
+        $documentos = $conductor->documentosConductor;
+
+        if ($documentos->isEmpty()) {
+            return [
+                'estado' => 'SIN_DOCUMENTOS',
+                'clase' => 'secondary',
+                'icono' => 'fas fa-question-circle',
+                'texto' => 'Sin documentos'
+            ];
+        }
+
+        $tieneVencido = $documentos->where('estado', 'VENCIDO')->count() > 0;
+        $tienePorVencer = $documentos->where('estado', 'POR_VENCER')->count() > 0;
+
+        if ($tieneVencido) {
+            return [
+                'estado' => 'VENCIDO',
+                'clase' => 'danger',
+                'icono' => 'fas fa-times-circle',
+                'texto' => 'Licencia vencida'
+            ];
+        }
+
+        if ($tienePorVencer) {
+            return [
+                'estado' => 'POR_VENCER',
+                'clase' => 'warning',
+                'icono' => 'fas fa-exclamation-triangle',
+                'texto' => 'Próximo a vencer'
+            ];
+        }
+
+        return [
+            'estado' => 'VIGENTE',
+            'clase' => 'success',
+            'icono' => 'fas fa-check-circle',
+            'texto' => 'Documentos vigentes'
+        ];
+    }
+
+    /**
+     * 6. REPORTE HISTÓRICO
      */
     public function historico(Request $request)
     {
@@ -361,6 +476,8 @@ class ReporteController extends Controller
                 return $this->exportAlertasPdf($request);
             case 'propietarios':
                 return $this->exportPropietariosPdf($request);
+            case 'conductores':
+                return $this->exportConductoresPdf($request);
             case 'historico':
                 return $this->exportHistoricoPdf($request);
             default:
@@ -380,6 +497,8 @@ class ReporteController extends Controller
                 return $this->exportAlertasExcel($request);
             case 'propietarios':
                 return $this->exportPropietariosExcel($request);
+            case 'conductores':
+                return $this->exportConductoresExcel($request);
             case 'historico':
                 return $this->exportHistoricoExcel($request);
             default:
@@ -511,6 +630,110 @@ class ReporteController extends Controller
         $pdf->setPaper('letter', 'portrait');
 
         return $pdf->download('reporte_propietarios_' . date('Y-m-d') . '.pdf');
+    }
+
+    private function exportConductoresPdf(Request $request)
+    {
+        $query = Conductor::with(['vehiculos' => function($q) {
+            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+                $q2->where('activo', 1);
+            }]);
+        }, 'documentosConductor' => function($q) {
+            $q->where('activo', 1);
+        }])->where('activo', 1);
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('apellido', 'LIKE', "%{$buscar}%")
+                  ->orWhere('identificacion', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        $conductores = $query->orderBy('nombre')->get();
+
+        $conductores = $conductores->map(function($conductor) {
+            $conductor->estado_documentos = $this->calcularEstadoDocumentosConductor($conductor);
+            $conductor->vehiculos = $conductor->vehiculos->map(function($vehiculo) {
+                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                return $vehiculo;
+            });
+            return $conductor;
+        });
+
+        $pdf = Pdf::loadView('reportes.pdf.conductores', compact('conductores'));
+        $pdf->setPaper('letter', 'portrait');
+
+        return $pdf->download('reporte_conductores_' . date('Y-m-d') . '.pdf');
+    }
+
+    private function exportConductoresExcel(Request $request)
+    {
+        $query = Conductor::with(['vehiculos' => function($q) {
+            $q->where('estado', 'Activo');
+        }, 'documentosConductor' => function($q) {
+            $q->where('activo', 1);
+        }])->where('activo', 1);
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('apellido', 'LIKE', "%{$buscar}%")
+                  ->orWhere('identificacion', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        $conductores = $query->orderBy('nombre')->get();
+
+        $filename = 'reporte_conductores_' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($conductores) {
+            $file = fopen('php://output', 'w');
+
+            $limpiar = function($texto) {
+                if (is_numeric($texto)) return $texto;
+                return mb_convert_encoding((string)$texto, 'Windows-1252', 'UTF-8');
+            };
+
+            fputcsv($file, array_map($limpiar, [
+                'Nombre', 'Apellido', 'Tipo Doc', 'Identificacion', 'Telefono',
+                'Tel. Emergencia', 'Activo', 'Num. Licencia', 'Categoria',
+                'Categorias Adicionales', 'Vencimiento Licencia', 'Estado Licencia',
+                'Vehiculos Asignados'
+            ]), ';');
+
+            foreach ($conductores as $c) {
+                $licencia = $c->documentosConductor->where('tipo_documento', 'Licencia Conducción')->first();
+                $placas = $c->vehiculos->pluck('placa')->implode(' | ');
+
+                fputcsv($file, array_map($limpiar, [
+                    $c->nombre,
+                    $c->apellido,
+                    $c->tipo_doc,
+                    $c->identificacion,
+                    $c->telefono ?? '-',
+                    $c->telefono_emergencia ?? '-',
+                    $c->activo ? 'Si' : 'No',
+                    $licencia->numero_documento ?? '-',
+                    $licencia->categoria_licencia ?? '-',
+                    $licencia->categorias_adicionales ?? '-',
+                    $licencia && $licencia->fecha_vencimiento ? Carbon::parse($licencia->fecha_vencimiento)->format('d/m/Y') : '-',
+                    $licencia ? $licencia->estado : 'SIN LICENCIA',
+                    $placas ?: 'Sin vehiculos'
+                ]), ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     private function exportHistoricoPdf(Request $request)

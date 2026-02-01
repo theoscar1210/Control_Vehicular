@@ -2007,3 +2007,107 @@ tbody tr {
         margin-left: 0.5rem;
     }
 }
+
+/* ============================================
+   NAVBAR ESPECIAL - Responsive para vistas con navbar-collapse
+============================================ */
+
+/* Navbar toggler mejorado */
+.navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(91, 130, 56, 0.25);
+}
+
+.navbar-toggler:hover {
+    background-color: rgba(91, 130, 56, 0.1);
+}
+
+/* Menú colapsado en móvil */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 0 0 12px 12px;
+        padding: 1rem;
+        z-index: 1050;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+
+    .navbar-collapse .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .navbar-collapse .nav-item {
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .navbar-collapse .nav-item:last-child {
+        border-bottom: none;
+    }
+
+    .navbar-collapse .nav-link {
+        padding: 0.85rem 1rem;
+        color: #2c3e50;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .navbar-collapse .nav-link:hover {
+        background-color: rgba(91, 130, 56, 0.1);
+        color: #5B8238;
+    }
+
+    /* Dropdown dentro del navbar colapsado */
+    .navbar-collapse .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        box-shadow: none;
+        border: none;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+    }
+
+    .navbar-collapse .dropdown-item {
+        border-radius: 6px;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .navbar-collapse .dropdown-item:hover {
+        background-color: rgba(91, 130, 56, 0.15);
+    }
+}
+
+/* Ajustes específicos para pantallas pequeñas */
+@media (max-width: 575px) {
+    .navbar-collapse {
+        padding: 0.75rem;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .navbar-collapse .nav-link {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.9rem;
+    }
+
+    .navbar-collapse .dropdown-item {
+        padding: 0.6rem 0.85rem;
+        font-size: 0.85rem;
+    }
+}

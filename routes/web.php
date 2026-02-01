@@ -175,6 +175,9 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             // Reporte por Propietario
             Route::get('/propietarios', [ReporteController::class, 'propietarios'])->name('propietarios');
 
+            // Reporte por Conductor
+            Route::get('/conductores', [ReporteController::class, 'conductores'])->name('conductores');
+
             // Reporte Histórico
             Route::get('/historico', [ReporteController::class, 'historico'])->name('historico');
 

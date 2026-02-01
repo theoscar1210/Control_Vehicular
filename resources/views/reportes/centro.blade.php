@@ -175,6 +175,44 @@ $sinPadding = true;
             </div>
         </div>
 
+
+
+
+        {{-- Reporte por Conductor--}}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 reporte-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-user-tie fa-lg text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Reporte por Conductor</h5>
+                            <small class="text-muted">Agrupado por conductor</small>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted small">
+                        Vehículos agrupados por conductor con resumen de estado documental.
+                        Ideal para notificar a propietarios sobre vencimientos.
+                    </p>
+                    <ul class="list-unstyled small text-muted mb-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Datos del conductor</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Vehículos asociados</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Estado por vehículo</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Resumen consolidado</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ route('reportes.conductores') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-users me-2"></i>Ver Conductores
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+
         {{-- Reporte Histórico --}}
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 reporte-card">

@@ -167,10 +167,11 @@
                                                 <label class="form-label fw-semibold">Tipo de Documento</label>
                                                 <select name="documento_tipo" id="documento_tipo" class="form-select rounded-3 border-success-subtle">
                                                     <option value="Licencia Conducción">Licencia Conducción</option>
-                                                    <option value="Certificado Médico" disabled>Certificado Médico</option>
-                                                    <option value="ARL" disabled>ARL</option>
-                                                    <option value="EPS" disabled>EPS</option>
-                                                    <option value="Otro" disabled>Otro</option>
+                                                    {{-- Opciones deshabilitadas para futuras actualizaciones --}}
+                                                    {{-- <option value="Certificado Médico">Certificado Médico</option> --}}
+                                                    {{-- <option value="ARL">ARL</option> --}}
+                                                    {{-- <option value="EPS">EPS</option> --}}
+                                                    {{-- <option value="Otro">Otro</option> --}}
                                                 </select>
                                             </div>
 
@@ -213,6 +214,9 @@
                                                     </div>
                                                     @endforeach
                                                 </div>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>Si selecciona categorías adicionales, podrá ingresar fechas diferentes para cada una
+                                                </small>
                                             </div>
 
                                             <div class="col-12">
@@ -222,22 +226,33 @@
                                                     value="{{ old('documento_numero') }}">
                                             </div>
 
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">F. Emisión</label>
-                                                <input type="date" name="documento_fecha_emision" id="documento_fecha_emision"
-                                                    class="form-control rounded-3 border-success-subtle"
-                                                    value="{{ old('documento_fecha_emision') }}">
+                                            {{-- Fechas de la categoría principal --}}
+                                            <div class="col-12" id="fechas_principal">
+                                                <div class="border rounded-3 p-3 bg-light">
+                                                    <label class="form-label fw-semibold text-success">
+                                                        <i class="bi bi-calendar-check me-1"></i>
+                                                        Fechas Categoría Principal
+                                                        <span id="label_categoria_principal" class="badge bg-success ms-1"></span>
+                                                    </label>
+                                                    <div class="row g-2">
+                                                        <div class="col-6">
+                                                            <label class="form-label small">F. Emisión</label>
+                                                            <input type="date" name="documento_fecha_emision" id="documento_fecha_emision"
+                                                                class="form-control rounded-3 border-success-subtle"
+                                                                value="{{ old('documento_fecha_emision') }}">
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <label class="form-label small">F. Vencimiento</label>
+                                                            <input type="date" name="documento_fecha_vencimiento" id="documento_fecha_vencimiento"
+                                                                class="form-control rounded-3 border-success-subtle"
+                                                                value="{{ old('documento_fecha_vencimiento') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <div class="col-12">
-                                                <label class="form-label fw-semibold">F. Vencimiento</label>
-                                                <input type="date" name="documento_fecha_vencimiento" id="documento_fecha_vencimiento"
-                                                    class="form-control rounded-3 border-success-subtle"
-                                                    value="{{ old('documento_fecha_vencimiento') }}">
-                                                <small class="text-muted">
-                                                    <i class="bi bi-info-circle me-1"></i>Ingrese la fecha de vencimiento según su licencia
-                                                </small>
-                                            </div>
+                                            {{-- Contenedor para fechas de categorías adicionales (dinámico) --}}
+                                            <div class="col-12" id="fechas_adicionales_container"></div>
 
                                             <div class="col-12">
                                                 <label class="form-label fw-semibold">Entidad Emisora</label>
@@ -263,7 +278,7 @@
                                 <i class="bi bi-check-circle me-2"></i>Crear Conductor
                             </button>
 
-                            <a href="{{ url()->previous() }}" class="btn btn-outline-danger ms-2 rounded-3">
+                            <a href="{{ route('conductores.index') }}" class="btn btn-outline-danger ms-2 rounded-3">
                                 <i class="bi bi-x-circle me-1"></i>Cancelar
                             </a>
                         </div>
@@ -288,33 +303,97 @@
         const tipoDoc = document.getElementById('documento_tipo').value;
         const seccionCat = document.getElementById('seccion_categorias');
         const seccionCatAd = document.getElementById('seccion_categorias_adicionales');
+        const fechasPrincipal = document.getElementById('fechas_principal');
 
         if (tipoDoc === 'Licencia Conducción') {
             seccionCat.style.display = 'block';
             seccionCatAd.style.display = 'block';
+            fechasPrincipal.style.display = 'block';
         } else {
             seccionCat.style.display = 'none';
             seccionCatAd.style.display = 'none';
+            fechasPrincipal.style.display = 'none';
         }
+    }
+
+    // Actualizar label de categoría principal
+    function actualizarLabelCategoriaPrincipal() {
+        const catPrincipal = document.getElementById('categoria_licencia');
+        const label = document.getElementById('label_categoria_principal');
+        if (catPrincipal && label) {
+            label.textContent = catPrincipal.value || '';
+        }
+    }
+
+    // Agregar/quitar campos de fecha para categorías adicionales
+    function actualizarFechasAdicionales() {
+        const container = document.getElementById('fechas_adicionales_container');
+        const catPrincipal = document.getElementById('categoria_licencia').value;
+        const checkboxes = document.querySelectorAll('.categoria-adicional:checked');
+
+        container.innerHTML = '';
+
+        checkboxes.forEach(function(checkbox) {
+            const cat = checkbox.value;
+            // No mostrar si es igual a la categoría principal
+            if (cat === catPrincipal) return;
+
+            const oldEmision = '{{ old("fechas_categoria." + cat + ".fecha_emision", "") }}' || '';
+            const oldVencimiento = '{{ old("fechas_categoria." + cat + ".fecha_vencimiento", "") }}' || '';
+
+            const html = `
+                <div class="border rounded-3 p-3 mt-2 bg-white" id="fechas_cat_${cat}">
+                    <label class="form-label fw-semibold text-info">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        Fechas Categoría ${cat}
+                        <span class="badge bg-info ms-1">${cat}</span>
+                    </label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">F. Emisión</label>
+                            <input type="date" name="fechas_categoria[${cat}][fecha_emision]"
+                                class="form-control form-control-sm rounded-3 border-info-subtle"
+                                value="${oldEmision}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">F. Vencimiento</label>
+                            <input type="date" name="fechas_categoria[${cat}][fecha_vencimiento]"
+                                class="form-control form-control-sm rounded-3 border-info-subtle"
+                                value="${oldVencimiento}">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
     }
 
     // Event listeners
     document.getElementById('documento_tipo').addEventListener('change', toggleSeccionCategorias);
 
-    // Deshabilitar categoría principal si está seleccionada como adicional
+    document.getElementById('categoria_licencia').addEventListener('change', function() {
+        actualizarLabelCategoriaPrincipal();
+        actualizarFechasAdicionales();
+    });
+
+    // Deshabilitar categoría principal si está seleccionada como adicional y actualizar fechas
     document.querySelectorAll('.categoria-adicional').forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
             const catPrincipal = document.getElementById('categoria_licencia');
             if (this.checked && catPrincipal.value === this.value) {
                 this.checked = false;
                 alert('Esta categoría ya está seleccionada como principal');
+                return;
             }
+            actualizarFechasAdicionales();
         });
     });
 
     // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         toggleSeccionCategorias();
+        actualizarLabelCategoriaPrincipal();
+        actualizarFechasAdicionales();
     });
 
     $(document).ready(function() {

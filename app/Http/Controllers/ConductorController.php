@@ -102,6 +102,11 @@ class ConductorController extends Controller
             'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
             'categorias_adicionales' => 'nullable|array',
             'categorias_adicionales.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
+
+            // Fechas por categoría adicional
+            'fechas_categoria' => 'nullable|array',
+            'fechas_categoria.*.fecha_emision' => 'nullable|date',
+            'fechas_categoria.*.fecha_vencimiento' => 'nullable|date',
         ];
 
         $validated = $request->validate($rules);
@@ -141,10 +146,51 @@ class ConductorController extends Controller
                 }
             }
 
-            // Calcular estado basado en fecha de vencimiento
+            // Procesar fechas por categoría
+            $fechasPorCategoria = [];
+
+            // Agregar fecha de la categoría principal
+            if (!empty($validated['categoria_licencia'])) {
+                $fechasPorCategoria[$validated['categoria_licencia']] = [
+                    'fecha_emision' => $validated['documento_fecha_emision'] ?? null,
+                    'fecha_vencimiento' => $validated['documento_fecha_vencimiento'] ?? null,
+                ];
+            }
+
+            // Agregar fechas de categorías adicionales
+            if (!empty($validated['fechas_categoria'])) {
+                foreach ($validated['fechas_categoria'] as $cat => $fechas) {
+                    if (!empty($fechas['fecha_emision']) || !empty($fechas['fecha_vencimiento'])) {
+                        $fechasPorCategoria[$cat] = [
+                            'fecha_emision' => $fechas['fecha_emision'] ?? null,
+                            'fecha_vencimiento' => $fechas['fecha_vencimiento'] ?? null,
+                        ];
+                    }
+                }
+            }
+
+            // Calcular la fecha de vencimiento más próxima de todas las categorías
+            $fechaVencimientoFinal = $validated['documento_fecha_vencimiento'] ?? null;
+
+            if (!empty($fechasPorCategoria)) {
+                $fechaMinima = null;
+                foreach ($fechasPorCategoria as $cat => $fechas) {
+                    if (!empty($fechas['fecha_vencimiento'])) {
+                        $fecha = \Carbon\Carbon::parse($fechas['fecha_vencimiento']);
+                        if ($fechaMinima === null || $fecha->lt($fechaMinima)) {
+                            $fechaMinima = $fecha;
+                        }
+                    }
+                }
+                if ($fechaMinima) {
+                    $fechaVencimientoFinal = $fechaMinima->format('Y-m-d');
+                }
+            }
+
+            // Calcular estado basado en fecha de vencimiento más próxima
             $estado = 'VIGENTE';
-            if (!empty($validated['documento_fecha_vencimiento'])) {
-                $fechaVenc = \Carbon\Carbon::parse($validated['documento_fecha_vencimiento']);
+            if (!empty($fechaVencimientoFinal)) {
+                $fechaVenc = \Carbon\Carbon::parse($fechaVencimientoFinal);
                 if (now()->greaterThan($fechaVenc)) {
                     $estado = 'VENCIDO';
                 } elseif (now()->diffInDays($fechaVenc, false) <= 20) {
@@ -157,10 +203,11 @@ class ConductorController extends Controller
                 'tipo_documento' => $validated['documento_tipo'] ?? 'Licencia Conducción',
                 'categoria_licencia' => $validated['categoria_licencia'] ?? null,
                 'categorias_adicionales' => $categoriasAdicionales,
+                'fechas_por_categoria' => !empty($fechasPorCategoria) ? $fechasPorCategoria : null,
                 'numero_documento' => $validated['documento_numero'],
                 'entidad_emisora' => $validated['entidad_emisora'] ?? null,
                 'fecha_emision' => $validated['documento_fecha_emision'] ?? null,
-                'fecha_vencimiento' => $validated['documento_fecha_vencimiento'] ?? null,
+                'fecha_vencimiento' => $fechaVencimientoFinal,
                 'estado' => $estado,
                 'activo' => 1,
                 'creado_por' => Auth::id(),

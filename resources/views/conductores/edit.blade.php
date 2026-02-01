@@ -180,10 +180,11 @@
                                 <select name="documento_tipo" id="documento_tipo_edit" class="form-select border-success-subtle">
                                     <option value="">-- Seleccionar --</option>
                                     <option value="Licencia Conducción" {{ old('documento_tipo') == 'Licencia Conducción' ? 'selected' : '' }}>Licencia Conducción</option>
-                                    <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }} disabled>EPS</option>
-                                    <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }} disabled>ARL</option>
-                                    <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }} disabled>Certificado Médico</option>
-                                    <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }} disabled>Otro</option>
+                                    {{-- Opciones deshabilitadas para futuras actualizaciones --}}
+                                    {{-- <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }}>EPS</option> --}}
+                                    {{-- <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }}>ARL</option> --}}
+                                    {{-- <option value="Certificado Médico" {{ old('documento_tipo') == 'Certificado Médico' ? 'selected' : '' }}>Certificado Médico</option> --}}
+                                    {{-- <option value="Otro" {{ old('documento_tipo') == 'Otro' ? 'selected' : '' }}>Otro</option> --}}
                                 </select>
                             </div>
 
@@ -223,7 +224,7 @@
                             <button type="submit" class="btn btn-success px-4">
                                 <i class="bi bi-save"></i> Actualizar
                             </button>
-                            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary ms-2">
+                            <a href="{{ route('conductores.index') }}" class="btn btn-outline-secondary ms-2">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
