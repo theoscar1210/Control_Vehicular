@@ -575,7 +575,7 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Fecha Emisión <span class="text-danger">*</span></label>
+                                <label class="form-label">Fecha Vigencia <span class="text-danger">*</span></label>
                                 <input type="date" name="fecha_emision" id="fecha_emision_soat"
                                     class="form-control @error('fecha_emision') is-invalid @enderror"
                                     value="{{ old('tipo_documento') == 'SOAT' ? old('fecha_emision') : '' }}" required>
@@ -722,7 +722,7 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Fecha Emisión <span class="text-danger">*</span></label>
+                                <label class="form-label">Fecha Expedicíon <span class="text-danger">*</span></label>
                                 <input type="date" name="fecha_emision" id="fecha_emision_tecno"
                                     class="form-control @error('fecha_emision') is-invalid @enderror"
                                     value="{{ old('tipo_documento') == 'Tecnomecanica' ? old('fecha_emision') : '' }}" required>
