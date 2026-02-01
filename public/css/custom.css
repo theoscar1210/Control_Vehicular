@@ -47,10 +47,11 @@ elementos comunes
 ============================ */
 
 .login-container {
-    height: auto;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 2rem 1rem;
 }
 
 .login-card {
@@ -69,6 +70,12 @@ elementos comunes
     text-align: center;
 }
 
+.login-card h4,
+.login-card h5 {
+    text-align: center;
+    color: var(--color-texto);
+}
+
 .footer-text {
     text-align: center;
     color: var(--color-terciario);
@@ -84,52 +91,186 @@ elementos comunes
     display: block;
     margin: 0 auto 1rem auto;
 }
+
 /* ============================
-   Responsive Login
+   Responsive Login - Tablet (768px - 991px)
 ============================ */
-@media (max-width: 576px) {
-    .login-card {
-        padding: 1rem;
+@media (min-width: 768px) and (max-width: 991px) {
+    .login-container {
+        padding: 1.5rem;
     }
 
     .login-card {
-        padding: 1.2rem;
-        border-radius: 0.75rem;
-        max-width: 100%;
-        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        padding: 1.75rem;
     }
+
     .brand-logo {
-        max-width: 100px;
-        margin-bottom: 0.8rem;
+        max-width: 150px;
     }
 
     .login-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .login-card h4 {
         font-size: 1.1rem;
+    }
+
+    .login-card h5 {
+        font-size: 0.95rem;
+    }
+}
+
+/* ============================
+   Responsive Login - Mobile Landscape (576px - 767px)
+============================ */
+@media (min-width: 576px) and (max-width: 767px) {
+    .login-container {
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    .login-card {
+        max-width: 380px;
+        padding: 1.5rem;
+    }
+
+    .brand-logo {
+        max-width: 130px;
+        margin-bottom: 0.75rem;
+    }
+
+    .login-card h3 {
+        font-size: 1.25rem;
         margin-bottom: 0.5rem;
     }
+
     .login-card h4 {
         font-size: 1rem;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.3rem;
     }
+
     .login-card h5 {
         font-size: 0.9rem;
         margin-bottom: 1rem;
     }
 
     .form-control-lg {
+        font-size: 0.9rem;
+        padding: 0.65rem 0.75rem 0.65rem 2.5rem;
+    }
+}
+
+/* ============================
+   Responsive Login - Small Mobile (< 576px)
+============================ */
+@media (max-width: 575px) {
+    .login-container {
+        padding: 0.75rem;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .login-card {
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        max-width: 100%;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .brand-logo {
+        max-width: 100px;
+        margin-bottom: 0.75rem;
+    }
+
+    .login-card h3 {
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-card h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .login-card h5 {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .login-card .form-control-lg {
         font-size: 0.85rem;
         padding: 0.6rem 0.75rem 0.6rem 2.2rem;
     }
 
-    .btn-principal {
+    .login-card .btn-principal {
         font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.4rem;
+        padding: 0.6rem 0.75rem;
+        border-radius: 0.5rem;
     }
+
     .footer-text {
-        font-size: 0.75rem;
-        padding: 0.5rem 1rem;
-        line-height: 1.2;
+        font-size: 0.72rem;
+        padding: 0.5rem 0.75rem;
+        line-height: 1.3;
+    }
+
+    /* Ajustar iconos dentro de inputs */
+    .login-card .position-absolute.ps-3 {
+        padding-left: 0.75rem !important;
+    }
+}
+
+/* ============================
+   Responsive Login - Extra Small (< 400px)
+============================ */
+@media (max-width: 400px) {
+    .login-container {
+        padding: 0.5rem;
+        padding-top: 1.5rem;
+    }
+
+    .login-card {
+        padding: 1rem;
+        border-radius: 0.6rem;
+    }
+
+    .brand-logo {
+        max-width: 80px;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-card h3 {
+        font-size: 1.05rem;
+    }
+
+    .login-card h4 {
+        font-size: 0.9rem;
+    }
+
+    .login-card h5 {
+        font-size: 0.8rem;
+    }
+
+    .login-card .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .login-card .form-control-lg {
+        font-size: 0.82rem;
+        padding: 0.5rem 0.6rem 0.5rem 2rem;
+    }
+
+    .login-card .btn-principal {
+        font-size: 0.85rem;
+        padding: 0.55rem 0.6rem;
+    }
+
+    .footer-text {
+        font-size: 0.68rem;
+        padding: 0.4rem 0.5rem;
     }
 }
 /* ============================
@@ -313,15 +454,22 @@ Sidebar lateral
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1015;
+    z-index: 1019;
     display: none;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
 .sidebar-overlay.active {
     display: block;
     opacity: 1;
+    visibility: visible;
+}
+
+/* Body cuando el menú está abierto - prevenir scroll */
+body.sidebar-open {
+    overflow: hidden;
 }
 
 /* RESPONSIVE - Tablet y Mobile */
@@ -370,7 +518,7 @@ Sidebar lateral
     }
 
     .topbar {
-        top: 700px;
+        top: 60px;
         height: 45px;
         padding: 0 1rem;
     }
@@ -942,4 +1090,920 @@ tbody tr {
 .hoja-pdf {
     display: table-header-group; /* 👈 fuerza a Dompdf a mostrar encabezado */
     background-color: #5b8238;
+}
+
+/*==============================================================================
+    RESPONSIVE - SISTEMA COMPLETO PARA TODOS LOS DISPOSITIVOS
+    Mobile First: 576px -> 768px -> 992px -> 1200px -> 1400px
+==============================================================================*/
+
+/* ============================================
+   EXTRA LARGE DEVICES (xxl: >= 1400px)
+   Monitores grandes y pantallas 4K
+============================================ */
+@media (min-width: 1400px) {
+    .content {
+        padding: 2.5rem 3rem;
+    }
+
+    .sidebar {
+        width: 260px;
+    }
+
+    .content {
+        margin-left: 260px;
+    }
+
+    .topbar {
+        left: 260px;
+    }
+
+    /* Tablas más espaciadas */
+    .table th,
+    .table td {
+        padding: 1rem 1.25rem;
+    }
+
+    /* Cards del dashboard más grandes */
+    .stat-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .stat-card h3 {
+        font-size: 2.25rem;
+    }
+
+    /* Container más amplio */
+    .container-fluid {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* ============================================
+   LARGE DEVICES (xl: 1200px - 1399px)
+   Laptops y monitores estándar
+============================================ */
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .content {
+        padding: 2rem 2.5rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.85rem;
+    }
+
+    /* Dropdown de notificaciones más ancho */
+    .dropdown-menu[aria-labelledby="notificacionesDropdown"] {
+        min-width: 380px;
+    }
+}
+
+/* ============================================
+   MEDIUM-LARGE DEVICES (lg: 992px - 1199px)
+   Tablets grandes y laptops pequeñas
+============================================ */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .content {
+        margin-left: 220px;
+        padding: 1.5rem;
+    }
+
+    .topbar {
+        left: 220px;
+    }
+
+    .sidebar .nav-link {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.6rem;
+    }
+
+    .stat-card h6 {
+        font-size: 0.8rem;
+    }
+
+    /* Ajustar tabla */
+    .table th,
+    .table td {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================================
+   TABLET DEVICES (md: 768px - 991px)
+   iPads y tablets
+============================================ */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Navbar */
+    .navbar {
+        height: 65px;
+    }
+
+    /* Sidebar oculto con overlay */
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        top: 65px;
+        height: calc(100vh - 65px);
+        box-shadow: none;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Contenido ocupa todo el ancho */
+    .content {
+        margin-left: 0;
+        margin-top: 65px;
+        padding: 1.25rem;
+    }
+
+    /* Topbar ajustado */
+    .topbar {
+        left: 0;
+        top: 65px;
+        height: 48px;
+    }
+
+    .content.con-sidebar {
+        margin-top: 113px; /* 65px navbar + 48px topbar */
+    }
+
+    /* Mostrar botón hamburguesa */
+    .btn-toggle-menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-toggle-menu:hover {
+        background-color: rgba(91, 130, 56, 0.1);
+    }
+
+    /* Dashboard cards - 2 por fila en tablet */
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Navbar ajustes */
+    .navbar-logo {
+        height: 35px;
+    }
+
+    .text-titulo {
+        font-size: 0.95rem;
+    }
+
+    .navbar-brand small {
+        font-size: 0.7rem;
+    }
+
+    /* Botones de acción más pequeños */
+    .btn-sm {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Tabla responsiva */
+    .table-responsive {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Dropdown notificaciones */
+    .dropdown-menu[aria-labelledby="notificacionesDropdown"] {
+        min-width: 320px;
+        max-width: 90vw;
+        right: -50px !important;
+    }
+
+    /* Formularios */
+    .form-control-lg {
+        font-size: 0.95rem;
+        padding: 0.65rem 0.9rem;
+    }
+
+    /* Cards generales */
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* Paginación compacta */
+    .pagination .page-link {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================
+   MOBILE DEVICES (sm: 576px - 767px)
+   Smartphones en landscape
+============================================ */
+@media (min-width: 576px) and (max-width: 767px) {
+    .navbar {
+        height: 56px;
+        padding: 0 0.75rem;
+    }
+
+    .navbar-logo {
+        height: 32px;
+    }
+
+    .text-titulo {
+        font-size: 0.85rem;
+    }
+
+    .navbar-brand small {
+        display: none;
+    }
+
+    /* Sidebar oculto por defecto */
+    .sidebar {
+        transform: translateX(-100%);
+        top: 56px;
+        height: calc(100vh - 56px);
+        width: 260px;
+        box-shadow: none;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .content {
+        margin-left: 0;
+        margin-top: 56px;
+        padding: 1rem;
+    }
+
+    .topbar {
+        left: 0;
+        top: 56px;
+        height: 42px;
+    }
+
+    .btn-toggle-menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .content.con-sidebar {
+        margin-top: 98px;
+    }
+
+    /* Dashboard - 2 cards por fila */
+    .row.g-3 > [class*="col-md-3"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .stat-card h3 {
+        font-size: 1.35rem;
+    }
+
+    .stat-card h6 {
+        font-size: 0.75rem;
+    }
+
+    /* Tablas - scroll horizontal mejorado */
+    .table-responsive {
+        border-radius: 8px;
+        box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        font-size: 0.82rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+        min-width: 80px;
+    }
+
+    /* Columnas de acción más compactas */
+    .table td:last-child {
+        min-width: 100px;
+    }
+
+    /* Botones */
+    .btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-sm {
+        padding: 0.3rem 0.45rem;
+        font-size: 0.75rem;
+    }
+
+    /* Cards */
+    .card-header {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+    }
+
+    /* Alertas */
+    .alert {
+        font-size: 0.8rem;
+        padding: 0.65rem 0.85rem;
+    }
+
+    /* List group items */
+    .list-group-item {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Dropdown de notificaciones */
+    .dropdown-menu[aria-labelledby="notificacionesDropdown"] {
+        min-width: 280px;
+        max-width: 85vw;
+        position: fixed !important;
+        top: 56px !important;
+        right: 10px !important;
+        left: auto !important;
+    }
+
+    /* Formularios */
+    .form-label {
+        font-size: 0.85rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 1rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* Badges más pequeños */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* ============================================
+   SMALL MOBILE DEVICES (xs: < 576px)
+   Smartphones pequeños
+============================================ */
+@media (max-width: 575px) {
+    /* Navbar ultra compacta */
+    .navbar {
+        height: 52px;
+        padding: 0 0.5rem;
+    }
+
+    .navbar-logo {
+        height: 28px;
+    }
+
+    .text-titulo {
+        font-size: 0.8rem;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .navbar-brand small {
+        display: none;
+    }
+
+    .navbar .nav-link {
+        padding: 0.35rem;
+    }
+
+    .circulo-redondo {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+
+    /* Sidebar oculto por defecto */
+    .sidebar {
+        transform: translateX(-100%);
+        top: 52px;
+        height: calc(100vh - 52px);
+        width: 100%;
+        max-width: 280px;
+        box-shadow: none;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar .nav-link {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Contenido */
+    .content {
+        margin-left: 0;
+        margin-top: 52px;
+        padding: 0.75rem;
+    }
+
+    .topbar {
+        left: 0;
+        top: 52px;
+        height: 40px;
+        padding: 0 0.5rem;
+    }
+
+    .btn-toggle-menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .content.con-sidebar {
+        margin-top: 92px;
+    }
+
+    /* Dashboard - 1 card por fila en móvil pequeño */
+    .row.g-3 > [class*="col-md-3"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .stat-card {
+        margin-bottom: 0.75rem;
+    }
+
+    .stat-card .card-body {
+        padding: 0.85rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .stat-card h6 {
+        font-size: 0.8rem;
+    }
+
+    /* Encabezados de sección */
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    h3 {
+        font-size: 1.15rem;
+    }
+
+    h4 {
+        font-size: 1.05rem;
+    }
+
+    h5 {
+        font-size: 0.95rem;
+    }
+
+    /* Tablas - estilo stack para móvil */
+    .table-responsive {
+        margin: 0 -0.75rem;
+        border-radius: 0;
+    }
+
+    .table {
+        font-size: 0.78rem;
+    }
+
+    .table thead {
+        font-size: 0.75rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.4rem 0.35rem;
+        vertical-align: middle;
+    }
+
+    .table th i,
+    .table td i {
+        display: none;
+    }
+
+    /* Ocultar columnas menos importantes en móvil */
+    .table .d-none-mobile {
+        display: none !important;
+    }
+
+    /* Botones de acción en tabla - stack vertical */
+    .table td .d-flex.gap-2 {
+        flex-direction: column;
+        gap: 0.25rem !important;
+    }
+
+    .table td .btn-sm {
+        width: 100%;
+        padding: 0.35rem;
+        font-size: 0.7rem;
+    }
+
+    /* Botones generales */
+    .btn {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* Grupos de botones en stack */
+    .d-flex.gap-2:not(.align-items-center):not(.justify-content-between) {
+        flex-direction: column;
+    }
+
+    /* Cards */
+    .card {
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-header {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .card-footer {
+        padding: 0.6rem 0.75rem;
+    }
+
+    /* Dropdown notificaciones - pantalla completa */
+    .dropdown-menu[aria-labelledby="notificacionesDropdown"] {
+        position: fixed !important;
+        top: 52px !important;
+        left: 5px !important;
+        right: 5px !important;
+        width: calc(100vw - 10px) !important;
+        max-width: none !important;
+        max-height: 70vh;
+        border-radius: 8px;
+    }
+
+    .dropdown-menu .dropdown-item {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Formularios */
+    .form-label {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.85rem;
+        padding: 0.45rem 0.65rem;
+    }
+
+    .form-control-lg {
+        font-size: 0.9rem;
+        padding: 0.55rem 0.75rem;
+    }
+
+    /* Input groups */
+    .input-group {
+        flex-direction: column;
+    }
+
+    .input-group > .form-control,
+    .input-group > .btn {
+        width: 100%;
+        border-radius: 6px !important;
+    }
+
+    .input-group > .form-control {
+        margin-bottom: 0.5rem;
+    }
+
+    .input-group-text {
+        display: none;
+    }
+
+    /* Buscador - vertical en móvil */
+    .row.g-3 > [class*="col-md-10"],
+    .row.g-3 > [class*="col-md-2"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Alertas */
+    .alert {
+        font-size: 0.78rem;
+        padding: 0.6rem 0.75rem;
+        border-radius: 6px;
+    }
+
+    /* List group */
+    .list-group-item {
+        padding: 0.65rem;
+        font-size: 0.82rem;
+    }
+
+    .list-group-item .d-flex.gap-2 {
+        flex-direction: column;
+        margin-top: 0.5rem;
+    }
+
+    .list-group-item .btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Paginación compacta */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination .page-link {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .pagination .page-item {
+        margin: 2px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    /* Footer */
+    footer {
+        padding: 0.75rem;
+        font-size: 0.7rem;
+    }
+
+    /* Badges */
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.4rem;
+    }
+
+    /* Modales */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-header,
+    .modal-footer {
+        padding: 0.75rem;
+    }
+
+    .modal-body {
+        padding: 0.75rem;
+    }
+
+    .modal-title {
+        font-size: 1rem;
+    }
+
+    /* Progress bars */
+    .progress-wrapper {
+        padding: 0.75rem;
+    }
+
+    .icon-modern {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+}
+
+/* ============================================
+   UTILIDADES RESPONSIVE ADICIONALES
+============================================ */
+
+/* Ocultar en móvil */
+@media (max-width: 767px) {
+    .d-mobile-none {
+        display: none !important;
+    }
+}
+
+/* Mostrar solo en móvil */
+@media (min-width: 768px) {
+    .d-mobile-only {
+        display: none !important;
+    }
+}
+
+/* Texto truncado responsive */
+.text-truncate-mobile {
+    max-width: 100%;
+}
+
+@media (max-width: 767px) {
+    .text-truncate-mobile {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 575px) {
+    .text-truncate-mobile {
+        max-width: 100px;
+    }
+}
+
+/* Scroll horizontal suave para tablas */
+.table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(91, 130, 56, 0.5) transparent;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(91, 130, 56, 0.5);
+    border-radius: 3px;
+}
+
+/* Indicador de scroll horizontal */
+.table-responsive::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.table-responsive:hover::after {
+    opacity: 1;
+}
+
+/* Botones flotantes responsive */
+.btn-floating-action {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 575px) {
+    .btn-floating-action {
+        bottom: 15px;
+        right: 15px;
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* Espaciado vertical responsive */
+.my-responsive {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 767px) {
+    .my-responsive {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .my-responsive {
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Grid gaps responsive */
+.gap-responsive {
+    gap: 1.5rem;
+}
+
+@media (max-width: 767px) {
+    .gap-responsive {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .gap-responsive {
+        gap: 0.75rem;
+    }
+}
+
+/* Contenedor de acciones responsive */
+.actions-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 575px) {
+    .actions-container {
+        flex-direction: column;
+    }
+
+    .actions-container .btn {
+        width: 100%;
+    }
+}
+
+/* Fix para el topbar en móvil pequeño */
+@media (max-width: 575px) {
+    .topbar {
+        top: 52px !important;
+    }
+}
+
+/* Mejora de touch targets para móvil */
+@media (max-width: 767px) {
+    .nav-link,
+    .dropdown-item,
+    .btn,
+    .page-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-toggle::after {
+        margin-left: 0.5rem;
+    }
 }

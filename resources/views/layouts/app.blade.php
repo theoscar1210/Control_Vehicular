@@ -312,37 +312,72 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
 
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
+            const isOpen = sidebar.classList.toggle('open');
+            overlay.classList.toggle('active', isOpen);
+            body.classList.toggle('sidebar-open', isOpen);
         }
 
         // Cerrar Sidebar
         function closeSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
 
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
+            body.classList.remove('sidebar-open');
         }
 
-        // Cerrar sidebar al hacer click en un enlace (solo en móvil)
+        // Inicialización cuando el DOM está listo
         document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
             const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+            const toggleBtn = document.querySelector('.btn-toggle-menu');
 
+            // Cerrar sidebar al hacer click en un enlace (solo en móvil/tablet)
             sidebarLinks.forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function(e) {
+                    // No cerrar si es un collapse toggle
+                    if (this.getAttribute('data-bs-toggle') === 'collapse') {
+                        return;
+                    }
                     if (window.innerWidth <= 991) {
                         closeSidebar();
                     }
                 });
             });
 
+            // Cerrar sidebar con tecla Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
+
+            // Cerrar sidebar al hacer resize si pasa a desktop
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (window.innerWidth > 991 && sidebar) {
+                        closeSidebar();
+                    }
+                }, 100);
+            });
+
             // Marcar enlace activo
             const currentPath = window.location.pathname;
             sidebarLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
+                const href = link.getAttribute('href');
+                if (href === currentPath || (href && currentPath.startsWith(href) && href !== '/')) {
                     link.classList.add('active');
+                    // Abrir el collapse parent si existe
+                    const parentCollapse = link.closest('.collapse');
+                    if (parentCollapse) {
+                        parentCollapse.classList.add('show');
+                    }
                 }
             });
 

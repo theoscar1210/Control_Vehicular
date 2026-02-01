@@ -5,15 +5,14 @@
             <img src="{{ asset('imagenes/Logo_solo.png') }}" alt="Logo" class="navbar-logo me-2">
             <div class="d-flex flex-column lh-sm">
                 <span class="text-titulo">Control Vehicular</span>
-
             </div>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarEspecial">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarEspecial" aria-controls="navbarEspecial" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarEspecial">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav me-auto">
 
 
                 <li class="nav-item">
