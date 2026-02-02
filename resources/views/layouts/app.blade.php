@@ -39,13 +39,18 @@
     @elseif(empty($ocultarNavbar))
 
     {{-- Navbar Principal --}}
-    <nav class=" navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-        <div class="container-fluid px-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid px-3 px-md-4">
+            {{-- Boton hamburguesa - Solo visible en movil/tablet --}}
+            <button class="btn-toggle-menu d-lg-none me-2" onclick="toggleSidebar()" type="button" aria-label="Abrir menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
                 <img src="{{ asset('imagenes/Logo_solo.png') }}" alt="Logo" class="navbar-logo me-2">
                 <div class="d-flex flex-column lh-sm">
                     <span class="text-titulo">Control Vehicular</span>
-                    <small class="text-muted">Club Campestre Altos del Chicalá</small>
+                    <small class="text-muted d-none d-sm-block">Club Campestre Altos del Chicala</small>
                 </div>
             </a>
 
@@ -284,12 +289,9 @@
     </div>
 
 
-    {{-- Topbar --}}
-    <nav class="topbar">
-        <button class="btn-toggle-menu" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
+    {{-- Topbar - Solo visible en desktop --}}
+    <nav class="topbar d-none d-lg-flex">
+        {{-- Espacio para breadcrumbs u otros elementos si se necesitan --}}
     </nav>
 
     {{-- Contenido Principal --}}

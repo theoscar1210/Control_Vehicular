@@ -223,20 +223,6 @@ $sinPadding = true;
     @endforelse
 </div>
 
-<style>
-    .avatar-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 1.1rem;
-    }
-</style>
-
 <script>
     function exportarReporte(formato) {
         const params = new URLSearchParams(window.location.search);

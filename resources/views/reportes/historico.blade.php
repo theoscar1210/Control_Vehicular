@@ -327,16 +327,6 @@ $sinPadding = true;
     </div>
 </div>
 
-<style>
-    .cronologia-punto {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #5B8238;
-        box-shadow: 0 0 0 4px rgba(91, 130, 56, 0.2);
-    }
-</style>
-
 <script>
     function exportarReporte(formato) {
         const params = new URLSearchParams(window.location.search);

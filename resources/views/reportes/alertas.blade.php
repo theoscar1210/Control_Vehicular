@@ -110,15 +110,23 @@ $sinPadding = true;
                         <label class="form-label fw-semibold">Tipo de Documento</label>
                         <select name="tipo_documento" class="form-select">
                             <option value="">Todos</option>
-                            <optgroup label="Vehículos">
-                                @foreach($tiposDocumentoVehiculo as $tipo)
-                                <option value="{{ $tipo }}" {{ request('tipo_documento') == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                                @endforeach
+                            <optgroup label="Vehiculos">
+                                <option value="SOAT" {{ request('tipo_documento') == 'SOAT' ? 'selected' : '' }}>SOAT</option>
+                                <option value="Tecnomecanica" {{ request('tipo_documento') == 'Tecnomecanica' ? 'selected' : '' }}>Tecnomecanica</option>
+                                <option value="Tarjeta Propiedad" {{ request('tipo_documento') == 'Tarjeta Propiedad' ? 'selected' : '' }}>Tarjeta Propiedad</option>
+                                {{-- Comentados para futuras actualizaciones
+                                <option value="Poliza" {{ request('tipo_documento') == 'Poliza' ? 'selected' : '' }}>Poliza</option>
+                                <option value="Otro" {{ request('tipo_documento') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                --}}
                             </optgroup>
                             <optgroup label="Conductores">
-                                @foreach($tiposDocumentoConductor as $tipo)
-                                <option value="{{ $tipo }}" {{ request('tipo_documento') == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                                @endforeach
+                                <option value="Licencia Conduccion" {{ request('tipo_documento') == 'Licencia Conduccion' ? 'selected' : '' }}>Licencia Conduccion</option>
+                                {{-- Comentados para futuras actualizaciones
+                                <option value="EPS" {{ request('tipo_documento') == 'EPS' ? 'selected' : '' }}>EPS</option>
+                                <option value="ARL" {{ request('tipo_documento') == 'ARL' ? 'selected' : '' }}>ARL</option>
+                                <option value="Certificado Medico" {{ request('tipo_documento') == 'Certificado Medico' ? 'selected' : '' }}>Certificado Medico</option>
+                                <option value="Otro" {{ request('tipo_documento') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                                --}}
                             </optgroup>
                         </select>
                     </div>
@@ -333,40 +341,6 @@ $sinPadding = true;
         </div>
     </div>
 </div>
-
-<style>
-    .semaforo {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        display: inline-block;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .semaforo-success {
-        background-color: #28a745;
-    }
-
-    .semaforo-warning {
-        background-color: #ffc107;
-    }
-
-    .semaforo-danger {
-        background-color: #dc3545;
-    }
-
-    .semaforo-grande {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .timeline-mes {
-        border-left: 3px solid #5B8238;
-        padding-left: 20px;
-    }
-</style>
 
 <script>
     function exportarReporte(formato) {

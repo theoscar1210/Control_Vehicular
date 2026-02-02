@@ -439,11 +439,26 @@ Sidebar lateral
 .btn-toggle-menu {
     background: none;
     border: none;
-    font-size: 1.2rem;
-    color: #2c3e50;
+    font-size: 1.4rem;
+    color: var(--color-principal);
     cursor: pointer;
-    margin-right: 1rem;
-    display: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.btn-toggle-menu:hover {
+    background-color: rgba(91, 130, 56, 0.1);
+    color: var(--color-principal);
+}
+
+.btn-toggle-menu:active {
+    background-color: rgba(91, 130, 56, 0.2);
 }
 
 /* Overlay para móvil */
@@ -489,14 +504,14 @@ body.sidebar-open {
         margin-left: 0;
     }
 
-    /* Topbar también ocupa todo el ancho */
+    /* Topbar oculto en movil - el boton hamburguesa esta en el navbar */
     .topbar {
-        left: 0;
+        display: none !important;
     }
 
-    /* Mostrar botón hamburguesa en topbar */
-    .btn-toggle-menu {
-        display: block;
+    /* Ajustar margin del contenido sin topbar */
+    .content.con-sidebar {
+        margin-top: 70px;
     }
 }
 
@@ -1240,19 +1255,13 @@ tbody tr {
         margin-top: 113px; /* 65px navbar + 48px topbar */
     }
 
-    /* Mostrar botón hamburguesa */
-    .btn-toggle-menu {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        transition: background-color 0.2s ease;
+    /* Topbar oculto en tablet */
+    .topbar {
+        display: none !important;
     }
 
-    .btn-toggle-menu:hover {
-        background-color: rgba(91, 130, 56, 0.1);
+    .content.con-sidebar {
+        margin-top: 65px;
     }
 
     /* Dashboard cards - 2 por fila en tablet */
@@ -1368,19 +1377,11 @@ tbody tr {
     }
 
     .topbar {
-        left: 0;
-        top: 56px;
-        height: 42px;
-    }
-
-    .btn-toggle-menu {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: none !important;
     }
 
     .content.con-sidebar {
-        margin-top: 98px;
+        margin-top: 56px;
     }
 
     /* Dashboard - 2 cards por fila */
@@ -1551,20 +1552,11 @@ tbody tr {
     }
 
     .topbar {
-        left: 0;
-        top: 52px;
-        height: 40px;
-        padding: 0 0.5rem;
-    }
-
-    .btn-toggle-menu {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: none !important;
     }
 
     .content.con-sidebar {
-        margin-top: 92px;
+        margin-top: 52px;
     }
 
     /* Dashboard - 1 card por fila en móvil pequeño */
@@ -1985,10 +1977,10 @@ tbody tr {
     }
 }
 
-/* Fix para el topbar en móvil pequeño */
-@media (max-width: 575px) {
+/* Topbar oculto en movil - el boton hamburguesa esta en el navbar */
+@media (max-width: 991px) {
     .topbar {
-        top: 52px !important;
+        display: none !important;
     }
 }
 
@@ -2109,5 +2101,285 @@ tbody tr {
     .navbar-collapse .dropdown-item {
         padding: 0.6rem 0.85rem;
         font-size: 0.85rem;
+    }
+}
+
+/* ==============================================================================
+   ESTILOS PARA MÓDULO DE REPORTES
+   Sección dedicada a todos los componentes visuales del módulo de reportes
+============================================================================== */
+
+/* ============================================
+   SEMÁFORO DE ESTADOS
+   Indicador visual circular para estados de documentos
+============================================ */
+.semaforo {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.semaforo-success {
+    background-color: #28a745;
+}
+
+.semaforo-warning {
+    background-color: #ffc107;
+}
+
+.semaforo-danger {
+    background-color: #dc3545;
+}
+
+.semaforo-secondary {
+    background-color: #6c757d;
+}
+
+/* Semáforo grande para estadísticas */
+.semaforo-grande {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Versión 20px para fichas detalladas */
+.semaforo-lg {
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   AVATARES
+   Círculos con iniciales para conductores/propietarios
+============================================ */
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.avatar-circle-sm {
+    width: 35px;
+    height: 35px;
+    font-size: 0.8rem;
+}
+
+.avatar-circle-lg {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+/* ============================================
+   PLACA DE VEHÍCULO
+   Estilo tipo matrícula colombiana
+============================================ */
+.placa-badge {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* ============================================
+   CARDS DE REPORTE
+   Cards con efecto hover para el centro de reportes
+============================================ */
+.reporte-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.reporte-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Icon box para cards de reporte */
+.icon-box {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   CRONOLOGÍA Y LÍNEA DE TIEMPO
+   Estilos para reportes históricos y alertas
+============================================ */
+.cronologia-punto {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #5B8238;
+    box-shadow: 0 0 0 4px rgba(91, 130, 56, 0.2);
+}
+
+.timeline-mes {
+    border-left: 3px solid #5B8238;
+    padding-left: 20px;
+}
+
+/* ============================================
+   ESTILOS DE IMPRESIÓN PARA FICHAS
+   Optimización para impresión de fichas de vehículos y conductores
+============================================ */
+@media print {
+    /* Ocultar elementos no imprimibles */
+    .no-print,
+    .sidebar,
+    .navbar,
+    .topbar {
+        display: none !important;
+    }
+
+    /* Ajustar contenido para impresión */
+    .content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Cards sin sombras y con bordes */
+    .ficha-container .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    /* Contenedor de ficha a ancho completo */
+    .ficha-container {
+        max-width: 100% !important;
+    }
+
+    /* Tamaño de fuente para impresión */
+    body {
+        font-size: 12px;
+    }
+
+    /* Mostrar pie de página en impresión */
+    .print-footer {
+        display: block !important;
+    }
+}
+
+/* Ocultar pie de impresión en pantalla */
+@media screen {
+    .print-footer {
+        display: none;
+    }
+}
+
+/* ============================================
+   RESPONSIVE PARA MÓDULO DE REPORTES
+============================================ */
+@media (max-width: 991px) {
+    .semaforo-grande {
+        width: 35px;
+        height: 35px;
+    }
+
+    .avatar-circle-lg {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 767px) {
+    .semaforo {
+        width: 14px;
+        height: 14px;
+    }
+
+    .semaforo-grande {
+        width: 30px;
+        height: 30px;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 0.95rem;
+    }
+
+    .avatar-circle-lg {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-box i {
+        font-size: 1rem;
+    }
+
+    .timeline-mes {
+        padding-left: 15px;
+    }
+
+    .cronologia-punto {
+        width: 12px;
+        height: 12px;
+    }
+
+    .reporte-card:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 575px) {
+    .semaforo {
+        width: 12px;
+        height: 12px;
+    }
+
+    .semaforo-grande {
+        width: 25px;
+        height: 25px;
+    }
+
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 0.85rem;
+    }
+
+    .avatar-circle-sm {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+    }
+
+    .avatar-circle-lg {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .icon-box {
+        width: 35px;
+        height: 35px;
+    }
+
+    .placa-badge {
+        letter-spacing: 1px;
+        font-size: 0.9rem;
     }
 }

@@ -234,17 +234,6 @@ $sinPadding = true;
     </div>
 </div>
 
-<style>
-    .avatar-circle {
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
-</style>
-
 <script>
     function exportarReporte(formato) {
         const form = document.getElementById('filtrosForm');
