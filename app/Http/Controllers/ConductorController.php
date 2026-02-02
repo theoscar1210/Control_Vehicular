@@ -103,9 +103,8 @@ class ConductorController extends Controller
             'categorias_adicionales' => 'nullable|array',
             'categorias_adicionales.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
 
-            // Fechas por categoría adicional
+            // Vencimiento por categoría adicional (solo fecha de vencimiento)
             'fechas_categoria' => 'nullable|array',
-            'fechas_categoria.*.fecha_emision' => 'nullable|date',
             'fechas_categoria.*.fecha_vencimiento' => 'nullable|date',
         ];
 
@@ -146,24 +145,23 @@ class ConductorController extends Controller
                 }
             }
 
-            // Procesar fechas por categoría
+            // Procesar vencimientos por categoría
+            // En Colombia, la licencia tiene una sola fecha de expedición pero cada categoría tiene su propio vencimiento
             $fechasPorCategoria = [];
 
-            // Agregar fecha de la categoría principal
+            // Agregar vencimiento de la categoría principal
             if (!empty($validated['categoria_licencia'])) {
                 $fechasPorCategoria[$validated['categoria_licencia']] = [
-                    'fecha_emision' => $validated['documento_fecha_emision'] ?? null,
                     'fecha_vencimiento' => $validated['documento_fecha_vencimiento'] ?? null,
                 ];
             }
 
-            // Agregar fechas de categorías adicionales
+            // Agregar vencimientos de categorías adicionales
             if (!empty($validated['fechas_categoria'])) {
                 foreach ($validated['fechas_categoria'] as $cat => $fechas) {
-                    if (!empty($fechas['fecha_emision']) || !empty($fechas['fecha_vencimiento'])) {
+                    if (!empty($fechas['fecha_vencimiento'])) {
                         $fechasPorCategoria[$cat] = [
-                            'fecha_emision' => $fechas['fecha_emision'] ?? null,
-                            'fecha_vencimiento' => $fechas['fecha_vencimiento'] ?? null,
+                            'fecha_vencimiento' => $fechas['fecha_vencimiento'],
                         ];
                     }
                 }

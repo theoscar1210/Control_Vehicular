@@ -184,7 +184,6 @@
             <small>
                 {{ $conductor->tipo_doc }} {{ $conductor->identificacion }}
                 @if($conductor->telefono) | Tel: {{ $conductor->telefono }} @endif
-                | {{ $conductor->vehiculos->count() }} vehículo(s) asignado(s)
             </small>
         </div>
 
@@ -211,30 +210,16 @@
         @endif
 
         @if($conductor->vehiculos->count() > 0)
-        <table>
-            <thead>
-                <tr>
-                    <th>Placa</th>
-                    <th>Tipo</th>
-                    <th>Marca/Modelo</th>
-                    <th>Propietario</th>
-                    <th>Estado Documental</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($conductor->vehiculos as $v)
-                <tr>
-                    <td><strong>{{ $v->placa }}</strong></td>
-                    <td>{{ $v->tipo }}</td>
-                    <td>{{ $v->marca }} {{ $v->modelo }}</td>
-                    <td>{{ $v->propietario ? $v->propietario->nombre . ' ' . $v->propietario->apellido : '-' }}</td>
-                    <td class="estado-{{ strtolower($v->estado_general['estado']) }}">{{ $v->estado_general['texto'] }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div style="margin-top: 5px;">
+            <strong style="font-size: 9px; color: #5B8238;">Vehículo(s) Asignado(s):</strong>
+            @foreach($conductor->vehiculos as $v)
+            <span class="badge badge-secondary" style="margin-left: 5px;">
+                {{ $v->placa }} - {{ $v->tipo }} ({{ $v->marca }} {{ $v->modelo }})
+            </span>
+            @endforeach
+        </div>
         @else
-        <p style="color: #666; padding: 10px;">Sin vehículos asignados</p>
+        <p style="color: #666; font-size: 9px; margin-top: 5px;">Sin vehículos asignados</p>
         @endif
     </div>
     @empty

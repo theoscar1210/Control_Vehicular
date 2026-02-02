@@ -178,6 +178,10 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             // Reporte por Conductor
             Route::get('/conductores', [ReporteController::class, 'conductores'])->name('conductores');
 
+            // Ficha detallada de un conductor
+            Route::get('/conductor/{id}/ficha', [ReporteController::class, 'fichaConductor'])->name('ficha.conductor');
+            Route::get('/conductor/{id}/ficha/pdf', [ReporteController::class, 'fichaConductorPdf'])->name('ficha.conductor.pdf');
+
             // Reporte Histórico
             Route::get('/historico', [ReporteController::class, 'historico'])->name('historico');
 

@@ -337,6 +337,14 @@ class ReporteController extends Controller
             return $conductor;
         });
 
+        // Filtrar por estado de licencia
+        $estadoLicenciaFiltro = $request->input('estado_licencia');
+        if ($estadoLicenciaFiltro) {
+            $conductores = $conductores->filter(function($conductor) use ($estadoLicenciaFiltro) {
+                return $conductor->estado_documentos['estado'] === $estadoLicenciaFiltro;
+            });
+        }
+
         // Estadísticas generales
         $estadisticas = [
             'total_conductores' => $conductores->count(),
@@ -353,6 +361,49 @@ class ReporteController extends Controller
         $listaConductores = Conductor::where('activo', 1)->orderBy('nombre')->get();
 
         return view('reportes.conductores', compact('conductores', 'estadisticas', 'listaConductores', 'navbarEspecial'));
+    }
+
+    /**
+     * Ficha detallada de un conductor
+     */
+    public function fichaConductor($id)
+    {
+        $navbarEspecial = true;
+
+        $conductor = Conductor::with([
+            'vehiculos' => function($q) {
+                $q->where('estado', 'Activo');
+            },
+            'documentosConductor'
+        ])->findOrFail($id);
+
+        $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();
+        $estadoGeneral = $this->calcularEstadoDocumentosConductor($conductor);
+        $historialDocumentos = $conductor->documentosConductor()->orderByDesc('fecha_registro')->get();
+
+        return view('reportes.ficha-conductor', compact('conductor', 'licencia', 'estadoGeneral', 'historialDocumentos', 'navbarEspecial'));
+    }
+
+    /**
+     * Exportar ficha de conductor a PDF
+     */
+    public function fichaConductorPdf($id)
+    {
+        $conductor = Conductor::with([
+            'vehiculos' => function($q) {
+                $q->where('estado', 'Activo');
+            },
+            'documentosConductor'
+        ])->findOrFail($id);
+
+        $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();
+        $estadoGeneral = $this->calcularEstadoDocumentosConductor($conductor);
+        $historialDocumentos = $conductor->documentosConductor()->orderByDesc('fecha_registro')->get();
+
+        $pdf = Pdf::loadView('reportes.pdf.ficha-conductor', compact('conductor', 'licencia', 'estadoGeneral', 'historialDocumentos'));
+        $pdf->setPaper('letter', 'portrait');
+
+        return $pdf->download('ficha_conductor_' . $conductor->identificacion . '_' . date('Y-m-d') . '.pdf');
     }
 
     /**

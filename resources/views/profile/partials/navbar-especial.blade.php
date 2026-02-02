@@ -59,7 +59,7 @@
 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('reportes.centro') }}">Consultas y Reportes</a>
+                    <a class="nav-link" href="{{ route('reportes.centro') }}">Centro de Reportes</a>
                 </li>
 
                 <li class="nav-item">

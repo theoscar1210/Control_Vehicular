@@ -281,22 +281,22 @@ class DocumentoConductor extends Model
     }
 
     /**
-     * Obtener las fechas de una categoría específica
+     * Obtener la fecha de vencimiento de una categoría específica
      */
-    public function getFechasCategoria(string $categoria): ?array
+    public function getVencimientoCategoria(string $categoria): ?string
     {
         $fechas = $this->fechas_por_categoria;
-        return $fechas[$categoria] ?? null;
+        return $fechas[$categoria]['fecha_vencimiento'] ?? null;
     }
 
     /**
-     * Establecer fechas para una categoría específica
+     * Establecer fecha de vencimiento para una categoría específica
+     * (La fecha de emisión es única para toda la licencia)
      */
-    public function setFechasCategoria(string $categoria, ?string $fechaEmision, ?string $fechaVencimiento): void
+    public function setVencimientoCategoria(string $categoria, ?string $fechaVencimiento): void
     {
         $fechas = $this->fechas_por_categoria ?? [];
         $fechas[$categoria] = [
-            'fecha_emision' => $fechaEmision,
             'fecha_vencimiento' => $fechaVencimiento,
         ];
         $this->fechas_por_categoria = $fechas;
