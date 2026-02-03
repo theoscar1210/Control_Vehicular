@@ -6,12 +6,17 @@
 @section('content')
 
 <div class="inicio-conductor">
-    <h3>
-        <i class="bi bi-person-lines-fill"></i> Crear Conductor
-
-    </h3>
-    <p>Ingrese la información del conductor</p>
-
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="mb-0">
+                <i class="bi bi-person-lines-fill"></i> Crear Conductor
+            </h3>
+            <p class="mb-0">Ingrese la información del conductor</p>
+        </div>
+        <a href="{{ route('conductores.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Regresar
+        </a>
+    </div>
 </div>
 <div class="container py-4">
 
