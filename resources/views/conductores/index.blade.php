@@ -265,6 +265,15 @@ $sinPadding = true;
                             {{-- ACCIONES --}}
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
+                                    {{-- Ver documentos --}}
+                                    <a href="{{ route('conductores.documentos.historial', $conductor->id_conductor) }}"
+                                        class="btn btn-sm shadow-sm"
+                                        style="background-color:#E8F5E9; color:#2E7D32; border-radius:8px;"
+                                        data-bs-toggle="tooltip"
+                                        title="Ver documentos">
+                                        <i class="fa-solid fa-file-lines"></i>
+                                    </a>
+
                                     {{-- Editar --}}
                                     @if (Auth::user()->rol === 'ADMIN' || Auth::user()->rol === 'SST')
                                     <a href="{{ route('conductores.edit', $conductor->id_conductor) }}"

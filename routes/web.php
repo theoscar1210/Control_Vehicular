@@ -129,6 +129,12 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::put('/{conductor}', [ConductorController::class, 'update'])->name('update');
             Route::delete('/{conductor}', [ConductorController::class, 'destroy'])->name('destroy');
             Route::post('/{id}/restore', [ConductorController::class, 'restore'])->name('restore');
+
+            // Documentos del conductor (historial y renovación)
+            Route::prefix('{conductor}/documentos')->name('documentos.')->group(function () {
+                Route::get('/historial', [DocumentoConductorController::class, 'historial'])->name('historial');
+                Route::post('/renovar', [DocumentoConductorController::class, 'renovar'])->name('renovar');
+            });
         });
 
         /*

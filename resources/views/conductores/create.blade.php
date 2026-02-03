@@ -196,19 +196,20 @@
                                                         <option value="B2" {{ old('categoria_licencia')=='B2'?'selected':'' }}>B2 - Camiones, Buses</option>
                                                         <option value="B3" {{ old('categoria_licencia')=='B3'?'selected':'' }}>B3 - Vehículos Articulados</option>
                                                     </optgroup>
-                                                    <optgroup label="Servicio Público">
+                                                    {{-- Categorías de Servicio Público (comentadas por ahora) --}}
+                                                    {{-- <optgroup label="Servicio Público">
                                                         <option value="C1" {{ old('categoria_licencia')=='C1'?'selected':'' }}>C1 - Taxi</option>
                                                         <option value="C2" {{ old('categoria_licencia')=='C2'?'selected':'' }}>C2 - Bus/Buseta Público</option>
                                                         <option value="C3" {{ old('categoria_licencia')=='C3'?'selected':'' }}>C3 - Carga Pública</option>
-                                                    </optgroup>
+                                                    </optgroup> --}}
                                                 </select>
                                             </div>
 
-                                            {{-- Categorías Adicionales --}}
+                                            {{-- Categorías Adicionales (sin servicio público) --}}
                                             <div class="col-12" id="seccion_categorias_adicionales">
                                                 <label class="form-label fw-semibold">Categorías Adicionales (opcional)</label>
                                                 <div class="row">
-                                                    @foreach(['A1','A2','B1','B2','B3','C1','C2','C3'] as $cat)
+                                                    @foreach(['A1','A2','B1','B2','B3'] as $cat)
                                                     <div class="col-4">
                                                         <div class="form-check">
                                                             <input class="form-check-input categoria-adicional" type="checkbox"
