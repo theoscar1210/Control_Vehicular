@@ -197,4 +197,138 @@ class Alerta extends Model
                 'motivo_solucion' => $motivo,
             ]);
     }
+
+    /**
+     * Generar alertas para un documento de conductor si está vencido o próximo a vencer.
+     * Este método se debe llamar después de crear o actualizar un documento.
+     *
+     * @param DocumentoConductor $documento El documento a evaluar
+     * @return int Número de alertas creadas
+     */
+    public static function generarAlertasDocumentoConductor(DocumentoConductor $documento): int
+    {
+        $hoy = \Carbon\Carbon::today();
+        $proximo = $hoy->copy()->addDays(15);
+        $creadas = 0;
+
+        // Si es una licencia de conducción con fechas por categoría
+        if ($documento->tipo_documento === 'Licencia Conducción' && !empty($documento->fechas_por_categoria)) {
+            $categoriasAMonitorear = $documento->getCategoriasAMonitorear();
+
+            foreach ($categoriasAMonitorear as $categoria) {
+                $fechaVencimiento = null;
+                $fechasPorCategoria = $documento->fechas_por_categoria;
+
+                if (isset($fechasPorCategoria[$categoria]['fecha_vencimiento'])) {
+                    $fechaVencimiento = \Carbon\Carbon::parse($fechasPorCategoria[$categoria]['fecha_vencimiento']);
+                }
+
+                if (!$fechaVencimiento) {
+                    continue;
+                }
+
+                // Verificar si está vencida o próxima a vencer
+                $necesitaAlerta = $fechaVencimiento->lt($hoy) ||
+                    ($fechaVencimiento->gte($hoy) && $fechaVencimiento->lte($proximo));
+
+                if (!$necesitaAlerta) {
+                    continue;
+                }
+
+                $tipo_v = $fechaVencimiento->lt($hoy) ? 'VENCIDO' : 'PROXIMO_VENCER';
+                $mensajeBusqueda = "Licencia categoría {$categoria}";
+
+                // Verificar si ya existe una alerta para esta categoría
+                $alertaExistente = self::where('tipo_vencimiento', $tipo_v)
+                    ->whereNull('deleted_at')
+                    ->where('id_doc_conductor', $documento->id_doc_conductor)
+                    ->where('mensaje', 'like', "%{$mensajeBusqueda}%")
+                    ->where('solucionada', false)
+                    ->exists();
+
+                if ($alertaExistente) {
+                    continue;
+                }
+
+                $nombreConductor = $documento->conductor
+                    ? "{$documento->conductor->nombre} {$documento->conductor->apellido}"
+                    : 'Conductor desconocido';
+
+                $mensaje = sprintf("Licencia categoría %s (%s) - %s - vence: %s",
+                    $categoria,
+                    $documento->numero_documento,
+                    $nombreConductor,
+                    $fechaVencimiento->format('Y-m-d')
+                );
+
+                self::create([
+                    'tipo_alerta' => 'CONDUCTOR',
+                    'id_doc_vehiculo' => null,
+                    'id_doc_conductor' => $documento->id_doc_conductor,
+                    'tipo_vencimiento' => $tipo_v,
+                    'mensaje' => $mensaje,
+                    'fecha_alerta' => \Carbon\Carbon::today(),
+                    'leida' => 0,
+                    'solucionada' => false,
+                    'visible_para' => 'TODOS',
+                    'creado_por' => null,
+                ]);
+                $creadas++;
+            }
+        } else {
+            // Para otros documentos o licencias sin fechas por categoría
+            if (!$documento->fecha_vencimiento) {
+                return 0;
+            }
+
+            $fechaVencimiento = \Carbon\Carbon::parse($documento->fecha_vencimiento);
+
+            $necesitaAlerta = $fechaVencimiento->lt($hoy) ||
+                ($fechaVencimiento->gte($hoy) && $fechaVencimiento->lte($proximo));
+
+            if (!$necesitaAlerta) {
+                return 0;
+            }
+
+            $tipo_v = $fechaVencimiento->lt($hoy) ? 'VENCIDO' : 'PROXIMO_VENCER';
+
+            // Verificar si ya existe una alerta
+            $alertaExistente = self::where('tipo_vencimiento', $tipo_v)
+                ->whereNull('deleted_at')
+                ->where('id_doc_conductor', $documento->id_doc_conductor)
+                ->where('solucionada', false)
+                ->exists();
+
+            if ($alertaExistente) {
+                return 0;
+            }
+
+            $nombreConductor = $documento->conductor
+                ? "{$documento->conductor->nombre} {$documento->conductor->apellido}"
+                : 'Conductor desconocido';
+
+            $mensaje = sprintf("Documento %s (%s) - %s - vence: %s",
+                $documento->tipo_documento,
+                $documento->numero_documento,
+                $nombreConductor,
+                $fechaVencimiento->format('Y-m-d')
+            );
+
+            self::create([
+                'tipo_alerta' => 'CONDUCTOR',
+                'id_doc_vehiculo' => null,
+                'id_doc_conductor' => $documento->id_doc_conductor,
+                'tipo_vencimiento' => $tipo_v,
+                'mensaje' => $mensaje,
+                'fecha_alerta' => \Carbon\Carbon::today(),
+                'leida' => 0,
+                'solucionada' => false,
+                'visible_para' => 'TODOS',
+                'creado_por' => null,
+            ]);
+            $creadas++;
+        }
+
+        return $creadas;
+    }
 }

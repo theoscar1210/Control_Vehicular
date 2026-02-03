@@ -72,11 +72,16 @@ $sinPadding = true;
                         </button>
                     </div>
                 </div>
-                <div class="mt-2">
+                <div class="mt-2 d-flex justify-content-between align-items-center">
                     <small class="text-muted">
                         <i class="fas fa-lightbulb me-1 text-warning"></i>
                         <strong>Tip:</strong> Seleccione "Todo" para buscar en placa, conductor, propietario o documento de identidad al mismo tiempo.
                     </small>
+                    @if($vehiculo || (isset($vehiculos) && $vehiculos->count() > 0))
+                    <a href="{{ route('porteria.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Limpiar búsqueda
+                    </a>
+                    @endif
                 </div>
             </form>
         </div>
@@ -408,6 +413,7 @@ $sinPadding = true;
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th style="width: 90px;">Tipo</th>
                             <th style="width: 100px;">Estado</th>
                             <th style="width: 100px;">Placa</th>
                             <th>Conductor</th>
@@ -444,8 +450,20 @@ $sinPadding = true;
                             }
 
                             $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
+                            $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
                         @endphp
                         <tr class="{{ $esVencido ? 'table-danger' : 'table-warning' }}">
+                            <td>
+                                @if($esAlertaVehiculo)
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-car me-1"></i>Vehículo
+                                </span>
+                                @else
+                                <span class="badge bg-info">
+                                    <i class="fas fa-user me-1"></i>Conductor
+                                </span>
+                                @endif
+                            </td>
                             <td>
                                 <span class="badge bg-{{ $esVencido ? 'danger' : 'warning' }} {{ !$esVencido ? 'text-dark' : '' }}">
                                     <i class="fas fa-{{ $esVencido ? 'times-circle' : 'exclamation-triangle' }} me-1"></i>

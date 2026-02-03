@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Conductor;
 use App\Models\Vehiculo;
 use App\Models\DocumentoConductor;
+use App\Models\Alerta;
 use App\Traits\SanitizesSearchInput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -209,7 +210,7 @@ class ConductorController extends Controller
                 $categoriasMonitoreadas = [$validated['categoria_licencia']];
             }
 
-            DocumentoConductor::create([
+            $documento = DocumentoConductor::create([
                 'id_conductor' => $conductor->id_conductor,
                 'tipo_documento' => $validated['documento_tipo'] ?? 'Licencia Conducción',
                 'categoria_licencia' => $validated['categoria_licencia'] ?? null,
@@ -226,6 +227,10 @@ class ConductorController extends Controller
                 'version' => 1,
                 'fecha_registro' => now(),
             ]);
+
+            // Generar alertas si el documento está vencido o próximo a vencer
+            $documento->load('conductor');
+            Alerta::generarAlertasDocumentoConductor($documento);
         }
 
         return redirect()->route('conductores.index')->with('success', 'Conductor creado correctamente.');
@@ -398,11 +403,15 @@ class ConductorController extends Controller
                     ]);
 
                     // Marcar alertas del documento anterior como solucionadas
-                    \App\Models\Alerta::solucionarPorDocumentoConductor(
+                    Alerta::solucionarPorDocumentoConductor(
                         $last->id_doc_conductor,
                         'DOCUMENTO_RENOVADO'
                     );
                 }
+
+                // Generar alertas si el nuevo documento está vencido o próximo a vencer
+                $newDoc->load('conductor');
+                Alerta::generarAlertasDocumentoConductor($newDoc);
             }
         });
 
