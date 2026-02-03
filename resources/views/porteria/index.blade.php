@@ -37,28 +37,46 @@ $sinPadding = true;
     </div>
     @endif
 
-    {{-- Buscador de Placas - Ancho Completo --}}
+    {{-- Buscador Múltiple - Ancho Completo --}}
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header" style="background-color: #5B8238; color: white;">
-            <h5 class="mb-0"><i class="fas fa-search me-2"></i>Consultar Vehículo por Placa</h5>
+            <h5 class="mb-0"><i class="fas fa-search me-2"></i>Consultar Vehículo</h5>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('porteria.index') }}">
-                <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light">
-                        <i class="fas fa-car text-success"></i>
-                    </span>
-                    <input type="text"
-                        name="placa"
-                        class="form-control text-uppercase fs-4"
-                        placeholder="Ingrese la placa (Ej: ABC123)"
-                        value="{{ $placaBuscada ?? '' }}"
-                        maxlength="10"
-                        required
-                        autofocus>
-                    <button type="submit" class="btn btn-universal px-4">
-                        <i class="fas fa-search me-1"></i>Buscar
-                    </button>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small mb-1">Buscar por:</label>
+                        <select name="tipo_busqueda" class="form-select" id="tipoBusqueda">
+                            <option value="todo" {{ ($tipoBusqueda ?? 'todo') === 'todo' ? 'selected' : '' }}>Todo (Global)</option>
+                            <option value="placa" {{ ($tipoBusqueda ?? '') === 'placa' ? 'selected' : '' }}>Placa</option>
+                            <option value="conductor" {{ ($tipoBusqueda ?? '') === 'conductor' ? 'selected' : '' }}>Conductor</option>
+                            <option value="propietario" {{ ($tipoBusqueda ?? '') === 'propietario' ? 'selected' : '' }}>Propietario</option>
+                            <option value="documento" {{ ($tipoBusqueda ?? '') === 'documento' ? 'selected' : '' }}>Documento Identidad</option>
+                        </select>
+                    </div>
+                    <div class="col-md-7">
+                        <label class="form-label fw-semibold small mb-1" id="labelBusqueda">Término de búsqueda:</label>
+                        <input type="text"
+                            name="busqueda"
+                            class="form-control form-control-lg text-uppercase"
+                            placeholder="Placa, nombre, cédula..."
+                            value="{{ $busqueda ?? '' }}"
+                            maxlength="50"
+                            required
+                            autofocus>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-universal btn-lg w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-lightbulb me-1 text-warning"></i>
+                        <strong>Tip:</strong> Seleccione "Todo" para buscar en placa, conductor, propietario o documento de identidad al mismo tiempo.
+                    </small>
                 </div>
             </form>
         </div>
@@ -71,7 +89,70 @@ $sinPadding = true;
     </div>
     @endif
 
-    {{-- Si hay vehículo encontrado, mostrar resultados a ancho completo --}}
+    {{-- Si hay múltiples vehículos encontrados, mostrar lista para seleccionar --}}
+    @if(isset($vehiculos) && $vehiculos->count() > 1)
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header" style="background-color: #17a2b8; color: white;">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Se encontraron {{ $vehiculos->count() }} resultados
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Placa</th>
+                            <th>Vehículo</th>
+                            <th>Conductor</th>
+                            <th>Propietario</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($vehiculos as $veh)
+                        <tr>
+                            <td>
+                                <span class="badge bg-dark fs-6">{{ $veh->placa }}</span>
+                            </td>
+                            <td>
+                                {{ $veh->marca }} {{ $veh->modelo }}
+                                <small class="text-muted d-block">{{ $veh->color ?? '' }}</small>
+                            </td>
+                            <td>
+                                @if($veh->conductor)
+                                    <i class="fas fa-user text-success me-1"></i>
+                                    {{ $veh->conductor->nombre }} {{ $veh->conductor->apellido }}
+                                    <small class="text-muted d-block">{{ $veh->conductor->identificacion }}</small>
+                                @else
+                                    <span class="text-muted">Sin asignar</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($veh->propietario)
+                                    <i class="fas fa-user-tie text-primary me-1"></i>
+                                    {{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }}
+                                    <small class="text-muted d-block">{{ $veh->propietario->identificacion }}</small>
+                                @else
+                                    <span class="text-muted">Sin propietario</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('porteria.index', ['busqueda' => $veh->placa, 'tipo_busqueda' => 'placa']) }}"
+                                   class="btn btn-sm btn-success">
+                                    <i class="fas fa-eye me-1"></i>Ver detalles
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Si hay vehículo único encontrado, mostrar resultados a ancho completo --}}
     @if($vehiculo)
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #5B8238; color: white;">
@@ -393,4 +474,33 @@ $sinPadding = true;
         &copy; 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
     </footer>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoBusqueda = document.getElementById('tipoBusqueda');
+    const inputBusqueda = document.querySelector('input[name="busqueda"]');
+    const labelBusqueda = document.getElementById('labelBusqueda');
+
+    const placeholders = {
+        'todo': 'Placa, nombre, cédula...',
+        'placa': 'Ej: ABC123',
+        'conductor': 'Nombre o apellido del conductor',
+        'propietario': 'Nombre o apellido del propietario',
+        'documento': 'Número de cédula o documento'
+    };
+
+    const labels = {
+        'todo': 'Término de búsqueda:',
+        'placa': 'Placa del vehículo:',
+        'conductor': 'Nombre del conductor:',
+        'propietario': 'Nombre del propietario:',
+        'documento': 'Número de documento:'
+    };
+
+    tipoBusqueda.addEventListener('change', function() {
+        inputBusqueda.placeholder = placeholders[this.value] || placeholders['todo'];
+        labelBusqueda.textContent = labels[this.value] || labels['todo'];
+    });
+});
+</script>
 @endsection

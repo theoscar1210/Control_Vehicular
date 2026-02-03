@@ -151,6 +151,48 @@
                             </table>
                         </div>
 
+                        {{-- Categorías Monitoreadas para Alertas --}}
+                        @php
+                            $licenciaActiva = $documentos->where('tipo_documento', 'Licencia Conducción')->where('activo', true)->first();
+                        @endphp
+                        @if($licenciaActiva)
+                        <div class="border rounded-3 p-3 mb-4 bg-warning-subtle">
+                            <h6 class="fw-semibold text-dark mb-3">
+                                <i class="bi bi-bell me-1"></i>Categorías a Monitorear para Alertas
+                            </h6>
+                            <p class="text-muted small mb-2">
+                                Solo se generarán alertas de vencimiento para las categorías seleccionadas.
+                                Actualmente monitoreando:
+                                @if($licenciaActiva->categorias_monitoreadas)
+                                    <strong>{{ implode(', ', $licenciaActiva->categorias_monitoreadas) }}</strong>
+                                @else
+                                    <strong>Todas las categorías</strong> (por defecto)
+                                @endif
+                            </p>
+                            <div class="row">
+                                @php
+                                    $todasCategorias = $licenciaActiva->todas_categorias;
+                                    $categoriasMonitoreadas = $licenciaActiva->categorias_monitoreadas ?? $todasCategorias;
+                                @endphp
+                                @foreach($todasCategorias as $cat)
+                                <div class="col-md-3 col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="categorias_monitoreadas[]" value="{{ $cat }}" id="mon_edit_{{ $cat }}"
+                                            {{ in_array($cat, $categoriasMonitoreadas) ? 'checked' : '' }}>
+                                        <label class="form-check-label {{ $cat === $licenciaActiva->categoria_licencia ? 'fw-bold' : '' }}" for="mon_edit_{{ $cat }}">
+                                            {{ $cat }}
+                                            @if($cat === $licenciaActiva->categoria_licencia)
+                                            <small class="text-muted">(principal)</small>
+                                            @endif
+                                        </label>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Acción sobre documentación --}}
                         <h6 class="fw-semibold text-secondary mb-3">Acción sobre documentación</h6>
                         <div class="mb-3">

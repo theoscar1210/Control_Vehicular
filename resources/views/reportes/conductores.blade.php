@@ -142,7 +142,7 @@ $sinPadding = true;
                     <tbody>
                         @forelse($conductores as $conductor)
                         @php
-                            $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conduccion')->first();
+                            $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->first();
                         @endphp
                         <tr>
                             <td class="px-4">

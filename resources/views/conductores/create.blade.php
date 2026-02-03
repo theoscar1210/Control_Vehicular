@@ -219,6 +219,21 @@
                                                 </small>
                                             </div>
 
+                                            {{-- Categorías a Monitorear para Alertas --}}
+                                            <div class="col-12" id="seccion_categorias_monitoreadas">
+                                                <div class="border rounded-3 p-3 bg-warning-subtle">
+                                                    <label class="form-label fw-semibold text-dark">
+                                                        <i class="bi bi-bell me-1"></i>Categorías a Monitorear para Alertas
+                                                    </label>
+                                                    <div class="row" id="checkboxes_monitoreadas">
+                                                        {{-- Se llena dinámicamente con JavaScript --}}
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-info-circle me-1"></i>Solo se generarán alertas de vencimiento para las categorías seleccionadas
+                                                    </small>
+                                                </div>
+                                            </div>
+
                                             <div class="col-12">
                                                 <label class="form-label fw-semibold">Número Documento</label>
                                                 <input type="text" name="documento_numero"
@@ -353,12 +368,53 @@
         });
     }
 
+    // Actualizar checkboxes de categorías monitoreadas
+    function actualizarCategoriasMonitoreadas() {
+        const container = document.getElementById('checkboxes_monitoreadas');
+        const catPrincipal = document.getElementById('categoria_licencia').value;
+        const categoriasAdicionales = Array.from(document.querySelectorAll('.categoria-adicional:checked')).map(cb => cb.value);
+
+        // Todas las categorías seleccionadas (principal + adicionales)
+        const todasCategorias = [];
+        if (catPrincipal) todasCategorias.push(catPrincipal);
+        categoriasAdicionales.forEach(cat => {
+            if (cat !== catPrincipal && !todasCategorias.includes(cat)) {
+                todasCategorias.push(cat);
+            }
+        });
+
+        container.innerHTML = '';
+
+        if (todasCategorias.length === 0) {
+            container.innerHTML = '<div class="col-12"><small class="text-muted">Seleccione primero una categoría principal</small></div>';
+            return;
+        }
+
+        todasCategorias.forEach(function(cat) {
+            const isPrincipal = cat === catPrincipal;
+            const html = `
+                <div class="col-4">
+                    <div class="form-check">
+                        <input class="form-check-input categoria-monitoreada" type="checkbox"
+                            name="categorias_monitoreadas[]" value="${cat}" id="mon_${cat}"
+                            ${isPrincipal ? 'checked' : ''}>
+                        <label class="form-check-label small ${isPrincipal ? 'fw-bold' : ''}" for="mon_${cat}">
+                            ${cat} ${isPrincipal ? '(principal)' : ''}
+                        </label>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
     // Event listeners
     document.getElementById('documento_tipo').addEventListener('change', toggleSeccionCategorias);
 
     document.getElementById('categoria_licencia').addEventListener('change', function() {
         actualizarLabelCategoriaPrincipal();
         actualizarVencimientosAdicionales();
+        actualizarCategoriasMonitoreadas();
     });
 
     // Deshabilitar categoría principal si está seleccionada como adicional y actualizar vencimientos
@@ -371,6 +427,7 @@
                 return;
             }
             actualizarVencimientosAdicionales();
+            actualizarCategoriasMonitoreadas();
         });
     });
 
@@ -379,6 +436,7 @@
         toggleSeccionCategorias();
         actualizarLabelCategoriaPrincipal();
         actualizarVencimientosAdicionales();
+        actualizarCategoriasMonitoreadas();
     });
 
     $(document).ready(function() {

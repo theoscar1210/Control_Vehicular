@@ -89,7 +89,8 @@ class DocumentoConductor extends Model
         'version',
         'reemplazado_por',
         'nota',
-        'fecha_registro'
+        'fecha_registro',
+        'categorias_monitoreadas'
     ];
 
     /** Conversión automática de tipos de datos */
@@ -99,6 +100,7 @@ class DocumentoConductor extends Model
         'fecha_vencimiento' => 'date',
         'fecha_registro' => 'datetime',
         'fechas_por_categoria' => 'array',
+        'categorias_monitoreadas' => 'array',
     ];
 
     /**
@@ -353,5 +355,34 @@ class DocumentoConductor extends Model
         }
 
         return $categoriaMinima;
+    }
+
+    /**
+     * Obtener las categorías que deben generar alertas de vencimiento.
+     * Si no hay categorías configuradas, retorna todas las categorías del documento.
+     * Esto asegura retrocompatibilidad con documentos existentes.
+     *
+     * @return array Lista de códigos de categoría (ej: ['B1', 'C1'])
+     */
+    public function getCategoriasAMonitorear(): array
+    {
+        // Si hay categorías monitoreadas configuradas, usarlas
+        if (!empty($this->categorias_monitoreadas)) {
+            return $this->categorias_monitoreadas;
+        }
+
+        // Fallback: retornar todas las categorías (comportamiento anterior)
+        return $this->todas_categorias;
+    }
+
+    /**
+     * Verificar si una categoría específica debe ser monitoreada para alertas
+     *
+     * @param string $categoria Código de categoría (ej: 'B1')
+     * @return bool
+     */
+    public function debeMonitorearCategoria(string $categoria): bool
+    {
+        return in_array($categoria, $this->getCategoriasAMonitorear());
     }
 }

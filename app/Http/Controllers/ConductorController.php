@@ -106,6 +106,10 @@ class ConductorController extends Controller
             // Vencimiento por categoría adicional (solo fecha de vencimiento)
             'fechas_categoria' => 'nullable|array',
             'fechas_categoria.*.fecha_vencimiento' => 'nullable|date',
+
+            // Categorías a monitorear para alertas (por defecto solo la principal)
+            'categorias_monitoreadas' => 'nullable|array',
+            'categorias_monitoreadas.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
         ];
 
         $validated = $request->validate($rules);
@@ -196,12 +200,22 @@ class ConductorController extends Controller
                 }
             }
 
+            // Determinar categorías a monitorear (por defecto solo la principal)
+            $categoriasMonitoreadas = null;
+            if (!empty($validated['categorias_monitoreadas'])) {
+                $categoriasMonitoreadas = $validated['categorias_monitoreadas'];
+            } elseif (!empty($validated['categoria_licencia'])) {
+                // Si no se especifica, monitorear solo la categoría principal
+                $categoriasMonitoreadas = [$validated['categoria_licencia']];
+            }
+
             DocumentoConductor::create([
                 'id_conductor' => $conductor->id_conductor,
                 'tipo_documento' => $validated['documento_tipo'] ?? 'Licencia Conducción',
                 'categoria_licencia' => $validated['categoria_licencia'] ?? null,
                 'categorias_adicionales' => $categoriasAdicionales,
                 'fechas_por_categoria' => !empty($fechasPorCategoria) ? $fechasPorCategoria : null,
+                'categorias_monitoreadas' => $categoriasMonitoreadas,
                 'numero_documento' => $validated['documento_numero'],
                 'entidad_emisora' => $validated['entidad_emisora'] ?? null,
                 'fecha_emision' => $validated['documento_fecha_emision'] ?? null,
@@ -261,6 +275,10 @@ class ConductorController extends Controller
             'documento_fecha_emision' => 'nullable|date',
             'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',
             'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
+
+            // Categorías a monitorear para alertas
+            'categorias_monitoreadas' => 'nullable|array',
+            'categorias_monitoreadas.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
         ];
 
         $validated = $request->validate($rules);
@@ -300,7 +318,22 @@ class ConductorController extends Controller
                 }
             }
 
-            // 3) Manejo de documentos (solo metadata)
+            // 3) Actualizar categorías monitoreadas (se puede hacer sin crear nueva versión)
+            if (array_key_exists('categorias_monitoreadas', $validated)) {
+                // Buscar el documento de licencia activo del conductor
+                $licencia = DocumentoConductor::where('id_conductor', $conductor->id_conductor)
+                    ->where('tipo_documento', 'Licencia Conducción')
+                    ->where('activo', 1)
+                    ->first();
+
+                if ($licencia) {
+                    $licencia->update([
+                        'categorias_monitoreadas' => $validated['categorias_monitoreadas'],
+                    ]);
+                }
+            }
+
+            // 4) Manejo de documentos (solo metadata)
             $action = $validated['documento_action'] ?? 'none';
 
             if ($action === 'update_existing' && !empty($validated['documento_id'])) {
@@ -319,6 +352,10 @@ class ConductorController extends Controller
                     // Add category if document is a license
                     if (($validated['documento_tipo'] ?? $doc->tipo_documento) === 'Licencia Conducción' && !empty($validated['categoria_licencia'])) {
                         $updateData['categoria_licencia'] = $validated['categoria_licencia'];
+                    }
+                    // Actualizar categorías monitoreadas si se proporcionaron
+                    if (array_key_exists('categorias_monitoreadas', $validated)) {
+                        $updateData['categorias_monitoreadas'] = $validated['categorias_monitoreadas'];
                     }
                     $doc->update($updateData);
                 }
