@@ -17,7 +17,8 @@
 9. [Módulo de Portería](#9-módulo-de-portería)
 10. [Sistema de Alertas](#10-sistema-de-alertas)
 11. [Administración de Usuarios](#11-administración-de-usuarios)
-12. [Preguntas Frecuentes](#12-preguntas-frecuentes)
+12. [Sistema de Auditoría](#12-sistema-de-auditoría)
+13. [Preguntas Frecuentes](#13-preguntas-frecuentes)
 
 ---
 
@@ -167,8 +168,26 @@ La tabla muestra:
 
 ### 5.3 Registrar un nuevo vehículo
 
+El registro de vehículos se realiza en pasos secuenciales, comenzando por el propietario.
+
+#### Paso 1: Buscar o crear propietario
+
 1. Haga clic en el botón **"Nuevo Vehículo"**
-2. Complete el formulario:
+2. En la sección "Registrar Propietario":
+   - Digite el número de identificación del propietario
+   - Haga clic en **"Buscar"**
+
+**Si el propietario ya existe:**
+- El sistema mostrará los datos del propietario encontrado
+- Haga clic en **"Continuar con este propietario"**
+
+**Si el propietario no existe:**
+- Complete los datos: Nombre, Apellido, Tipo Doc, Identificación
+- Haga clic en **"Crear Propietario"**
+
+#### Paso 2: Registrar datos del vehículo
+
+Una vez seleccionado el propietario, complete el formulario del vehículo:
 
 | Campo | Descripción | Ejemplo |
 |-------|-------------|---------|
@@ -178,10 +197,11 @@ La tabla muestra:
 | Modelo | Modelo específico | Corolla |
 | Color | Color del vehículo | Blanco |
 | Fecha de Matrícula | Fecha en que se matriculó (importante para Tecnomecánica) | 15/03/2022 |
-| Propietario | Seleccione o cree un propietario | Juan Pérez |
 | Conductor | Opcional - Asigne un conductor | - |
 
-3. Haga clic en **"Guardar"**
+#### Paso 3: Registrar documentos
+
+Complete los formularios de SOAT y Tecnomecánica (si aplica).
 
 > **Importante:** La fecha de matrícula es fundamental para calcular correctamente cuándo el vehículo debe realizar su primera Tecnomecánica.
 
@@ -407,7 +427,8 @@ Muestra la actividad de documentos en un período de tiempo.
 
 **Filtros disponibles:**
 - Rango de fechas (por defecto: últimos 6 meses)
-- Tipo de documento
+- Tipo de documento (SOAT, Tecnomecánica, Licencia, etc.)
+- Placa del vehículo (búsqueda parcial)
 
 **Información incluida:**
 - Documentos registrados y renovados
@@ -415,6 +436,8 @@ Muestra la actividad de documentos en un período de tiempo.
 - Tipo de operación (nuevo/renovación)
 
 **Exportar:** PDF o Excel
+
+> **Nota:** Al exportar a PDF, el reporte respetará todos los filtros aplicados. Solo se incluirán los documentos que coincidan con los criterios de búsqueda seleccionados.
 
 ### 8.3 Cómo exportar un reporte
 
@@ -556,7 +579,58 @@ En lugar de eliminar usuarios, se recomienda **desactivarlos**:
 
 ---
 
-## 12. PREGUNTAS FRECUENTES
+## 12. SISTEMA DE AUDITORÍA
+
+*Disponible para: ADMIN*
+
+El sistema cuenta con un registro automático de auditoría que permite rastrear todos los cambios realizados en los registros principales.
+
+### 12.1 ¿Qué se registra?
+
+El sistema registra automáticamente las siguientes acciones:
+
+| Acción | Descripción |
+|--------|-------------|
+| **Crear** | Cuando se crea un nuevo registro |
+| **Actualizar** | Cuando se modifica un registro existente |
+| **Eliminar** | Cuando se elimina un registro (soft delete) |
+
+### 12.2 Modelos auditados
+
+Los siguientes registros tienen auditoría habilitada:
+
+| Modelo | Campos auditados |
+|--------|------------------|
+| **Propietario** | nombre, apellido, tipo_doc, identificacion |
+| **Vehículo** | placa, marca, modelo, color, tipo, propietario, conductor, estado |
+| **Conductor** | nombre, apellido, tipo_doc, identificacion, telefono, estado |
+| **Documento Vehículo** | tipo_documento, numero_documento, fecha_vencimiento, activo, version, estado |
+| **Documento Conductor** | tipo_documento, numero_documento, categoria_licencia, fecha_vencimiento, activo, version |
+
+### 12.3 Información registrada
+
+Para cada cambio se guarda:
+
+- **Quién:** Usuario que realizó el cambio
+- **Cuándo:** Fecha y hora exacta del cambio
+- **Qué:** Registro afectado (tipo y ID)
+- **Valores anteriores:** Estado del registro antes del cambio
+- **Valores nuevos:** Estado del registro después del cambio
+
+### 12.4 Soft Deletes (Eliminación suave)
+
+Los registros eliminados no se borran permanentemente de la base de datos. En su lugar:
+
+- Se marcan como "eliminados" con una fecha
+- No aparecen en las listas normales del sistema
+- Pueden ser recuperados por el administrador si es necesario
+- Se conserva todo el historial de cambios
+
+> **Nota:** Esta funcionalidad permite recuperar información eliminada por error y mantener trazabilidad completa de las operaciones del sistema.
+
+---
+
+## 13. PREGUNTAS FRECUENTES
 
 ### ¿Por qué un vehículo nuevo aparece como "Exento" en Tecnomecánica?
 
@@ -613,5 +687,5 @@ Para reportar problemas o solicitar ayuda con el sistema, contacte al administra
 
 ---
 
-*Manual generado para el Sistema de Control Vehicular v1.0*
-*Club Campestre Altos del Chicalá - 2025*
+*Manual generado para el Sistema de Control Vehicular v1.1*
+*Club Campestre Altos del Chicalá - 2026*

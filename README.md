@@ -28,6 +28,14 @@ Control Vehicular es una aplicacion web que permite gestionar el control documen
 - Clasificacion por tipo de documento y urgencia
 - Marcado de alertas como leidas
 
+### Sistema de Auditoría
+
+- Registro automático de cambios en registros (crear, editar, eliminar)
+- Historial de quién modificó cada registro y cuándo
+- Valores anteriores y nuevos de cada cambio
+- Modelos auditados: Propietario, Vehículo, Conductor, DocumentoVehiculo, DocumentoConductor
+- Soft deletes en todos los modelos principales (registros eliminados se conservan)
+
 ### Centro de Reportes
 
 - Reporte general de vehiculos
@@ -121,6 +129,7 @@ maatwebsite/excel: ^3.1          (Exportación a Excel/CSV)
 doctrine/dbal: ^4.3              (Migraciones de BD)
 laravel/sanctum: ^4.0            (Autenticación API)
 laravel/breeze: ^2.3             (Autenticación UI)
+spatie/laravel-activitylog: ^4.11 (Auditoría de cambios)
 ```
 
 **Frontend (NPM):**
@@ -1108,6 +1117,9 @@ Orden de ejecución de migraciones:
 | 11  | add_version_and_softdeletes         | Modifica tablas de documentos  |
 | 12  | add_fecha_matricula_to_vehiculos    | Agrega fecha_matricula         |
 | 13  | add_categoria_licencia              | Agrega categorías de licencia  |
+| 14  | create_activity_log_table           | activity_log (auditoría)       |
+| 15  | add_event_column_to_activity_log    | Agrega columna event           |
+| 16  | add_batch_uuid_to_activity_log      | Agrega columna batch_uuid      |
 
 ---
 

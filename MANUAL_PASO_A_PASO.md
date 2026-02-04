@@ -21,6 +21,7 @@ Este manual le enseñará a usar el sistema de manera sencilla, con instruccione
 7. [Entender y gestionar alertas](#7-entender-y-gestionar-alertas)
 8. [Buscar vehículos y conductores](#8-buscar-vehículos-y-conductores)
 9. [Asignar un conductor a un vehículo](#9-asignar-un-conductor-a-un-vehículo)
+10. [Sistema de Auditoría](#10-sistema-de-auditoría)
 
 ---
 
@@ -125,32 +126,63 @@ El registro de un vehículo se hace en **4 pasos secuenciales**. El sistema le g
 1. En el menú lateral, haga clic en **"Vehículos"**
 2. Haga clic en el botón verde **"+ Nuevo Vehículo"**
 
-### PASO 2: Registrar el propietario
+### PASO 2: Buscar o registrar el propietario
+
+Primero debe verificar si el propietario ya existe en el sistema:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Progreso del registro                                      │
-│  ████░░░░░░░░░░░░░░░░░░░░░░░░░░░ 33%                       │
-│  ✓ Propietario creado | Registra vehículo                  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
 │  ┌───────────────────────────────────────────────────────┐ │
 │  │  👤 1. Registrar Propietario                          │ │
 │  ├───────────────────────────────────────────────────────┤ │
 │  │                                                       │ │
-│  │  Nombre *              Apellido *                     │ │
-│  │  ┌──────────────┐      ┌──────────────┐               │ │
-│  │  │ Juan         │      │ Pérez        │               │ │
-│  │  └──────────────┘      └──────────────┘               │ │
-│  │                                                       │ │
 │  │  Tipo Doc *            Identificación *               │ │
-│  │  ┌──────────────┐      ┌──────────────┐               │ │
-│  │  │ CC        ▼  │      │ 12345678     │               │ │
-│  │  └──────────────┘      └──────────────┘               │ │
+│  │  ┌──────────────┐      ┌──────────────────────────┐   │ │
+│  │  │ CC        ▼  │      │ 12345678        [🔍Buscar]│   │ │
+│  │  └──────────────┘      └──────────────────────────┘   │ │
 │  │                                                       │ │
-│  │            [ 👤 Crear Propietario ]                   │ │
+│  │  💡 Busque primero si el propietario ya existe        │ │
 │  │                                                       │ │
 │  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Paso 2a: Buscar propietario existente**
+
+1. Digite el número de identificación del propietario
+2. Haga clic en el botón **"Buscar"**
+
+**Si el propietario YA existe**, verá sus datos:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ✅ Propietario encontrado:                                  │
+│                                                             │
+│  Tipo Documento: CC                                         │
+│  Identificación: 12345678                                   │
+│  Nombre: Juan                                               │
+│  Apellido: Pérez                                            │
+│  Vehículos registrados: 2                                   │
+│                                                             │
+│      [Cancelar]    [→ Continuar con este propietario]       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Haga clic en **"Continuar con este propietario"** para proceder al registro del vehículo.
+
+**Si el propietario NO existe**, complete el formulario:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ⚠️ No se encontró propietario con identificación 12345678   │
+│     Complete los datos para crear uno nuevo.                │
+│                                                             │
+│  Nombre *              Apellido *                           │
+│  ┌──────────────┐      ┌──────────────┐                     │
+│  │ Juan         │      │ Pérez        │                     │
+│  └──────────────┘      └──────────────┘                     │
+│                                                             │
+│            [ 👤 Crear Propietario ]                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -158,11 +190,11 @@ El registro de un vehículo se hace en **4 pasos secuenciales**. El sistema le g
 1. **Nombre:** Nombre del propietario (ejemplo: Juan)
 2. **Apellido:** Apellido del propietario (ejemplo: Pérez)
 3. **Tipo Documento:** Seleccione CC (Cédula) o NIT (para empresas)
-4. **Identificación:** Número del documento
+4. **Identificación:** Número del documento (ya está pre-llenado)
 
 Haga clic en **"Crear Propietario"**
 
-> **Mensaje de éxito:** "Propietario creado: Juan Pérez - CC: 12345678"
+> **Mensaje de éxito:** "Propietario creado correctamente. Ahora puede registrar el vehículo."
 
 ### PASO 3: Registrar el vehículo
 
@@ -660,6 +692,7 @@ Al crear un conductor nuevo, puede asignarlo directamente a un vehículo usando 
 |-----------|----------|
 | Ver resumen general | Panel Principal (Dashboard) |
 | Registrar vehículo nuevo | Vehículos → Nuevo Vehículo |
+| Buscar propietario existente | Nuevo Vehículo → Buscar por identificación |
 | Registrar conductor nuevo | Conductores → Nuevo Conductor |
 | Ver documentos de un vehículo | Vehículos → Ícono 📄 |
 | Renovar un documento | Documentos del vehículo → Renovar |
@@ -667,6 +700,47 @@ Al crear un conductor nuevo, puede asignarlo directamente a un vehículo usando 
 | Buscar un vehículo | Vehículos → Campo de búsqueda |
 | Editar un vehículo | Vehículos → Ícono ✏️ |
 | Eliminar un vehículo | Vehículos → Ícono 🗑️ |
+
+---
+
+## 10. SISTEMA DE AUDITORÍA
+
+El sistema registra automáticamente todos los cambios realizados en los registros principales.
+
+### ¿Qué se registra?
+
+Cada vez que se **crea**, **edita** o **elimina** un registro de:
+- Propietarios
+- Vehículos
+- Conductores
+- Documentos de vehículos
+- Documentos de conductores
+
+El sistema guarda:
+- **Quién** hizo el cambio (usuario)
+- **Cuándo** se hizo el cambio (fecha y hora)
+- **Qué** cambió (valores anteriores y nuevos)
+
+### Eliminación segura (Soft Delete)
+
+Cuando se elimina un registro:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ⚠️ ¿Está seguro de eliminar este vehículo?                 │
+│                                                             │
+│  El vehículo ABC123 será marcado como eliminado.            │
+│  Esta acción puede ser revertida por el administrador.      │
+│                                                             │
+│              [Cancelar]    [Eliminar]                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- El registro **no se borra permanentemente**
+- Queda marcado como "eliminado" pero puede recuperarse
+- El administrador puede restaurar registros eliminados si es necesario
+
+> **Beneficio:** Si elimina algo por error, puede solicitar al administrador que lo recupere.
 
 ---
 
@@ -679,5 +753,5 @@ Si tiene preguntas o problemas con el sistema:
 
 ---
 
-*Manual elaborado para el Sistema de Control Vehicular*
-*Club Campestre Altos del Chicalá - 2025*
+*Manual elaborado para el Sistema de Control Vehicular v1.1*
+*Club Campestre Altos del Chicalá - 2026*
