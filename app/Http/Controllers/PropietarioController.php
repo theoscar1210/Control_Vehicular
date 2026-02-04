@@ -8,6 +8,51 @@ use Illuminate\Support\Facades\DB;
 
 class PropietarioController extends Controller
 {
+    /**
+     * Buscar propietario por identificación (AJAX)
+     * Retorna los datos del propietario si existe
+     */
+    public function buscar(Request $request)
+    {
+        $identificacion = $request->input('identificacion');
+
+        if (empty($identificacion) || strlen($identificacion) < 3) {
+            return response()->json(['encontrado' => false]);
+        }
+
+        $propietario = Propietario::where('identificacion', $identificacion)->first();
+
+        if ($propietario) {
+            return response()->json([
+                'encontrado' => true,
+                'propietario' => [
+                    'id_propietario' => $propietario->id_propietario,
+                    'nombre' => $propietario->nombre,
+                    'apellido' => $propietario->apellido,
+                    'tipo_doc' => $propietario->tipo_doc,
+                    'identificacion' => $propietario->identificacion,
+                ],
+                'vehiculos_count' => $propietario->vehiculos()->count(),
+            ]);
+        }
+
+        return response()->json(['encontrado' => false]);
+    }
+
+    /**
+     * Usar propietario existente (redirige a crear vehículo)
+     */
+    public function usarExistente(Request $request)
+    {
+        $request->validate([
+            'id_propietario' => 'required|exists:propietarios,id_propietario',
+        ]);
+
+        return redirect()
+            ->route('vehiculos.create', ['propietario' => $request->id_propietario])
+            ->with('success', 'Propietario seleccionado. Ahora puede registrar el vehículo.');
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

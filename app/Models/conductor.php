@@ -59,11 +59,31 @@ class Conductor extends Model
     }
 
     /**
-     * Relación: el conductor tiene muchos vehículos
+     * Relación: el conductor tiene muchos vehículos (legacy - mantener por compatibilidad)
+     * @deprecated Usar vehiculosAsignados() para relación muchos a muchos
      */
     public function vehiculos()
     {
         return $this->hasMany(Vehiculo::class, 'id_conductor', 'id_conductor');
+    }
+
+    /**
+     * Relación: vehículos asignados al conductor (muchos a muchos)
+     */
+    public function vehiculosAsignados()
+    {
+        return $this->belongsToMany(Vehiculo::class, 'conductor_vehiculo', 'id_conductor', 'id_vehiculo')
+            ->withPivot('es_principal', 'fecha_asignacion', 'fecha_desasignacion', 'activo')
+            ->wherePivot('activo', true);
+    }
+
+    /**
+     * Relación: todos los vehículos (incluyendo inactivos) para historial
+     */
+    public function todosLosVehiculos()
+    {
+        return $this->belongsToMany(Vehiculo::class, 'conductor_vehiculo', 'id_conductor', 'id_vehiculo')
+            ->withPivot('es_principal', 'fecha_asignacion', 'fecha_desasignacion', 'activo');
     }
 
     /**

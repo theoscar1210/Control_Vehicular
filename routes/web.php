@@ -114,6 +114,8 @@ Route::middleware(['auth', 'nocache'])->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::post('propietarios', [PropietarioController::class, 'store'])->name('propietarios.store');
+        Route::get('propietarios/buscar', [PropietarioController::class, 'buscar'])->name('propietarios.buscar');
+        Route::post('propietarios/usar-existente', [PropietarioController::class, 'usarExistente'])->name('propietarios.usar-existente');
 
         /*
         |--------------------------------------------------------------------------
@@ -134,6 +136,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::prefix('{conductor}/documentos')->name('documentos.')->group(function () {
                 Route::get('/historial', [DocumentoConductorController::class, 'historial'])->name('historial');
                 Route::post('/renovar', [DocumentoConductorController::class, 'renovar'])->name('renovar');
+                Route::post('/renovar-categoria', [DocumentoConductorController::class, 'renovarCategoria'])->name('renovar-categoria');
             });
         });
 

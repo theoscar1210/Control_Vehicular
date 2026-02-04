@@ -2383,3 +2383,109 @@ tbody tr {
         font-size: 0.9rem;
     }
 }
+
+/* ============================================
+   HISTORIAL DE DOCUMENTOS CONDUCTOR
+   Estilos para la vista de historial de documentos
+============================================ */
+
+/*
+ * IMPORTANTE: NO aplicar transform a cards contenedoras porque afecta
+ * el posicionamiento fixed de los modales Bootstrap.
+ * Solo aplicar a cards de documentos individuales (con clase doc-card).
+ */
+.historial-documentos .doc-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.historial-documentos .doc-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Asegurar que modales no hereden transforms */
+.modal,
+.modal-dialog,
+.modal-content {
+    transform: none !important;
+}
+
+/* ============================================
+   PORTERÍA - TARJETAS DE ALERTAS
+   Diseño de cards para alertas en vista portería
+============================================ */
+
+/* Card de alerta con hover suave */
+.alerta-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px !important;
+}
+
+.alerta-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Círculo para iconos */
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icon-circle i {
+    font-size: 1rem;
+}
+
+/* Estilos específicos para cards de alerta */
+.alerta-card .card-header {
+    background: transparent !important;
+}
+
+.alerta-card .card-body {
+    padding-top: 0.75rem;
+}
+
+.alerta-card .card-footer {
+    padding: 0.75rem 1rem 1rem;
+}
+
+/* Responsive para tarjetas de alerta */
+@media (max-width: 767px) {
+    .alerta-card {
+        border-radius: 10px !important;
+    }
+
+    .alerta-card .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.6rem;
+    }
+
+    .icon-circle {
+        width: 35px;
+        height: 35px;
+    }
+
+    .icon-circle i {
+        font-size: 0.875rem;
+    }
+
+    .alerta-card .card-body {
+        padding: 0.75rem;
+    }
+
+    .alerta-card .card-footer .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .alerta-card:hover {
+        transform: none;
+    }
+}

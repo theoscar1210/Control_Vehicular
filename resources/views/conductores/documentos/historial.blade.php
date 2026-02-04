@@ -21,7 +21,7 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
 
 @section('content')
 <br><br><br>
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 historial-documentos">
 
     {{-- ================= ENCABEZADO ================= --}}
     <nav aria-label="breadcrumb" class="mb-3">
@@ -138,7 +138,7 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
                 @else
                 {{-- OTROS DOCUMENTOS (EPS, ARL, etc.) --}}
                 <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card h-100 border-{{ $doc->clase_badge }}" style="border-width: 2px;">
+                    <div class="card doc-card h-100 border-{{ $doc->clase_badge }}" style="border-width: 2px;">
                         <div class="card-header bg-{{ $doc->clase_badge }} text-white">
                             <h6 class="mb-0 fw-bold">
                                 <i class="fa-solid fa-file-alt me-1"></i>
@@ -213,12 +213,11 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
                             <tr>
                                 <th>Tipo</th>
                                 <th>Versión</th>
-                                <th>Categoría</th>
+                                <th>Categorías</th>
                                 <th>Número</th>
-                                <th>Emisión</th>
                                 <th>Vencimiento</th>
-                                <th>Estado</th>
-                                <th>Reemplazado</th>
+                                <th>Motivo</th>
+                                <th>Fecha Registro</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -226,9 +225,19 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
                             <tr>
                                 <td>{{ $h->tipo_documento }}</td>
                                 <td><span class="badge bg-secondary">v{{ $h->version }}</span></td>
-                                <td>{{ $h->categoria_licencia ?? '-' }}</td>
+                                <td>
+                                    @if($h->tipo_documento === 'Licencia Conducción')
+                                        @php
+                                            $cats = $h->todas_categorias;
+                                        @endphp
+                                        @foreach($cats as $cat)
+                                            <span class="badge bg-dark me-1">{{ $cat }}</span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                                 <td>{{ $h->numero_documento }}</td>
-                                <td>{{ $h->fecha_emision ? \Carbon\Carbon::parse($h->fecha_emision)->format('d/m/Y') : 'N/A' }}</td>
                                 <td>
                                     @if($h->fecha_vencimiento)
                                     {{ \Carbon\Carbon::parse($h->fecha_vencimiento)->format('d/m/Y') }}
@@ -236,8 +245,22 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
                                     <span class="text-muted">N/A</span>
                                     @endif
                                 </td>
-                                <td><span class="badge bg-secondary">REEMPLAZADO</span></td>
-                                <td>{{ $h->updated_at ? \Carbon\Carbon::parse($h->updated_at)->format('d/m/Y') : '-' }}</td>
+                                <td>
+                                    @if($h->nota)
+                                        <small class="text-info">
+                                            <i class="fa-solid fa-info-circle me-1"></i>{{ $h->nota }}
+                                        </small>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($h->fecha_registro)
+                                        {{ \Carbon\Carbon::parse($h->fecha_registro)->format('d/m/Y H:i') }}
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -254,17 +277,5 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
     </footer>
 
 </div>
-
-{{-- ESTILOS --}}
-<style>
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
-    }
-</style>
 
 @endsection

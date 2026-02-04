@@ -151,6 +151,32 @@ class Alerta extends Model
     }
 
     /**
+     * Scope para obtener alertas cuyos documentos asociados están vigentes (no reemplazados).
+     * Excluye alertas de documentos que ya fueron reemplazados por versiones más nuevas.
+     */
+    public function scopeConDocumentoVigente($query)
+    {
+        return $query->where(function ($q) {
+            // Alertas de vehículos: documento no reemplazado
+            $q->where(function ($q2) {
+                $q2->whereNotNull('id_doc_vehiculo')
+                    ->whereHas('documentoVehiculo', function ($docQuery) {
+                        $docQuery->whereNull('reemplazado_por')
+                            ->where('estado', '!=', 'REEMPLAZADO');
+                    });
+            })
+            // Alertas de conductores: documento activo y no reemplazado
+            ->orWhere(function ($q2) {
+                $q2->whereNotNull('id_doc_conductor')
+                    ->whereHas('documentoConductor', function ($docQuery) {
+                        $docQuery->where('activo', 1)
+                            ->whereNull('reemplazado_por');
+                    });
+            });
+        });
+    }
+
+    /**
      * Scope para obtener alertas solucionadas
      */
     public function scopeSolucionadas($query)

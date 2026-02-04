@@ -402,123 +402,165 @@ $sinPadding = true;
                 @endif
             </div>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body">
             @if($alertas->isEmpty())
             <div class="text-center py-5">
                 <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
                 <p class="text-muted mb-0">No hay alertas pendientes</p>
             </div>
             @else
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 90px;">Tipo</th>
-                            <th style="width: 100px;">Estado</th>
-                            <th style="width: 100px;">Placa</th>
-                            <th>Conductor</th>
-                            <th>Documento</th>
-                            <th style="width: 100px;">Fecha</th>
-                            <th style="width: 120px;" class="text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($alertas as $alerta)
-                        @php
-                            $placaAlerta = null;
-                            $conductorAlerta = null;
-                            $conductorId = null;
-                            $tipoDocumento = null;
+            <div class="row g-3">
+                @foreach($alertas as $alerta)
+                @php
+                    $placaAlerta = null;
+                    $conductorAlerta = null;
+                    $conductorId = null;
+                    $tipoDocumento = null;
+                    $vehiculoInfo = null;
 
-                            if ($alerta->documentoVehiculo) {
-                                $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
-                                if ($alerta->documentoVehiculo->vehiculo) {
-                                    $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
-                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                                        $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
-                                        $conductorId = $alerta->documentoVehiculo->vehiculo->conductor->id_conductor;
-                                    }
-                                }
+                    if ($alerta->documentoVehiculo) {
+                        $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
+                        if ($alerta->documentoVehiculo->vehiculo) {
+                            $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                            $vehiculoInfo = $alerta->documentoVehiculo->vehiculo->marca . ' ' . $alerta->documentoVehiculo->vehiculo->modelo;
+                            if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                                $conductorId = $alerta->documentoVehiculo->vehiculo->conductor->id_conductor;
                             }
+                        }
+                    }
 
-                            if ($alerta->documentoConductor) {
-                                $tipoDocumento = $alerta->documentoConductor->tipo_documento;
-                                if ($alerta->documentoConductor->conductor) {
-                                    $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
-                                    $conductorId = $alerta->documentoConductor->conductor->id_conductor;
-                                }
-                            }
+                    if ($alerta->documentoConductor) {
+                        $tipoDocumento = $alerta->documentoConductor->tipo_documento;
+                        if ($alerta->documentoConductor->conductor) {
+                            $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                            $conductorId = $alerta->documentoConductor->conductor->id_conductor;
+                        }
+                    }
 
-                            $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
-                            $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
-                        @endphp
-                        <tr class="{{ $esVencido ? 'table-danger' : 'table-warning' }}">
-                            <td>
-                                @if($esAlertaVehiculo)
-                                <span class="badge bg-primary">
-                                    <i class="fas fa-car me-1"></i>Vehículo
-                                </span>
-                                @else
-                                <span class="badge bg-info">
-                                    <i class="fas fa-user me-1"></i>Conductor
-                                </span>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="badge bg-{{ $esVencido ? 'danger' : 'warning' }} {{ !$esVencido ? 'text-dark' : '' }}">
+                    $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
+                    $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
+                    $colorBorde = $esVencido ? 'danger' : 'warning';
+                    $colorFondo = $esVencido ? 'rgba(220, 53, 69, 0.08)' : 'rgba(255, 193, 7, 0.08)';
+                @endphp
+
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card alerta-card h-100 border-{{ $colorBorde }} border-start border-4" style="background: {{ $colorFondo }};">
+                        {{-- Header de la tarjeta --}}
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <div class="d-flex justify-content-between align-items-start">
+                                {{-- Tipo de alerta (Vehículo/Conductor) --}}
+                                <div>
+                                    @if($esAlertaVehiculo)
+                                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                                        <i class="fas fa-car me-1"></i>Vehículo
+                                    </span>
+                                    @else
+                                    <span class="badge bg-info rounded-pill px-3 py-2">
+                                        <i class="fas fa-user me-1"></i>Conductor
+                                    </span>
+                                    @endif
+                                </div>
+                                {{-- Estado (Vencido/Por vencer) --}}
+                                <span class="badge bg-{{ $colorBorde }} {{ !$esVencido ? 'text-dark' : '' }} rounded-pill px-3 py-2">
                                     <i class="fas fa-{{ $esVencido ? 'times-circle' : 'exclamation-triangle' }} me-1"></i>
-                                    {{ $esVencido ? 'Vencido' : 'Por vencer' }}
+                                    {{ $esVencido ? 'VENCIDO' : 'POR VENCER' }}
                                 </span>
-                            </td>
-                            <td>
-                                @if($placaAlerta)
-                                <span class="badge bg-dark">{{ $placaAlerta }}</span>
-                                @else
-                                <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($conductorAlerta)
-                                <i class="fas fa-user text-secondary me-1"></i>{{ $conductorAlerta }}
-                                @if(isset($conductorId))
-                                <a href="{{ route('reportes.ficha.conductor', $conductorId) }}"
-                                   class="btn btn-link btn-sm p-0 ms-1" title="Ver ficha del conductor">
-                                    <i class="fas fa-external-link-alt text-primary"></i>
-                                </a>
-                                @endif
-                                @else
-                                <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                <i class="fas fa-file-alt text-secondary me-1"></i>{{ $tipoDocumento ?? 'Documento' }}
-                            </td>
-                            <td>
-                                <small>{{ optional($alerta->fecha_alerta)->format('d/m/Y') ?? '-' }}</small>
-                            </td>
-                            <td class="text-center">
-                                <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="d-inline">
+                            </div>
+                        </div>
+
+                        {{-- Cuerpo de la tarjeta --}}
+                        <div class="card-body pt-3">
+                            {{-- Documento afectado --}}
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-{{ $colorBorde }} bg-opacity-25 me-3">
+                                        <i class="fas fa-file-alt text-{{ $colorBorde }}"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Documento</small>
+                                        <span class="fw-bold">{{ $tipoDocumento ?? 'Sin especificar' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Información del vehículo (si aplica) --}}
+                            @if($placaAlerta)
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-dark bg-opacity-10 me-3">
+                                        <i class="fas fa-car text-dark"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Vehículo</small>
+                                        <span class="badge bg-dark fs-6 me-2">{{ $placaAlerta }}</span>
+                                        @if($vehiculoInfo)
+                                        <small class="text-muted">{{ $vehiculoInfo }}</small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- Conductor --}}
+                            @if($conductorAlerta)
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-success bg-opacity-25 me-3">
+                                        <i class="fas fa-user text-success"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Conductor</small>
+                                        <span class="fw-medium">{{ $conductorAlerta }}</span>
+                                    </div>
+                                    @if(isset($conductorId))
+                                    <a href="{{ route('reportes.ficha.conductor', $conductorId) }}"
+                                       class="btn btn-sm btn-outline-secondary rounded-circle" title="Ver ficha">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- Fecha de alerta --}}
+                            <div class="d-flex align-items-center text-muted small">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                <span>Alerta generada: {{ optional($alerta->fecha_alerta)->format('d/m/Y') ?? '-' }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Footer con acciones --}}
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                            <div class="d-flex gap-2">
+                                <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="flex-grow-1">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-check"></i>
+                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                        <i class="fas fa-check me-1"></i>Marcar leída
                                     </button>
                                 </form>
                                 @if($placaAlerta)
                                 <a href="{{ route('porteria.index', ['busqueda' => $placaAlerta, 'tipo_busqueda' => 'placa']) }}"
-                                   class="btn btn-sm btn-outline-primary ms-1" title="Ver vehículo">
+                                   class="btn btn-outline-primary btn-sm" title="Ver vehículo">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                @if(isset($conductorId))
+                                <a href="{{ route('conductores.documentos.historial', $conductorId) }}"
+                                   class="btn btn-outline-info btn-sm" title="Ver documentos">
+                                    <i class="fas fa-file-lines"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
 
             {{-- Paginación --}}
             @if($alertas->hasPages())
-            <div class="card-footer bg-white py-2">
+            <div class="mt-4 d-flex justify-content-center">
                 {{ $alertas->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
             </div>
             @endif

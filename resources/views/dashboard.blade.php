@@ -104,17 +104,23 @@ $rol = $user->rol ?? 'N/A';
         ];
         $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
 
-        // Obtener placa y conductor
+        // Obtener placa, conductor e IDs para enlaces
         $placaDash = null;
         $conductorDash = null;
+        $vehiculoIdDash = null;
+        $conductorIdDash = null;
+        $esAlertaVehiculoDash = $a->id_doc_vehiculo !== null;
+
         if ($a->documentoVehiculo && $a->documentoVehiculo->vehiculo) {
-        $placaDash = $a->documentoVehiculo->vehiculo->placa;
-        if ($a->documentoVehiculo->vehiculo->conductor) {
-        $conductorDash = $a->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $a->documentoVehiculo->vehiculo->conductor->apellido;
-        }
+            $placaDash = $a->documentoVehiculo->vehiculo->placa;
+            $vehiculoIdDash = $a->documentoVehiculo->vehiculo->id_vehiculo;
+            if ($a->documentoVehiculo->vehiculo->conductor) {
+                $conductorDash = $a->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $a->documentoVehiculo->vehiculo->conductor->apellido;
+            }
         }
         if ($a->documentoConductor && $a->documentoConductor->conductor) {
-        $conductorDash = $a->documentoConductor->conductor->nombre . ' ' . $a->documentoConductor->conductor->apellido;
+            $conductorDash = $a->documentoConductor->conductor->nombre . ' ' . $a->documentoConductor->conductor->apellido;
+            $conductorIdDash = $a->documentoConductor->conductor->id_conductor;
         }
         @endphp
         <div class="list-group-item {{ $a->leida ? 'bg-light text-muted' : 'border-start border-warning border-3' }}">
@@ -148,9 +154,20 @@ $rol = $user->rol ?? 'N/A';
                     </small>
                 </div>
                 <div class="d-flex gap-2 align-items-start ms-3">
-                    <a href="{{ route('alertas.show', $a->id_alerta) }}" class="btn btn-sm btn-primary">
+                    {{-- Botón Ver: redirige al historial según tipo de alerta --}}
+                    @if($esAlertaVehiculoDash && $vehiculoIdDash)
+                    <a href="{{ route('vehiculos.documentos.historial.completo', $vehiculoIdDash) }}" class="btn btn-sm btn-primary">
                         <i class="bi bi-eye-fill me-1"></i>Ver
                     </a>
+                    @elseif(!$esAlertaVehiculoDash && $conductorIdDash)
+                    <a href="{{ route('conductores.documentos.historial', $conductorIdDash) }}" class="btn btn-sm btn-info">
+                        <i class="bi bi-eye-fill me-1"></i>Ver
+                    </a>
+                    @else
+                    <a href="{{ route('alertas.show', $a->id_alerta) }}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-eye-fill me-1"></i>Ver
+                    </a>
+                    @endif
                     @if(!$a->leida)
                     <form method="POST" action="{{ route('alertas.read', $a->id_alerta) }}" class="d-inline">
                         @csrf

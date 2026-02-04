@@ -216,11 +216,74 @@ $vehiculoId = request()->query('vehiculo');
                     @endif
                 </div>
                 <div class="card-body">
+                    {{-- Formulario oculto para búsqueda de propietario (GET) --}}
+                    <form action="{{ route('vehiculos.create') }}" method="GET" id="form-buscar-propietario"></form>
+
+                    @php
+                        $propEncontrado = isset($propietarioBuscado) && $propietarioBuscado;
+                    @endphp
+
                     @if($propietario)
+                    {{-- CASO 1: Propietario ya seleccionado/creado --}}
                     <div class="alert alert-success mb-3">
                         <i class="fa-solid fa-check-circle me-2"></i>
-                        <strong>Propietario creado:</strong><br>
+                        <strong>Propietario:</strong><br>
                         {{ $propietario->nombre }} {{ $propietario->apellido }} - {{ $propietario->tipo_doc }}: {{ $propietario->identificacion }}
+                    </div>
+
+                    @elseif($propEncontrado)
+                    {{-- CASO 2: Propietario encontrado en búsqueda - Solo mostrar datos y botón usar --}}
+                    <div class="alert alert-success mb-0">
+                        <i class="fa-solid fa-user-check me-2"></i>
+                        <strong>Propietario encontrado:</strong>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo Documento</label>
+                            <input type="text" class="form-control" value="{{ $propietarioBuscado->tipo_doc }}" disabled>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Identificación</label>
+                            <input type="text" class="form-control" value="{{ $propietarioBuscado->identificacion }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" value="{{ $propietarioBuscado->nombre }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" class="form-control" value="{{ $propietarioBuscado->apellido }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="fa-solid fa-car me-1"></i>
+                            Vehículos registrados: {{ $propietarioBuscado->vehiculos()->count() }}
+                        </small>
+                        <div>
+                            <a href="{{ route('vehiculos.create') }}" class="btn btn-outline-secondary btn-sm me-2">
+                                <i class="fa-solid fa-xmark me-1"></i>Cancelar
+                            </a>
+                            <form action="{{ route('propietarios.usar-existente') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="id_propietario" value="{{ $propietarioBuscado->id_propietario }}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa-solid fa-arrow-right me-1"></i>Continuar con este propietario
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    @else
+                    {{-- CASO 3: No hay propietario - Mostrar formulario de búsqueda/creación --}}
+
+                    @if(isset($identificacionBuscada) && $identificacionBuscada)
+                    <div class="alert alert-warning mb-3">
+                        <i class="fa-solid fa-circle-info me-2"></i>
+                        No se encontró propietario con identificación <strong>{{ $identificacionBuscada }}</strong>.
+                        Complete los datos para crear uno nuevo.
                     </div>
                     @endif
 
@@ -228,33 +291,9 @@ $vehiculoId = request()->query('vehiculo');
                         @csrf
 
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" name="nombre"
-                                    class="form-control @error('nombre') is-invalid @enderror"
-                                    value="{{ old('nombre') }}"
-                                    {{ $propietario ? 'disabled' : '' }} required>
-                                @error('nombre')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Apellido <span class="text-danger">*</span></label>
-                                <input type="text" name="apellido"
-                                    class="form-control @error('apellido') is-invalid @enderror"
-                                    value="{{ old('apellido') }}"
-                                    {{ $propietario ? 'disabled' : '' }} required>
-                                @error('apellido')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="col-md-4">
                                 <label class="form-label">Tipo Documento <span class="text-danger">*</span></label>
-                                <select name="tipo_doc"
-                                    class="form-select @error('tipo_doc') is-invalid @enderror"
-                                    {{ $propietario ? 'disabled' : '' }} required>
+                                <select name="tipo_doc" class="form-select @error('tipo_doc') is-invalid @enderror" required>
                                     <option value="CC" {{ old('tipo_doc') == 'CC' ? 'selected' : '' }}>CC</option>
                                     <option value="NIT" {{ old('tipo_doc') == 'NIT' ? 'selected' : '' }}>NIT</option>
                                 </select>
@@ -265,31 +304,55 @@ $vehiculoId = request()->query('vehiculo');
 
                             <div class="col-md-8">
                                 <label class="form-label">Identificación <span class="text-danger">*</span></label>
-                                <input type="text" name="identificacion"
-                                    class="form-control @error('identificacion') is-invalid @enderror"
-                                    value="{{ old('identificacion') }}"
-                                    {{ $propietario ? 'disabled' : '' }} required>
+                                <div class="input-group">
+                                    <input type="text" name="identificacion"
+                                        class="form-control @error('identificacion') is-invalid @enderror"
+                                        value="{{ $identificacionBuscada ?? old('identificacion') }}"
+                                        placeholder="Digite cédula o NIT" required>
+                                    <input type="hidden" form="form-buscar-propietario" name="buscar_identificacion" id="input-buscar-id">
+                                    <button type="button" class="btn btn-outline-primary"
+                                        onclick="document.getElementById('input-buscar-id').value = document.querySelector('input[name=identificacion]').value; document.getElementById('form-buscar-propietario').submit();"
+                                        title="Buscar propietario existente">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                                    </button>
+                                </div>
                                 @error('identificacion')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" name="nombre"
+                                    class="form-control @error('nombre') is-invalid @enderror"
+                                    value="{{ old('nombre') }}" required>
+                                @error('nombre')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Apellido <span class="text-danger">*</span></label>
+                                <input type="text" name="apellido"
+                                    class="form-control @error('apellido') is-invalid @enderror"
+                                    value="{{ old('apellido') }}" required>
+                                @error('apellido')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
                         <div class="mt-4">
-                            @if(!$propietario)
                             <button type="submit" class="btn btn-universal" data-loading-text="Creando...">
                                 <i class="fa-solid fa-user-plus me-2"></i>Crear Propietario
                             </button>
                             <p class="text-muted small mt-2 mb-0">
                                 <i class="fa-solid fa-info-circle me-1"></i>
-                                Al crear el propietario, se habilitará el formulario del vehículo.
+                                Busque primero si el propietario ya existe. Si no, complete los datos.
                             </p>
-                            @else
-                            {{-- Aquí estaba el botón de "Crear Otro Propietario"
-                                pero se ha eliminado sin afectar la estructura ni la lógica --}}
-                            @endif
                         </div>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>
@@ -799,7 +862,6 @@ $vehiculoId = request()->query('vehiculo');
             document.querySelectorAll('[data-bs-toggle="tooltip"]')
         );
         tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
-
 
         /* --------------------------------------------------------------------
          * 3. Scroll automático según parámetros de URL

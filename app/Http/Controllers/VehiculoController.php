@@ -78,7 +78,14 @@ class VehiculoController extends Controller
         $vehiculoId = $request->query('vehiculo');
         $vehiculo = $vehiculoId ? Vehiculo::with('propietario')->find($vehiculoId) : null;
 
-        return view('vehiculos.create', compact('propietario', 'vehiculo'));
+        // Buscar propietario existente por identificación (búsqueda PHP puro)
+        $propietarioBuscado = null;
+        $identificacionBuscada = $request->query('buscar_identificacion');
+        if ($identificacionBuscada && strlen($identificacionBuscada) >= 5 && !$propietario) {
+            $propietarioBuscado = Propietario::where('identificacion', $identificacionBuscada)->first();
+        }
+
+        return view('vehiculos.create', compact('propietario', 'vehiculo', 'propietarioBuscado', 'identificacionBuscada'));
     }
 
     /**

@@ -108,6 +108,100 @@ class DocumentoConductorController extends Controller
     }
 
     /**
+     * Renovar solo una categoría específica de la licencia.
+     * Crea una nueva versión del documento para mantener trazabilidad.
+     */
+    public function renovarCategoria(Request $request, Conductor $conductor)
+    {
+        $data = $request->validate([
+            'documento_id' => 'required|integer|exists:documentos_conductor,id_doc_conductor',
+            'categoria' => 'required|string|max:10',
+            'fecha_vencimiento' => 'required|date|after:today',
+            'agregar_monitoreo' => 'nullable',
+        ]);
+
+        // Obtener documento actual
+        $docActual = DocumentoConductor::findOrFail($data['documento_id']);
+
+        // Verificar que pertenece al conductor
+        if ($docActual->id_conductor !== $conductor->id_conductor) {
+            return back()->with('error', 'El documento no pertenece a este conductor.');
+        }
+
+        // Verificar que la categoría existe en el documento
+        $todasCategorias = $docActual->todas_categorias;
+        if (!in_array($data['categoria'], $todasCategorias)) {
+            return back()->with('error', 'La categoría no existe en este documento.');
+        }
+
+        // Preparar fechas por categoría (copiar existentes y actualizar la renovada)
+        $fechasPorCategoria = $docActual->fechas_por_categoria ?? [];
+        $fechasPorCategoria[$data['categoria']] = [
+            'fecha_vencimiento' => $data['fecha_vencimiento'],
+        ];
+
+        // Preparar categorías monitoreadas
+        $categoriasMonitoreadas = $docActual->categorias_monitoreadas ?? [];
+        if ($request->has('agregar_monitoreo')) {
+            if (!in_array($data['categoria'], $categoriasMonitoreadas)) {
+                $categoriasMonitoreadas[] = $data['categoria'];
+            }
+        } else {
+            $categoriasMonitoreadas = array_filter($categoriasMonitoreadas, fn($c) => $c !== $data['categoria']);
+        }
+        $categoriasMonitoreadas = array_values($categoriasMonitoreadas);
+
+        // Calcular nueva versión
+        $newVersion = $docActual->version + 1;
+
+        // Calcular fecha de vencimiento general (la más próxima de todas las categorías)
+        $fechaVencimientoGeneral = null;
+        foreach ($fechasPorCategoria as $cat => $info) {
+            if (!empty($info['fecha_vencimiento'])) {
+                $fecha = Carbon::parse($info['fecha_vencimiento']);
+                if ($fechaVencimientoGeneral === null || $fecha->lt($fechaVencimientoGeneral)) {
+                    $fechaVencimientoGeneral = $fecha;
+                }
+            }
+        }
+
+        // Crear nueva versión del documento
+        $newDoc = DocumentoConductor::create([
+            'id_conductor' => $conductor->id_conductor,
+            'tipo_documento' => $docActual->tipo_documento,
+            'categoria_licencia' => $docActual->categoria_licencia,
+            'categorias_adicionales' => $docActual->categorias_adicionales,
+            'fechas_por_categoria' => $fechasPorCategoria,
+            'categorias_monitoreadas' => $categoriasMonitoreadas,
+            'numero_documento' => $docActual->numero_documento,
+            'entidad_emisora' => $docActual->entidad_emisora,
+            'fecha_emision' => $docActual->fecha_emision,
+            'fecha_vencimiento' => $fechaVencimientoGeneral,
+            'activo' => 1,
+            'creado_por' => Auth::id(),
+            'version' => $newVersion,
+            'nota' => 'Refrendación categoría ' . $data['categoria'],
+            'fecha_registro' => now(),
+        ]);
+
+        // Marcar documento anterior como reemplazado
+        $docActual->update([
+            'activo' => 0,
+            'reemplazado_por' => $newDoc->id_doc_conductor,
+        ]);
+
+        // Solucionar alertas del documento anterior
+        Alerta::solucionarPorDocumentoConductor($docActual->id_doc_conductor, 'Categoría ' . $data['categoria'] . ' refrendada');
+
+        // Generar nuevas alertas si el nuevo documento tiene categorías próximas a vencer
+        $newDoc->load('conductor');
+        Alerta::generarAlertasDocumentoConductor($newDoc);
+
+        return redirect()->route('conductores.documentos.historial', $conductor->id_conductor)
+            ->with('success', 'Categoría ' . $data['categoria'] . ' refrendada correctamente. Versión ' . $newVersion);
+    }
+
+    /**
      * Mostrar formulario para crear documento de un conductor.
      * Route-model binding inyecta el Conductor.
      */

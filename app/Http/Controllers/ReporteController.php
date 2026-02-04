@@ -791,18 +791,34 @@ class ReporteController extends Controller
     {
         $fechaInicio = $request->input('fecha_inicio', Carbon::now()->subMonths(6)->format('Y-m-d'));
         $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
+        $tipoDocumento = $request->input('tipo_documento');
+        $placa = $request->input('placa');
 
-        $historialVehiculos = DocumentoVehiculo::with(['vehiculo'])
-            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59'])
-            ->orderByDesc('fecha_registro')
-            ->get();
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
-        $historialConductores = DocumentoConductor::with(['conductor'])
-            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59'])
-            ->orderByDesc('fecha_registro')
-            ->get();
+        if ($tipoDocumento) {
+            $queryVehiculos->where('tipo_documento', $tipoDocumento);
+        }
 
-        $pdf = Pdf::loadView('reportes.pdf.historico', compact('historialVehiculos', 'historialConductores', 'fechaInicio', 'fechaFin'));
+        if ($placa) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($placa) {
+                $q->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
+            });
+        }
+
+        $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
+
+        $queryConductores = DocumentoConductor::with(['conductor'])
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
+
+        if ($tipoDocumento) {
+            $queryConductores->where('tipo_documento', $tipoDocumento);
+        }
+
+        $historialConductores = $queryConductores->orderByDesc('fecha_registro')->get();
+
+        $pdf = Pdf::loadView('reportes.pdf.historico', compact('historialVehiculos', 'historialConductores', 'fechaInicio', 'fechaFin', 'tipoDocumento', 'placa'));
         $pdf->setPaper('letter', 'portrait');
 
         return $pdf->download('reporte_historico_' . date('Y-m-d') . '.pdf');

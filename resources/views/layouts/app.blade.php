@@ -63,6 +63,7 @@
             ])
             ->whereNull('deleted_at')
             ->activas() // Solo alertas no solucionadas
+            ->conDocumentoVigente() // Solo alertas de documentos no reemplazados
             ->where(function($q) use ($currentUser) {
             $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
             })
@@ -73,6 +74,7 @@
 
             $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
             ->activas() // Solo alertas no solucionadas
+            ->conDocumentoVigente() // Solo alertas de documentos no reemplazados
             ->where(function($q) use ($currentUser) {
             $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
             })

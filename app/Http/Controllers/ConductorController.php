@@ -127,12 +127,22 @@ class ConductorController extends Controller
             'creado_por' => Auth::id(),
         ]);
 
-        // Asignar vehículo (si se seleccionó)
+        // Asignar vehículo (si se seleccionó) usando tabla pivote
         if (!empty($validated['id_vehiculo'])) {
             $vehiculo = Vehiculo::find($validated['id_vehiculo']);
             if ($vehiculo) {
+                // Mantener compatibilidad con campo legacy
                 $vehiculo->id_conductor = $conductor->id_conductor;
                 $vehiculo->save();
+
+                // Usar tabla pivote para relación muchos a muchos
+                $conductor->vehiculosAsignados()->syncWithoutDetaching([
+                    $validated['id_vehiculo'] => [
+                        'es_principal' => true,
+                        'fecha_asignacion' => now(),
+                        'activo' => true,
+                    ]
+                ]);
             }
         }
 
@@ -301,25 +311,65 @@ class ConductorController extends Controller
                 'activo' => $request->has('activo') ? boolval($request->input('activo')) : $conductor->activo,
             ]);
 
-            // 2) Manejo del vehículo asignado
+            // 2) Manejo del vehículo asignado (usando tabla pivote)
             if (array_key_exists('id_vehiculo', $validated)) {
                 $newVehiculoId = $validated['id_vehiculo'] ?: null;
 
-                // Quitar vehículo anterior si cambió
-                $oldVeh = Vehiculo::where('id_conductor', $conductor->id_conductor)->first();
-                if ($oldVeh && (!$newVehiculoId || $oldVeh->id_vehiculo != $newVehiculoId)) {
-                    $oldVeh->id_conductor = null;
-                    $oldVeh->save();
-                }
-
-                // Asignar nuevo vehículo
+                // Desactivar asignación anterior si cambió de vehículo
                 if ($newVehiculoId) {
-                    $veh = Vehiculo::find($newVehiculoId);
-                    if ($veh->id_conductor && $veh->id_conductor != $conductor->id_conductor) {
-                        throw new \Exception('El vehículo seleccionado ya está asignado a otro conductor.');
+                    // Desmarcar otros vehículos como principal para este conductor
+                    DB::table('conductor_vehiculo')
+                        ->where('id_conductor', $conductor->id_conductor)
+                        ->where('id_vehiculo', '!=', $newVehiculoId)
+                        ->where('es_principal', true)
+                        ->update(['es_principal' => false]);
+
+                    // Asignar nuevo vehículo en tabla pivote
+                    $existeRelacion = DB::table('conductor_vehiculo')
+                        ->where('id_conductor', $conductor->id_conductor)
+                        ->where('id_vehiculo', $newVehiculoId)
+                        ->first();
+
+                    if ($existeRelacion) {
+                        // Actualizar relación existente
+                        DB::table('conductor_vehiculo')
+                            ->where('id_conductor', $conductor->id_conductor)
+                            ->where('id_vehiculo', $newVehiculoId)
+                            ->update([
+                                'es_principal' => true,
+                                'activo' => true,
+                                'fecha_desasignacion' => null,
+                            ]);
+                    } else {
+                        // Crear nueva relación
+                        DB::table('conductor_vehiculo')->insert([
+                            'id_conductor' => $conductor->id_conductor,
+                            'id_vehiculo' => $newVehiculoId,
+                            'es_principal' => true,
+                            'fecha_asignacion' => now(),
+                            'activo' => true,
+                        ]);
                     }
-                    $veh->id_conductor = $conductor->id_conductor;
-                    $veh->save();
+
+                    // Mantener compatibilidad con campo legacy id_conductor en vehiculos
+                    $veh = Vehiculo::find($newVehiculoId);
+                    if ($veh) {
+                        $veh->id_conductor = $conductor->id_conductor;
+                        $veh->save();
+                    }
+                } else {
+                    // Desasignar todos los vehículos del conductor
+                    DB::table('conductor_vehiculo')
+                        ->where('id_conductor', $conductor->id_conductor)
+                        ->where('activo', true)
+                        ->update([
+                            'activo' => false,
+                            'fecha_desasignacion' => now(),
+                        ]);
+
+                    // Limpiar campo legacy
+                    Vehiculo::where('id_conductor', $conductor->id_conductor)
+                        ->update(['id_conductor' => null]);
                 }
             }
 
@@ -426,14 +476,23 @@ class ConductorController extends Controller
     {
         try {
             DB::transaction(function () use ($conductor) {
-                // 1) Desasignar vehículos del conductor
+                // 1) Desasignar vehículos en tabla pivote
+                DB::table('conductor_vehiculo')
+                    ->where('id_conductor', $conductor->id_conductor)
+                    ->where('activo', true)
+                    ->update([
+                        'activo' => false,
+                        'fecha_desasignacion' => now(),
+                    ]);
+
+                // 2) Limpiar campo legacy id_conductor en vehículos
                 Vehiculo::where('id_conductor', $conductor->id_conductor)
                     ->update(['id_conductor' => null]);
 
-                // 2) Soft delete de documentos del conductor
+                // 3) Soft delete de documentos del conductor
                 $conductor->documentosConductor()->delete();
 
-                // 3) Soft delete del conductor
+                // 4) Soft delete del conductor
                 $conductor->delete();
             });
 

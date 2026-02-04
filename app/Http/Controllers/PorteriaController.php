@@ -28,6 +28,7 @@ class PorteriaController extends Controller
             ])
             ->whereNull('deleted_at')
             ->activas() // Solo alertas no solucionadas
+            ->conDocumentoVigente() // Solo alertas de documentos no reemplazados
             ->where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')
                     ->orWhere('visible_para', $user->rol);

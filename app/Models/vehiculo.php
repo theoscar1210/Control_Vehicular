@@ -58,10 +58,13 @@ class Vehiculo extends Model
             }
         });
 
-        // Al restaurar, reactivar documentos
+        // Al restaurar, reactivar solo documentos vigentes (no reemplazados)
         static::restoring(function ($veh) {
-            // Reactivar todos los documentos del vehículo
+            // Solo reactivar documentos que NO fueron reemplazados
+            // Documentos con estado REEMPLAZADO o con reemplazado_por != null permanecen inactivos
             \App\Models\DocumentoVehiculo::where('id_vehiculo', $veh->id_vehiculo)
+                ->whereNull('reemplazado_por')
+                ->where('estado', '!=', 'REEMPLAZADO')
                 ->update(['activo' => true]);
         });
     }
@@ -150,11 +153,42 @@ class Vehiculo extends Model
     }
 
     /**
-     * Relación: el vehículo pertenece a un conductor
+     * Relación: el vehículo pertenece a un conductor (legacy - mantener por compatibilidad)
+     * @deprecated Usar relación conductores() para múltiples conductores
      */
     public function conductor()
     {
         return $this->belongsTo(Conductor::class, 'id_conductor', 'id_conductor');
+    }
+
+    /**
+     * Relación: el vehículo tiene muchos conductores (muchos a muchos)
+     */
+    public function conductores()
+    {
+        return $this->belongsToMany(Conductor::class, 'conductor_vehiculo', 'id_vehiculo', 'id_conductor')
+            ->withPivot('es_principal', 'fecha_asignacion', 'fecha_desasignacion', 'activo')
+            ->wherePivot('activo', true);
+    }
+
+    /**
+     * Relación: todos los conductores (incluyendo inactivos) para historial
+     */
+    public function todosLosConductores()
+    {
+        return $this->belongsToMany(Conductor::class, 'conductor_vehiculo', 'id_vehiculo', 'id_conductor')
+            ->withPivot('es_principal', 'fecha_asignacion', 'fecha_desasignacion', 'activo');
+    }
+
+    /**
+     * Obtener el conductor principal del vehículo
+     */
+    public function conductorPrincipal()
+    {
+        return $this->belongsToMany(Conductor::class, 'conductor_vehiculo', 'id_vehiculo', 'id_conductor')
+            ->withPivot('es_principal', 'activo')
+            ->wherePivot('activo', true)
+            ->wherePivot('es_principal', true);
     }
 
     /**

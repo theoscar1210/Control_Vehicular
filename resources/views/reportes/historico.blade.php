@@ -146,7 +146,7 @@ $sinPadding = true;
     @if($cronologia->count() > 0)
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white py-3">
-            <h5 class="mb-0"><i class="fas fa-stream me-2" style="color: #5B8238;"></i>Cronología de Documentos</h5>
+            <h5 class="mb-0"><i class="fas fa-stream me-2"></i>Cronología de Documentos</h5>
         </div>
         <div class="card-body">
             @foreach($cronologia as $mes => $eventos)
@@ -224,7 +224,7 @@ $sinPadding = true;
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0">
-                        <i class="fas fa-car me-2" style="color: #5B8238;"></i>
+                        <i class="fas fa-car me-2"></i>
                         Documentos de Vehículos
                         <span class="badge bg-secondary ms-2">{{ $historialVehiculos->count() }}</span>
                     </h5>
@@ -277,7 +277,7 @@ $sinPadding = true;
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0">
-                        <i class="fas fa-id-card me-2" style="color: #5B8238;"></i>
+                        <i class="fas fa-id-card me-2"></i>
                         Documentos de Conductores
                         <span class="badge bg-secondary ms-2">{{ $historialConductores->count() }}</span>
                     </h5>
