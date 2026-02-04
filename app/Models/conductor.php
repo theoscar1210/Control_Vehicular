@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Conductor extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $table = 'conductores';
     protected $primaryKey = 'id_conductor';
@@ -32,6 +34,18 @@ class Conductor extends Model
         'activo' => 'boolean',
         'fecha_registro' => 'datetime',
     ];
+
+    /**
+     * Configuración de auditoría de cambios
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['nombre', 'apellido', 'tipo_doc', 'identificacion', 'telefono', 'activo'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Conductor {$this->nombre} {$this->apellido} {$eventName}");
+    }
 
     /**
      * Hook de Eloquent: al eliminar un conductor

@@ -6,10 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class DocumentoConductor extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    /**
+     * Configuración de auditoría de cambios
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['tipo_documento', 'numero_documento', 'categoria_licencia', 'fecha_vencimiento', 'activo', 'version'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Documento conductor {$this->tipo_documento} {$eventName}");
+    }
 
     /** Nombre explícito de la tabla en la base de datos */
     protected $table = 'documentos_conductor';

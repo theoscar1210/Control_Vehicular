@@ -6,10 +6,24 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Vehiculo extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    /**
+     * Configuración de auditoría de cambios
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['placa', 'marca', 'modelo', 'color', 'tipo', 'id_propietario', 'id_conductor', 'estado'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Vehículo {$this->placa} {$eventName}");
+    }
 
     /** Nombre explícito de la tabla en la base de datos */
     protected $table = 'vehiculos';

@@ -1,41 +1,47 @@
 <?php
 
-// Define el espacio de nombres del modelo
 namespace App\Models;
 
-// Importa clases necesarias para el modelo
-use Illuminate\Database\Eloquent\Model; // Clase base para modelos Eloquent
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Permite usar factories para pruebas
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
-// Define el modelo Propietario que extiende Eloquent
 class Propietario extends Model
 {
-    // Habilita el uso de factories para generar datos de prueba
-    use HasFactory;
+    use HasFactory, SoftDeletes, LogsActivity;
 
-    /** Nombre explícito de la tabla en la base de datos */
     protected $table = 'propietarios';
-
-    /** Clave primaria personalizada (por defecto sería 'id') */
     protected $primaryKey = 'id_propietario';
     public $incrementing = true;
-
     public $timestamps = false;
 
-
-    /** Campos que se pueden asignar masivamente */
     protected $fillable = [
-        'nombre',              // Nombre del propietario
-        'apellido',            // Apellido del propietario
-        'tipo_doc',      // Tipo de documento (ej. CC, TI, CE)
-        'identificacion',      // Número de identificación
-        'creado_por',          // Usuario que creó el registro
-        'fecha_registro'       // Fecha de registro del propietario
+        'nombre',
+        'apellido',
+        'tipo_doc',
+        'identificacion',
+        'creado_por',
+        'fecha_registro'
     ];
 
     protected $casts = [
         'fecha_registro' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
+
+    /**
+     * Configuración de auditoría de cambios
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['nombre', 'apellido', 'tipo_doc', 'identificacion'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Propietario {$eventName}");
+    }
 
     // relaciones
     public function vehiculos()

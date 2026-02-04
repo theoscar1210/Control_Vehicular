@@ -2,18 +2,31 @@
 
 namespace App\Models;
 
-
 use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 /**
  * Modelo para gestionar documentos de vehículos (SOAT, Tecnomecánica, etc.)
  */
 class DocumentoVehiculo extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
+
+    /**
+     * Configuración de auditoría de cambios
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['tipo_documento', 'numero_documento', 'fecha_vencimiento', 'activo', 'version', 'estado'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Documento {$this->tipo_documento} {$eventName}");
+    }
 
     protected $table = 'documentos_vehiculo';
     protected $primaryKey = 'id_doc_vehiculo';
