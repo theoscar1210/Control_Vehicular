@@ -319,6 +319,58 @@ class ApiTest extends TestCase
     }
 
     /**
+     * Test: Login se bloquea después de 5 intentos fallidos
+     */
+    public function test_login_bloqueado_por_intentos(): void
+    {
+        // Realizar 5 intentos fallidos
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('login.post'), [
+                'usuario' => 'atacante',
+                'password' => 'wrong' . $i,
+            ]);
+        }
+
+        // El 6to intento debe ser bloqueado con mensaje de throttle
+        $response = $this->post(route('login.post'), [
+            'usuario' => 'atacante',
+            'password' => 'wrong6',
+        ]);
+
+        $response->assertSessionHasErrors('usuario');
+        $errors = session('errors')->get('usuario');
+        // El mensaje puede estar en español ("intentos") o inglés ("attempts")
+        $this->assertTrue(
+            str_contains($errors[0], 'intentos') || str_contains($errors[0], 'attempts'),
+            "El mensaje de bloqueo no contiene la palabra esperada: {$errors[0]}"
+        );
+    }
+
+    /**
+     * Test: Login muestra advertencia cuando quedan pocos intentos
+     */
+    public function test_login_muestra_intentos_restantes(): void
+    {
+        // Realizar 3 intentos fallidos (quedan 2)
+        for ($i = 0; $i < 3; $i++) {
+            $this->post(route('login.post'), [
+                'usuario' => 'usuario_warn',
+                'password' => 'wrong' . $i,
+            ]);
+        }
+
+        // El 4to intento debe mostrar advertencia de intentos restantes
+        $response = $this->post(route('login.post'), [
+            'usuario' => 'usuario_warn',
+            'password' => 'wrong4',
+        ]);
+
+        $response->assertSessionHasErrors('usuario');
+        $errors = session('errors')->get('usuario');
+        $this->assertStringContainsString('intento(s)', $errors[0]);
+    }
+
+    /**
      * Test: Logout funciona correctamente
      */
     public function test_logout(): void
