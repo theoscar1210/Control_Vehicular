@@ -12,9 +12,9 @@ return [
     | Default Log Channel
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | Esta opción define el canal de registro predeterminado que se utiliza para escribir
+    | mensajes en sus registros. El valor proporcionado aquí debe coincidir con uno de
+    | los canales presentes en la lista de «canales» configurados a continuación.
     |
     */
 
@@ -25,9 +25,9 @@ return [
     | Deprecations Log Channel
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+   | Esta opción controla el canal de registro que se debe utilizar para registrar advertencias
+    | relacionadas con funciones obsoletas de PHP y bibliotecas. Esto le permite preparar
+    | su aplicación para las próximas versiones principales de las dependencias.
     |
     */
 
@@ -89,7 +89,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],

@@ -9,7 +9,7 @@ use App\Models\DocumentoVehiculo;
 class DocumentoVehiculoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar una lista de los recursos
      */
     public function index()
     {
@@ -20,7 +20,7 @@ class DocumentoVehiculoController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Almacenar un recurso recién creado en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -43,9 +43,7 @@ class DocumentoVehiculoController extends Controller
         return response()->json($doc, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(DocumentoVehiculo $documentoVehiculo)
     {
         //
@@ -56,7 +54,7 @@ class DocumentoVehiculoController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, DocumentoVehiculo $documentoVehiculo)
     {
@@ -74,7 +72,7 @@ class DocumentoVehiculoController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     *  Elimina el recurso especificado del almacenamiento.
      */
     public function destroy(DocumentoVehiculo $documentoVehiculo)
     {

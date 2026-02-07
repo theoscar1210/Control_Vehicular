@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 
 class VehiculoController extends Controller
 {
+    /**
+     * Mostrar una lista de los recursos.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         return response()->json(Vehiculo::with('propietario', 'conductor', 'documentosVehiculo')->paginate(15));

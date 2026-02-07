@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class DocumentoConductorController extends Controller
 {
+    /**
+     * Mostrar listado de documentos de conductores con su conductor asociado.
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         return response()->json(DocumentoConductor::with('conductor')->paginate(20));

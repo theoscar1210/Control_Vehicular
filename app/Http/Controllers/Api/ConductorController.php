@@ -49,8 +49,14 @@ class ConductorController extends Controller
 
 
 
+
     /**
-     * Update the specified resource in storage.
+     * Actualizar conductor existente.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Conductor  $conductor
+     *
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Conductor $conductor)
     {
@@ -71,9 +77,7 @@ class ConductorController extends Controller
         return response()->json($conductor);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Conductor $conductor)
     {
         //

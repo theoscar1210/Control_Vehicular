@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
+    /**
+     * Mostrar lista de usuarios.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         return response()->json(Usuario::paginate(20));

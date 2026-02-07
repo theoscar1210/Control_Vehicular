@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SstOrAdmin
 {
     /**
-     * Handle an incoming request.
+     * Gestionar una solicitud entrante.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

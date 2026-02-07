@@ -13,7 +13,7 @@ class DocumentoVencidoNotification extends Notification
     protected $alerta;
 
     /**
-     * Create a new notification instance.
+     * Crear una nueva instancia de notificación.
      */
     public function __construct($alerta)
     {
@@ -23,7 +23,7 @@ class DocumentoVencidoNotification extends Notification
 
 
     /**
-     * Get the notification's delivery channels.
+     * Obtenga los canales de entrega de la notificación.
      *
      * @return array<int, string>
      */
@@ -33,7 +33,7 @@ class DocumentoVencidoNotification extends Notification
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Obtener la representación de correo electrónico de la notificación.
      */
     public function toMail($notifiable)
     {
@@ -52,7 +52,7 @@ class DocumentoVencidoNotification extends Notification
     }
 
     /**
-     * Get the array representation of the notification.
+     * Obtener la representación de la matriz de la notificación.
      *
      * @return array<string, mixed>
      */

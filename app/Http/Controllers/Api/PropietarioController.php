@@ -9,7 +9,7 @@ use App\Models\Propietario;
 class PropietarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar una lista de los recursos.
      */
     public function index()
     {
@@ -17,7 +17,8 @@ class PropietarioController extends Controller
         return response()->json(Propietario::with('vehiculos')->paginate(15));
     }
 
-    /* Store a newly created resource in storage.
+    /* 
+    Almacenar un recurso recién creado en el almacenamiento.
      */
     public function store(Request $request)
     {
@@ -44,13 +45,10 @@ class PropietarioController extends Controller
 
 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
 
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el recurso especificado en el almacenamiento.
      */
     public function update(Request $request, Propietario $propietario)
     {
@@ -69,7 +67,7 @@ class PropietarioController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el recurso especificado del almacenamiento.
      */
     public function destroy(Propietario $propietario)
     {

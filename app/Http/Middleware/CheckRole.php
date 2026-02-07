@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckRole
 {
     /**
-     * Handle an incoming request.
+     * Gestionar una solicitud entrante.t.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @param  string  ...$roles

@@ -7,6 +7,11 @@ use Illuminate\Validation\Rule;
 
 class StoreConductorRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para realizar esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;

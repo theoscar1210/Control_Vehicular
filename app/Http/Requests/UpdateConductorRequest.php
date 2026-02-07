@@ -12,6 +12,11 @@ class UpdateConductorRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Reglas de validación para actualizar un conductor.
+     *
+     * @return array Validation rules.
+     */
     public function rules(): array
     {
         $conductor = $this->route('conductor');

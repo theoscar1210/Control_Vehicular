@@ -12,11 +12,34 @@ class StoreDocumentoVehiculoRequest extends FormRequest
         'Poliza_Seguro'
     ];
 
+    /**
+     * Determinar si el usuario está autorizado para realizar esta solicitud.
+     *
+     * @return bool true si el usuario está autorizado, false en caso contrario.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Devuelve un array con las reglas de validación para la solicitud.
+     * 
+     * Las reglas de validación son las siguientes:
+     * 
+     * - tipo_documento: required, in:SOAT,Tecnomecanica,Tarjeta Propiedad,Poliza_Seguro
+     * - numero_documento: required, string, max:50
+     * - entidad_emisora: nullable, string, max:100
+     * - nota: nullable, string, max:255
+     * 
+     * Si el tipo de documento es alguno de los que necesitan vencimiento,
+     * se agrega la regla de fecha_emision como required|date.
+     * 
+     * Si el tipo de documento es Tarjeta Propiedad, se agrega la regla de
+     * fecha_matricula como required|date|before_or_equal:today.
+     * 
+     * @return array Las reglas de validación.
+     */
     public function rules(): array
     {
         $rules = [

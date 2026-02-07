@@ -13,6 +13,12 @@ class AlertaController extends Controller
         return response()->json(Alerta::with(['documentoVehiculo.vehiculo', 'documentoConductor.conductor'])->orderByDesc('fecha_registro')->paginate(25));
     }
 
+    /**
+     * Crear una alerta manualmente y notificar a roles (util para pruebas o env o manual).
+     * Espera: tipo_alerta, id_doc_vehiculo?, id_doc_conductor?, tipo_vencimiento, mensaje, fecha_alerta, visible_para
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -31,6 +37,12 @@ class AlertaController extends Controller
         return response()->json($alert, 201);
     }
 
+    /**
+     * Mostrar una alerta concreta con sus relaciones cargadas.
+     *
+     * @param Alerta $alerta La alerta a mostrar
+     * @return \Illuminate\Http\Response La respuesta en formato JSON con la alerta cargada
+     */
     public function show(Alerta $alerta)
     {
         $alerta->load(['documentoVehiculo.vehiculo', 'documentoConductor.conductor']);
