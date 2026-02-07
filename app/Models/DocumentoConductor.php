@@ -6,12 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class DocumentoConductor extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
+
+    protected static function booted(): void
+    {
+        static::saved(fn() => Cache::forget('dashboard_stats') ?: Cache::forget('reporte_stats'));
+        static::deleted(fn() => Cache::forget('dashboard_stats') ?: Cache::forget('reporte_stats'));
+    }
 
     /**
      * Configuración de auditoría de cambios

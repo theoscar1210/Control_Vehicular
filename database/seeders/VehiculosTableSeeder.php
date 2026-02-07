@@ -179,14 +179,17 @@ class VehiculosTableSeeder extends Seeder
                 $condIdx++;
             }
 
-            Vehiculo::create(array_merge($data, [
-                'id_propietario' => $propietario->id_propietario,
-                'id_conductor' => $conductor?->id_conductor,
-                'estado' => $data['estado'] ?? 'Activo',
-                'fecha_matricula' => Carbon::parse($data['fecha_matricula']),
-                'creado_por' => null,
-                'fecha_registro' => now(),
-            ]));
+            Vehiculo::firstOrCreate(
+                ['placa' => $data['placa']],
+                array_merge($data, [
+                    'id_propietario' => $propietario->id_propietario,
+                    'id_conductor' => $conductor?->id_conductor,
+                    'estado' => $data['estado'] ?? 'Activo',
+                    'fecha_matricula' => Carbon::parse($data['fecha_matricula']),
+                    'creado_por' => null,
+                    'fecha_registro' => now(),
+                ])
+            );
         }
     }
 }

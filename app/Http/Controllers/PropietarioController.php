@@ -14,11 +14,11 @@ class PropietarioController extends Controller
      */
     public function buscar(Request $request)
     {
-        $identificacion = $request->input('identificacion');
+        $request->validate([
+            'identificacion' => 'required|string|min:3|max:50',
+        ]);
 
-        if (empty($identificacion) || strlen($identificacion) < 3) {
-            return response()->json(['encontrado' => false]);
-        }
+        $identificacion = $request->input('identificacion');
 
         $propietario = Propietario::where('identificacion', $identificacion)->first();
 

@@ -106,10 +106,13 @@ class ConductoresTableSeeder extends Seeder
         ];
 
         foreach ($conductores as $data) {
-            Conductor::create(array_merge($data, [
-                'creado_por' => $creator?->id_usuario,
-                'fecha_registro' => now(),
-            ]));
+            Conductor::firstOrCreate(
+                ['identificacion' => $data['identificacion']],
+                array_merge($data, [
+                    'creado_por' => $creator?->id_usuario,
+                    'fecha_registro' => now(),
+                ])
+            );
         }
     }
 }

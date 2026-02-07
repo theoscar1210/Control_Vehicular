@@ -54,40 +54,7 @@
                 </div>
             </a>
 
-            @php
-            $currentUser = auth()->user();
-
-            // ADMIN no ve alertas en la campanita
-            if ($currentUser->rol === 'ADMIN') {
-                $alertasMenu = collect();
-                $totalAlertasNoLeidas = 0;
-            } else {
-                $alertasMenu = \App\Models\Alerta::with([
-                'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor',
-                'usuariosQueLeyeron'
-                ])
-                ->whereNull('deleted_at')
-                ->activas()
-                ->conDocumentoVigente()
-                ->where(function($q) use ($currentUser) {
-                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
-                })
-                ->noLeidasPor($currentUser->id_usuario)
-                ->orderByDesc('fecha_alerta')
-                ->take(5)
-                ->get();
-
-                $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
-                ->activas()
-                ->conDocumentoVigente()
-                ->where(function($q) use ($currentUser) {
-                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
-                })
-                ->noLeidasPor($currentUser->id_usuario)
-                ->count();
-            }
-            @endphp
+            {{-- $alertasMenu y $totalAlertasNoLeidas son inyectados por AlertaComposer --}}
             <ul class="navbar-nav ms-auto align-items-center">
                 {{-- Notificaciones con Dropdown --}}
                 <li class="nav-item dropdown me-3">

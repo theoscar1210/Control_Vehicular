@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreConductorRequest;
+use App\Http\Requests\UpdateConductorRequest;
 
 class ConductorController extends Controller
 {
@@ -79,41 +81,9 @@ class ConductorController extends Controller
     /**
      * Guardar un nuevo conductor.
      */
-    public function store(Request $request)
+    public function store(StoreConductorRequest $request)
     {
-        // Validaciones de campos del formulario
-        $rules = [
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'tipo_doc' => ['required', Rule::in(['CC', 'CE'])],
-            'identificacion' => 'required|string|max:50|unique:conductores,identificacion',
-            'telefono' => 'nullable|string|max:30',
-            'telefono_emergencia' => 'nullable|string|max:30',
-            'activo' => 'nullable|boolean',
-            'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
-
-            // Datos del documento sin archivo
-            'documento_tipo' => 'nullable|string|in:Licencia Conducción,Certificado Médico,ARL,EPS,Otro',
-            'documento_numero' => 'nullable|string|max:50',
-            'documento_fecha_emision' => 'nullable|date',
-            'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',
-            'entidad_emisora' => 'nullable|string|max:100',
-
-            // Categorías de licencia
-            'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
-            'categorias_adicionales' => 'nullable|array',
-            'categorias_adicionales.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
-
-            // Vencimiento por categoría adicional (solo fecha de vencimiento)
-            'fechas_categoria' => 'nullable|array',
-            'fechas_categoria.*.fecha_vencimiento' => 'nullable|date',
-
-            // Categorías a monitorear para alertas (por defecto solo la principal)
-            'categorias_monitoreadas' => 'nullable|array',
-            'categorias_monitoreadas.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
-        ];
-
-        $validated = $request->validate($rules);
+        $validated = $request->validated();
 
         // Crear el conductor
         $conductor = Conductor::create([
@@ -265,38 +235,9 @@ class ConductorController extends Controller
     /**
      * Actualizar conductor existente.
      */
-    public function update(Request $request, Conductor $conductor)
+    public function update(UpdateConductorRequest $request, Conductor $conductor)
     {
-        $rules = [
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'tipo_doc' => ['required', Rule::in(['CC', 'CE'])],
-            'identificacion' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('conductores', 'identificacion')->ignore($conductor->id_conductor, 'id_conductor'),
-            ],
-            'telefono' => 'nullable|string|max:30',
-            'telefono_emergencia' => 'nullable|string|max:30',
-            'activo' => 'nullable|boolean',
-            'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
-
-            // Datos de documentos
-            'documento_action' => ['nullable', Rule::in(['none', 'update_existing', 'create_version'])],
-            'documento_id' => 'nullable|integer|exists:documentos_conductor,id_doc_conductor',
-            'documento_tipo' => 'nullable|string|max:100',
-            'documento_numero' => 'nullable|string|max:100',
-            'documento_fecha_emision' => 'nullable|date',
-            'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',
-            'categoria_licencia' => 'nullable|string|in:A1,A2,B1,B2,B3,C1,C2,C3',
-
-            // Categorías a monitorear para alertas
-            'categorias_monitoreadas' => 'nullable|array',
-            'categorias_monitoreadas.*' => 'string|in:A1,A2,B1,B2,B3,C1,C2,C3',
-        ];
-
-        $validated = $request->validate($rules);
+        $validated = $request->validated();
 
         // Transacción para consistencia
         DB::transaction(function () use ($validated, $request, $conductor) {

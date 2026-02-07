@@ -64,10 +64,13 @@ class PropietariosTableSeeder extends Seeder
         ];
 
         foreach ($propietarios as $data) {
-            Propietario::create(array_merge($data, [
-                'creado_por' => $creator?->id_usuario,
-                'fecha_registro' => now(),
-            ]));
+            Propietario::firstOrCreate(
+                ['identificacion' => $data['identificacion']],
+                array_merge($data, [
+                    'creado_por' => $creator?->id_usuario,
+                    'fecha_registro' => now(),
+                ])
+            );
         }
     }
 }

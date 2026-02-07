@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Models\Vehiculo;
 use App\Models\Conductor;
@@ -25,46 +26,49 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $hoy = Carbon::today();
-        $proximo = $hoy->copy()->addDays(20); // Cambio de 30 a 20 días para POR_VENCER
+        // Contadores cacheados por 1 hora (se invalidan al crear/editar/eliminar registros)
+        $stats = Cache::remember('dashboard_stats', 3600, function () {
+            $hoy = Carbon::today();
+            $proximo = $hoy->copy()->addDays(20);
 
-        // Total vehículos: contar solo los activos (evita valores irreales)
-        $totalVehiculos = Vehiculo::where('estado', 'Activo')->count();
+            $totalVehiculos = Vehiculo::where('estado', 'Activo')->count();
+            $conductoresActivos = Conductor::where('activo', 1)->count();
 
-        // Conductores activos
-        $conductoresActivos = Conductor::where('activo', 1)->count();
+            $porVencerVeh = DocumentoVehiculo::whereNotNull('fecha_vencimiento')
+                ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
+                ->where('estado', '!=', 'REEMPLAZADO')
+                ->count();
 
-        // Documentos por vencer: documentos (vehículo + conductor) con fecha_vencimiento entre hoy y +30,
-        // y que no estén marcados como REEMPLAZADO (historiales antiguos).
-        $porVencerVeh = DocumentoVehiculo::whereNotNull('fecha_vencimiento')
-            ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
-            ->where('estado', '!=', 'REEMPLAZADO')
-            ->count();
+            $porVencerCond = DocumentoConductor::whereNotNull('fecha_vencimiento')
+                ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
+                ->where('estado', '!=', 'REEMPLAZADO')
+                ->count();
 
-        $porVencerCond = DocumentoConductor::whereNotNull('fecha_vencimiento')
-            ->whereBetween('fecha_vencimiento', [$hoy, $proximo])
-            ->where('estado', '!=', 'REEMPLAZADO')
-            ->count();
+            $vencidosVeh = DocumentoVehiculo::where('estado', '!=', 'REEMPLAZADO')
+                ->where(function ($q) use ($hoy) {
+                    $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
+                        ->orWhere('estado', 'VENCIDO');
+                })->count();
 
-        $porVencerCount = $porVencerVeh + $porVencerCond;
+            $vencidosCond = DocumentoConductor::where('estado', '!=', 'REEMPLAZADO')
+                ->where(function ($q) use ($hoy) {
+                    $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
+                        ->orWhere('estado', 'VENCIDO');
+                })->count();
 
-        // Documentos vencidos: fecha_vencimiento < hoy OR estado = 'VENCIDO'
-        // Excluimos los que están como REEMPLAZADO
-        $vencidosVeh = DocumentoVehiculo::where('estado', '!=', 'REEMPLAZADO')
-            ->where(function ($q) use ($hoy) {
-                $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
-                    ->orWhere('estado', 'VENCIDO');
-            })->count();
+            return [
+                'totalVehiculos' => $totalVehiculos,
+                'conductoresActivos' => $conductoresActivos,
+                'porVencerCount' => $porVencerVeh + $porVencerCond,
+                'vencidosCount' => $vencidosVeh + $vencidosCond,
+            ];
+        });
 
-        $vencidosCond = DocumentoConductor::where('estado', '!=', 'REEMPLAZADO')
-            ->where(function ($q) use ($hoy) {
-                $q->whereNotNull('fecha_vencimiento')->where('fecha_vencimiento', '<', $hoy)
-                    ->orWhere('estado', 'VENCIDO');
-            })->count();
+        $totalVehiculos = $stats['totalVehiculos'];
+        $conductoresActivos = $stats['conductoresActivos'];
+        $porVencerCount = $stats['porVencerCount'];
+        $vencidosCount = $stats['vencidosCount'];
 
-        $vencidosCount = $vencidosVeh + $vencidosCond;
-
-        // Última actualización: fecha y hora completas
         $ultima_actualizacion = Carbon::now()->format('d M Y, H:i:s');
 
         // Alertas: visibles para el rol del usuario o para TODOS, no borradas (softDelete),

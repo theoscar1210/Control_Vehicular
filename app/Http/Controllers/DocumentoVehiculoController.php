@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Http\Requests\StoreDocumentoVehiculoRequest;
 
 class DocumentoVehiculoController extends Controller
 {
@@ -26,34 +27,9 @@ class DocumentoVehiculoController extends Controller
      * GUARDAR DOCUMENTO DE VEHÍCULO
      * ============================================
      */
-    public function store(Request $request, $idVehiculo)
+    public function store(StoreDocumentoVehiculoRequest $request, $idVehiculo)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDACIÓN DINÁMICA
-        |--------------------------------------------------------------------------
-        | Si el documento tiene vencimiento, fecha_emision es obligatoria
-        | Si es Tarjeta Propiedad, fecha_matricula es obligatoria
-        */
-        $rules = [
-            'tipo_documento'   => 'required|string',
-            'numero_documento' => 'required|string|max:50',
-            'entidad_emisora'  => 'nullable|string|max:100',
-            'nota'             => 'nullable|string|max:255',
-        ];
-
-        if (in_array($request->tipo_documento, $this->documentosConVencimiento)) {
-            $rules['fecha_emision'] = 'required|date';
-        } else {
-            $rules['fecha_emision'] = 'nullable|date';
-        }
-
-        // Tarjeta de Propiedad requiere fecha de matrícula
-        if ($request->tipo_documento === 'Tarjeta Propiedad') {
-            $rules['fecha_matricula'] = 'required|date|before_or_equal:today';
-        }
-
-        $validated = $request->validate($rules);
+        $validated = $request->validated();
 
         $vehiculo = Vehiculo::with(['propietario'])->findOrFail($idVehiculo);
         $tipo = $validated['tipo_documento'];

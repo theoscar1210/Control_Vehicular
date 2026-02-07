@@ -57,19 +57,23 @@ class DocumentosVehiculoTableSeeder extends Seeder
                     default => 'DOC-' . rand(100000, 999999),
                 };
 
-                DocumentoVehiculo::create([
-                    'id_vehiculo' => $vehiculo->id_vehiculo,
-                    'tipo_documento' => $tipo,
-                    'numero_documento' => $numDoc,
-                    'entidad_emisora' => $entidad,
-                    'fecha_emision' => $fechaEmision,
-                    'fecha_vencimiento' => $fechaVencimiento,
-                    'estado' => $estado,
-                    'activo' => true,
-                    'version' => 1,
-                    'creado_por' => $creator?->id_usuario,
-                    'fecha_registro' => now(),
-                ]);
+                DocumentoVehiculo::firstOrCreate(
+                    [
+                        'id_vehiculo' => $vehiculo->id_vehiculo,
+                        'tipo_documento' => $tipo,
+                        'activo' => 1,
+                    ],
+                    [
+                        'numero_documento' => $numDoc,
+                        'entidad_emisora' => $entidad,
+                        'fecha_emision' => $fechaEmision,
+                        'fecha_vencimiento' => $fechaVencimiento,
+                        'estado' => $estado,
+                        'version' => 1,
+                        'creado_por' => $creator?->id_usuario,
+                        'fecha_registro' => now(),
+                    ]
+                );
             }
         }
     }

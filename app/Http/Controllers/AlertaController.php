@@ -119,19 +119,25 @@ class AlertaController extends Controller
     {
         $user = Auth::user();
 
-        // Obtener alertas no leidas por este usuario
-        $alertas = Alerta::where(function ($q) use ($user) {
+        // Obtener IDs de alertas no leidas por este usuario
+        $alertaIds = Alerta::where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')->orWhere('visible_para', $user->rol);
             })
             ->whereNull('deleted_at')
             ->noLeidasPor($user->id_usuario)
-            ->get();
+            ->pluck('id_alerta');
 
-        $count = 0;
-        foreach ($alertas as $alerta) {
-            $alerta->marcarLeidaPara($user->id_usuario);
-            $count++;
+        if ($alertaIds->isNotEmpty()) {
+            $registros = $alertaIds->map(fn($id) => [
+                'id_alerta' => $id,
+                'id_usuario' => $user->id_usuario,
+                'fecha_lectura' => now(),
+            ])->toArray();
+
+            \DB::table('alerta_usuario_leida')->insertOrIgnore($registros);
         }
+
+        $count = $alertaIds->count();
 
         return redirect()->back()->with('success', "Se marcaron $count alertas como leidas.");
     }

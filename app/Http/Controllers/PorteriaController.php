@@ -11,9 +11,14 @@ use App\Models\DocumentoVehiculo;
 use App\Models\DocumentoConductor;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\DocumentStatusService;
 
 class PorteriaController extends Controller
 {
+    public function __construct(
+        private DocumentStatusService $documentStatusService
+    ) {}
+
     /**
      * Vista principal de Portería con alertas y buscador múltiple.
      */
@@ -59,7 +64,7 @@ class PorteriaController extends Controller
         // Calcular estados de documentos si hay vehículo único
         $estadosDocumentos = [];
         if ($vehiculo) {
-            $estadosDocumentos = $this->calcularEstadosDocumentos($vehiculo);
+            $estadosDocumentos = $this->documentStatusService->calcularEstadosDetallados($vehiculo);
         }
 
         // Usar navbar especial (sin menú lateral)
@@ -193,128 +198,5 @@ class PorteriaController extends Controller
     /**
      * Calcula el estado de los documentos del vehículo y conductor.
      */
-    private function calcularEstadosDocumentos($vehiculo)
-    {
-        $hoy = Carbon::today();
-        $limite20 = Carbon::today()->addDays(20); // Cambio de 30 a 20 días
-        $estados = [];
-
-        // Documentos del vehículo
-        $tiposVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad'];
-        foreach ($tiposVehiculo as $tipo) {
-            $doc = $vehiculo->documentos
-                ->where('tipo_documento', $tipo)
-                ->where('activo', 1)
-                ->first();
-
-            if (!$doc) {
-                $estados["vehiculo_{$tipo}"] = [
-                    'estado' => 'SIN_REGISTRO',
-                    'clase' => 'secondary',
-                    'mensaje' => 'Sin registro',
-                    'fecha' => null,
-                    'dias' => null
-                ];
-            } else {
-                $vencimiento = Carbon::parse($doc->fecha_vencimiento);
-                $dias = $hoy->diffInDays($vencimiento, false);
-
-                // Rojo (danger): VENCIDO o 0-5 días | Amarillo (warning): 6-20 días | Verde (success): > 20 días
-                if ($dias < 0) {
-                    $estados["vehiculo_{$tipo}"] = [
-                        'estado' => 'VENCIDO',
-                        'clase' => 'danger',
-                        'mensaje' => 'Vencido hace ' . abs($dias) . ' días',
-                        'fecha' => $vencimiento->format('d/m/Y'),
-                        'dias' => abs($dias)
-                    ];
-                } elseif ($dias <= 5) {
-                    $estados["vehiculo_{$tipo}"] = [
-                        'estado' => 'POR_VENCER',
-                        'clase' => 'danger', // Crítico: 0-5 días
-                        'mensaje' => 'Vence en ' . $dias . ' días',
-                        'fecha' => $vencimiento->format('d/m/Y'),
-                        'dias' => $dias
-                    ];
-                } elseif ($dias <= 20) {
-                    $estados["vehiculo_{$tipo}"] = [
-                        'estado' => 'POR_VENCER',
-                        'clase' => 'warning', // Advertencia: 6-20 días
-                        'mensaje' => 'Vence en ' . $dias . ' días',
-                        'fecha' => $vencimiento->format('d/m/Y'),
-                        'dias' => $dias
-                    ];
-                } else {
-                    $estados["vehiculo_{$tipo}"] = [
-                        'estado' => 'VIGENTE',
-                        'clase' => 'success', // Vigente: > 20 días
-                        'mensaje' => 'Vigente',
-                        'fecha' => $vencimiento->format('d/m/Y'),
-                        'dias' => $dias
-                    ];
-                }
-            }
-        }
-
-        // Documentos del conductor
-        if ($vehiculo->conductor) {
-            $tiposConductor = ['Licencia Conducción'];
-            foreach ($tiposConductor as $tipo) {
-                $doc = $vehiculo->conductor->documentosConductor
-                    ->where('tipo_documento', $tipo)
-                    ->where('activo', 1)
-                    ->first();
-
-                if (!$doc) {
-                    $estados["conductor_{$tipo}"] = [
-                        'estado' => 'SIN_REGISTRO',
-                        'clase' => 'secondary',
-                        'mensaje' => 'Sin registro',
-                        'fecha' => null,
-                        'dias' => null
-                    ];
-                } else {
-                    $vencimiento = Carbon::parse($doc->fecha_vencimiento);
-                    $dias = $hoy->diffInDays($vencimiento, false);
-
-                    // Rojo (danger): VENCIDO o 0-5 días | Amarillo (warning): 6-20 días | Verde (success): > 20 días
-                    if ($dias < 0) {
-                        $estados["conductor_{$tipo}"] = [
-                            'estado' => 'VENCIDO',
-                            'clase' => 'danger',
-                            'mensaje' => 'Vencido hace ' . abs($dias) . ' días',
-                            'fecha' => $vencimiento->format('d/m/Y'),
-                            'dias' => abs($dias)
-                        ];
-                    } elseif ($dias <= 5) {
-                        $estados["conductor_{$tipo}"] = [
-                            'estado' => 'POR_VENCER',
-                            'clase' => 'danger', // Crítico: 0-5 días
-                            'mensaje' => 'Vence en ' . $dias . ' días',
-                            'fecha' => $vencimiento->format('d/m/Y'),
-                            'dias' => $dias
-                        ];
-                    } elseif ($dias <= 20) {
-                        $estados["conductor_{$tipo}"] = [
-                            'estado' => 'POR_VENCER',
-                            'clase' => 'warning', // Advertencia: 6-20 días
-                            'mensaje' => 'Vence en ' . $dias . ' días',
-                            'fecha' => $vencimiento->format('d/m/Y'),
-                            'dias' => $dias
-                        ];
-                    } else {
-                        $estados["conductor_{$tipo}"] = [
-                            'estado' => 'VIGENTE',
-                            'clase' => 'success', // Vigente: > 20 días
-                            'mensaje' => 'Vigente',
-                            'fecha' => $vencimiento->format('d/m/Y'),
-                            'dias' => $dias
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $estados;
-    }
+    // calcularEstadosDocumentos() movido a DocumentStatusService
 }

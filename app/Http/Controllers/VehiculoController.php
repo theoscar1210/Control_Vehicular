@@ -10,6 +10,7 @@ use App\Traits\SanitizesSearchInput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreVehiculoRequest;
 
 class VehiculoController extends Controller
 {
@@ -91,16 +92,9 @@ class VehiculoController extends Controller
     /**
      * Almacenar un recurso recién creado en el almacenamiento.
      */
-    public function store(Request $request)
+    public function store(StoreVehiculoRequest $request)
     {
-        $validated = $request->validate([
-            'placa'           => 'required|string|max:10|unique:vehiculos,placa',
-            'marca'           => 'required|string|max:50',
-            'modelo'          => 'required|string|max:50',
-            'color'           => 'required|string|max:30',
-            'tipo'            => 'required|in:Carro,Moto',
-            'id_propietario'  => 'required|exists:propietarios,id_propietario',
-        ]);
+        $validated = $request->validated();
 
         try {
             // Crear el vehículo

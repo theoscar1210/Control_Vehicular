@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -62,6 +63,10 @@ class Vehiculo extends Model
      */
     protected static function booted()
     {
+        // Invalidar cache de estadísticas al modificar vehículos
+        static::saved(fn() => Cache::forget('dashboard_stats') ?: Cache::forget('reporte_stats'));
+        static::deleted(fn() => Cache::forget('dashboard_stats') ?: Cache::forget('reporte_stats'));
+
         static::deleting(function ($veh) {
             if (!$veh->isForceDeleting()) {
                 // Desactivar documentos del vehículo (no usa SoftDeletes)

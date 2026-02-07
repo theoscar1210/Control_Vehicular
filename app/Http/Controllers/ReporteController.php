@@ -11,9 +11,15 @@ use App\Models\Alerta;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Cache;
+use App\Services\DocumentStatusService;
 
 class ReporteController extends Controller
 {
+    public function __construct(
+        private DocumentStatusService $documentStatusService
+    ) {}
+
     /**
      * Vista principal del módulo de reportes
      */
@@ -21,24 +27,26 @@ class ReporteController extends Controller
     {
         $navbarEspecial = true;
 
-        $hoy = Carbon::today();
-        $limite20Dias = Carbon::today()->addDays(20); // Cambio de 30 a 20 días
+        $stats = Cache::remember('reporte_stats', 3600, function () {
+            $hoy = Carbon::today();
+            $limite20Dias = Carbon::today()->addDays(20);
 
-        $stats = [
-            'total_vehiculos' => Vehiculo::where('estado', 'Activo')->count(),
-            'total_propietarios' => Propietario::count(),
-            'total_conductores' => Conductor::where('activo', 1)->count(),
-            'docs_vigentes' => DocumentoVehiculo::where('activo', 1)
-                ->where('fecha_vencimiento', '>', $limite20Dias)
-                ->count(),
-            'docs_por_vencer' => DocumentoVehiculo::where('activo', 1)
-                ->where('fecha_vencimiento', '>=', $hoy)
-                ->where('fecha_vencimiento', '<=', $limite20Dias)
-                ->count(),
-            'docs_vencidos' => DocumentoVehiculo::where('activo', 1)
-                ->where('fecha_vencimiento', '<', $hoy)
-                ->count(),
-        ];
+            return [
+                'total_vehiculos' => Vehiculo::where('estado', 'Activo')->count(),
+                'total_propietarios' => Propietario::count(),
+                'total_conductores' => Conductor::where('activo', 1)->count(),
+                'docs_vigentes' => DocumentoVehiculo::where('activo', 1)
+                    ->where('fecha_vencimiento', '>', $limite20Dias)
+                    ->count(),
+                'docs_por_vencer' => DocumentoVehiculo::where('activo', 1)
+                    ->where('fecha_vencimiento', '>=', $hoy)
+                    ->where('fecha_vencimiento', '<=', $limite20Dias)
+                    ->count(),
+                'docs_vencidos' => DocumentoVehiculo::where('activo', 1)
+                    ->where('fecha_vencimiento', '<', $hoy)
+                    ->count(),
+            ];
+        });
 
         return view('reportes.centro', compact('stats', 'navbarEspecial'));
     }
@@ -71,7 +79,7 @@ class ReporteController extends Controller
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
-            $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+            $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
             return $vehiculo;
         });
 
@@ -111,7 +119,7 @@ class ReporteController extends Controller
             }
         ])->findOrFail($id);
 
-        $estadosDocumentos = $this->calcularEstadosDocumentosDetallado($vehiculo);
+        $estadosDocumentos = $this->documentStatusService->calcularEstadosDetallados($vehiculo);
         $historialReciente = DocumentoVehiculo::where('id_vehiculo', $id)
             ->where('activo', 0)
             ->orderByDesc('fecha_registro')
@@ -136,7 +144,7 @@ class ReporteController extends Controller
             }
         ])->findOrFail($id);
 
-        $estadosDocumentos = $this->calcularEstadosDocumentosDetallado($vehiculo);
+        $estadosDocumentos = $this->documentStatusService->calcularEstadosDetallados($vehiculo);
         $historialReciente = DocumentoVehiculo::where('id_vehiculo', $id)
             ->where('activo', 0)
             ->orderByDesc('fecha_registro')
@@ -260,7 +268,7 @@ class ReporteController extends Controller
 
         $propietarios = $propietarios->map(function($propietario) {
             $propietario->vehiculos = $propietario->vehiculos->map(function($vehiculo) {
-                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
 
@@ -322,7 +330,7 @@ class ReporteController extends Controller
 
             // Calcular estado de cada vehículo asignado
             $conductor->vehiculos = $conductor->vehiculos->map(function($vehiculo) {
-                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
 
@@ -580,7 +588,7 @@ class ReporteController extends Controller
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
-            $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+            $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
             return $vehiculo;
         });
 
@@ -671,7 +679,7 @@ class ReporteController extends Controller
 
         $propietarios = $propietarios->map(function($propietario) {
             $propietario->vehiculos = $propietario->vehiculos->map(function($vehiculo) {
-                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
             return $propietario;
@@ -707,7 +715,7 @@ class ReporteController extends Controller
         $conductores = $conductores->map(function($conductor) {
             $conductor->estado_documentos = $this->calcularEstadoDocumentosConductor($conductor);
             $conductor->vehiculos = $conductor->vehiculos->map(function($vehiculo) {
-                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
             return $conductor;
@@ -847,7 +855,7 @@ class ReporteController extends Controller
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
-            $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+            $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
             return $vehiculo;
         });
 
@@ -1028,7 +1036,7 @@ class ReporteController extends Controller
 
         $propietarios = $propietarios->map(function($propietario) {
             $propietario->vehiculos = $propietario->vehiculos->map(function($vehiculo) {
-                $vehiculo->estado_general = $this->calcularEstadoGeneral($vehiculo);
+                $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
             return $propietario;
@@ -1173,104 +1181,9 @@ class ReporteController extends Controller
 
     // ==================== MÉTODOS AUXILIARES ====================
 
-    private function calcularEstadoGeneral($vehiculo)
-    {
-        $documentos = $vehiculo->documentos;
+    // calcularEstadoGeneral() movido a DocumentStatusService
 
-        if ($documentos->isEmpty()) {
-            return [
-                'estado' => 'SIN_DOCUMENTOS',
-                'clase' => 'secondary',
-                'icono' => 'fas fa-question-circle',
-                'texto' => 'Sin documentos'
-            ];
-        }
-
-        $tieneVencido = $documentos->where('estado', 'VENCIDO')->count() > 0;
-        $tienePorVencer = $documentos->where('estado', 'POR_VENCER')->count() > 0;
-
-        if ($tieneVencido) {
-            return [
-                'estado' => 'VENCIDO',
-                'clase' => 'danger',
-                'icono' => 'fas fa-times-circle',
-                'texto' => 'Documentos vencidos'
-            ];
-        }
-
-        if ($tienePorVencer) {
-            return [
-                'estado' => 'POR_VENCER',
-                'clase' => 'warning',
-                'icono' => 'fas fa-exclamation-triangle',
-                'texto' => 'Próximo a vencer'
-            ];
-        }
-
-        return [
-            'estado' => 'VIGENTE',
-            'clase' => 'success',
-            'icono' => 'fas fa-check-circle',
-            'texto' => 'Documentos vigentes'
-        ];
-    }
-
-    private function calcularEstadosDocumentosDetallado($vehiculo)
-    {
-        $estados = [];
-        $tiposVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza'];
-
-        foreach ($tiposVehiculo as $tipo) {
-            $doc = $vehiculo->documentos->where('tipo_documento', $tipo)->first();
-
-            if (!$doc) {
-                $estados[$tipo] = [
-                    'estado' => 'SIN_REGISTRO',
-                    'clase' => 'secondary',
-                    'documento' => null,
-                    'dias_restantes' => null,
-                    'mensaje' => 'No registrado'
-                ];
-            } else {
-                $diasRestantes = $doc->diasRestantes();
-                $estados[$tipo] = [
-                    'estado' => $doc->estado,
-                    'clase' => $this->getClaseEstado($doc->estado),
-                    'documento' => $doc,
-                    'dias_restantes' => $diasRestantes,
-                    'mensaje' => $this->getMensajeEstado($doc->estado, $diasRestantes)
-                ];
-            }
-        }
-
-        if ($vehiculo->conductor) {
-            $tiposConductor = ['Licencia Conducción'];
-            foreach ($tiposConductor as $tipo) {
-                $doc = $vehiculo->conductor->documentosConductor->where('tipo_documento', $tipo)->first();
-
-                if (!$doc) {
-                    $estados['conductor_' . $tipo] = [
-                        'estado' => 'SIN_REGISTRO',
-                        'clase' => 'secondary',
-                        'documento' => null,
-                        'dias_restantes' => null,
-                        'mensaje' => 'No registrado'
-                    ];
-                } else {
-                    $diasRestantes = Carbon::now()->diffInDays(Carbon::parse($doc->fecha_vencimiento), false);
-                    $estados['conductor_' . $tipo] = [
-                        'estado' => $doc->estado,
-                        'clase' => $this->getClaseEstado($doc->estado),
-                        'documento' => $doc,
-                        'dias_restantes' => $diasRestantes,
-                        'mensaje' => $this->getMensajeEstado($doc->estado, $diasRestantes)
-                    ];
-                }
-            }
-        }
-
-        return $estados;
-    }
+    // calcularEstadosDocumentosDetallado() movido a DocumentStatusService
 
     private function generarLineaTiempo($docsVehiculos, $docsConductores)
     {
@@ -1343,23 +1256,5 @@ class ReporteController extends Controller
         });
     }
 
-    private function getClaseEstado($estado)
-    {
-        return match($estado) {
-            'VIGENTE' => 'success',
-            'POR_VENCER' => 'warning',
-            'VENCIDO' => 'danger',
-            default => 'secondary'
-        };
-    }
-
-    private function getMensajeEstado($estado, $dias)
-    {
-        return match($estado) {
-            'VIGENTE' => "Vigente ({$dias} días restantes)",
-            'POR_VENCER' => "Vence en {$dias} días",
-            'VENCIDO' => "Vencido hace " . abs($dias) . " días",
-            default => 'Estado desconocido'
-        };
-    }
+    // getClaseEstado() y getMensajeEstado() movidos a DocumentStatusService
 }

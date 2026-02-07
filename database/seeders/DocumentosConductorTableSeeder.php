@@ -65,15 +65,12 @@ class DocumentosConductorTableSeeder extends Seeder
                     default => 'DOC-' . rand(100000, 999999),
                 };
 
-                $data = [
-                    'id_conductor' => $conductor->id_conductor,
-                    'tipo_documento' => $tipo,
+                $attributes = [
                     'numero_documento' => $numDoc,
                     'entidad_emisora' => $entidad,
                     'fecha_emision' => $fechaEmision,
                     'fecha_vencimiento' => $fechaVencimiento,
                     'estado' => $estado,
-                    'activo' => true,
                     'version' => 1,
                     'creado_por' => $creator?->id_usuario,
                     'fecha_registro' => now(),
@@ -81,10 +78,17 @@ class DocumentosConductorTableSeeder extends Seeder
 
                 // Agregar categoría solo para licencias
                 if ($tipo === 'Licencia Conducción') {
-                    $data['categoria_licencia'] = $categoriasLicencia[array_rand($categoriasLicencia)];
+                    $attributes['categoria_licencia'] = $categoriasLicencia[array_rand($categoriasLicencia)];
                 }
 
-                DocumentoConductor::create($data);
+                DocumentoConductor::firstOrCreate(
+                    [
+                        'id_conductor' => $conductor->id_conductor,
+                        'tipo_documento' => $tipo,
+                        'activo' => 1,
+                    ],
+                    $attributes
+                );
             }
         }
     }
