@@ -51,8 +51,8 @@ class EnviarAlertasSemanales extends Command
         // Agrupar alertas por tipo de vencimiento
         $alertasPorTipo = $alertas->groupBy('tipo_vencimiento');
 
-        // Obtener usuarios ADMIN y SST PORTERIA activos para enviar correos
-        $destinatarios = Usuario::whereIn('rol', ['ADMIN', 'SST', 'PORTERIA'])
+        // Obtener usuarios SST y PORTERIA activos para enviar correos (ADMIN excluido)
+        $destinatarios = Usuario::whereIn('rol', ['SST', 'PORTERIA'])
             ->where('activo', 1)
             ->whereNotNull('email')
             ->get();

@@ -121,7 +121,7 @@ $sinPadding = true;
         {{-- Estado de Licencia de Conduccion --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white py-3">
-                <h5 class="mb-0"><i class="fas fa-id-card me-2" style="color: #5B8238;"></i>Licencia de Conduccion</h5>
+                <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Licencia de Conduccion</h5>
             </div>
             <div class="card-body">
                 @if($licencia)
@@ -280,7 +280,7 @@ $sinPadding = true;
     @if($historialDocumentos->count() > 0)
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white py-3">
-            <h5 class="mb-0"><i class="fas fa-history me-2" style="color: #5B8238;"></i>Historial de Documentos</h5>
+            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Historial de Documentos</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

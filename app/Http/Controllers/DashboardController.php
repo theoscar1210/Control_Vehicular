@@ -69,37 +69,43 @@ class DashboardController extends Controller
 
         // Alertas: visibles para el rol del usuario o para TODOS, no borradas (softDelete),
         // Solo mostrar alertas NO LEÍDAS por este usuario específico.
-        // ADMIN/SST: las leídas desaparecen del dashboard
+        // ADMIN: no ve alertas en el dashboard
+        // SST: las leídas desaparecen del dashboard
         // PORTERIA: ve todas las alertas (no se filtran por leídas)
         $user = Auth::user();
         $role = $user ? $user->rol : null;
 
-        $alertasQuery = Alerta::with([
-                'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor',
-                'usuariosQueLeyeron'
-            ])
-            ->whereNull('deleted_at')
-            ->activas() // Solo alertas no solucionadas
-            ->conDocumentoVigente(); // Solo alertas de documentos no reemplazados
-
-        if ($role) {
-            $alertasQuery->where(function ($q) use ($role) {
-                $q->where('visible_para', 'TODOS')
-                    ->orWhere('visible_para', $role);
-            });
+        // ADMIN no ve alertas en el dashboard
+        if ($role === 'ADMIN') {
+            $alertas = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
         } else {
-            $alertasQuery->where('visible_para', 'TODOS');
-        }
+            $alertasQuery = Alerta::with([
+                    'documentoVehiculo.vehiculo.conductor',
+                    'documentoConductor.conductor',
+                    'usuariosQueLeyeron'
+                ])
+                ->whereNull('deleted_at')
+                ->activas() // Solo alertas no solucionadas
+                ->conDocumentoVigente(); // Solo alertas de documentos no reemplazados
 
-        // ADMIN y SST: filtrar solo alertas no leídas (las leídas desaparecen del dashboard)
-        // PORTERIA: ver todas las alertas
-        if ($user && $role !== 'PORTERIA') {
-            $alertasQuery->noLeidasPor($user->id_usuario);
-        }
+            if ($role) {
+                $alertasQuery->where(function ($q) use ($role) {
+                    $q->where('visible_para', 'TODOS')
+                        ->orWhere('visible_para', $role);
+                });
+            } else {
+                $alertasQuery->where('visible_para', 'TODOS');
+            }
 
-        // ordenar por fecha desc
-        $alertas = $alertasQuery->orderByDesc('fecha_alerta')->orderByDesc('fecha_registro')->paginate(10);
+            // SST: filtrar solo alertas no leídas (las leídas desaparecen del dashboard)
+            // PORTERIA: ver todas las alertas
+            if ($user && $role !== 'PORTERIA') {
+                $alertasQuery->noLeidasPor($user->id_usuario);
+            }
+
+            // ordenar por fecha desc
+            $alertas = $alertasQuery->orderByDesc('fecha_alerta')->orderByDesc('fecha_registro')->paginate(10);
+        }
 
         return view('dashboard', compact(
             'totalVehiculos',

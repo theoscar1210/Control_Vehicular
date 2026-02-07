@@ -114,34 +114,34 @@ $sinPadding = true;
         {{-- Estado de Documentos con Semáforo --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-white py-3">
-                <h5 class="mb-0"><i class="fas fa-file-alt me-2" style="color: #5B8238;"></i>Estado de Documentación</h5>
+                <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Estado de Documentación</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     @foreach($estadosDocumentos as $tipo => $info)
                     @php
-                        $esExentoTecno = false;
-                        $fechaPrimeraRevFicha = null;
-                        $esTarjetaPropiedad = ($tipo === 'Tarjeta Propiedad');
+                    $esExentoTecno = false;
+                    $fechaPrimeraRevFicha = null;
+                    $esTarjetaPropiedad = ($tipo === 'Tarjeta Propiedad');
 
-                        if ($tipo === 'Tecnomecanica' && !$info['documento']) {
-                            $requiereTecnoFicha = $vehiculo->requiereTecnomecanica();
-                            $fechaPrimeraRevFicha = $vehiculo->fechaPrimeraTecnomecanica();
-                            $esExentoTecno = $vehiculo->fecha_matricula && !$requiereTecnoFicha;
-                        }
+                    if ($tipo === 'Tecnomecanica' && !$info['documento']) {
+                    $requiereTecnoFicha = $vehiculo->requiereTecnomecanica();
+                    $fechaPrimeraRevFicha = $vehiculo->fechaPrimeraTecnomecanica();
+                    $esExentoTecno = $vehiculo->fecha_matricula && !$requiereTecnoFicha;
+                    }
 
-                        // Tarjeta de Propiedad no tiene vencimiento - siempre verde si existe
-                        if ($esTarjetaPropiedad && $info['documento']) {
-                            $claseCard = 'success';
-                        } else {
-                            $claseCard = $esExentoTecno ? 'success' : $info['clase'];
-                        }
+                    // Tarjeta de Propiedad no tiene vencimiento - siempre verde si existe
+                    if ($esTarjetaPropiedad && $info['documento']) {
+                    $claseCard = 'success';
+                    } else {
+                    $claseCard = $esExentoTecno ? 'success' : $info['clase'];
+                    }
 
-                        // Calcular días restantes como entero
-                        $diasRestantesFicha = null;
-                        if ($info['documento'] && $info['documento']->fecha_vencimiento && !$esTarjetaPropiedad) {
-                            $diasRestantesFicha = (int) \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($info['documento']->fecha_vencimiento)->startOfDay(), false);
-                        }
+                    // Calcular días restantes como entero
+                    $diasRestantesFicha = null;
+                    if ($info['documento'] && $info['documento']->fecha_vencimiento && !$esTarjetaPropiedad) {
+                    $diasRestantesFicha = (int) \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($info['documento']->fecha_vencimiento)->startOfDay(), false);
+                    }
                     @endphp
                     <div class="col-md-6 col-lg-4 mb-3">
                         <div class="card h-100 border-{{ $claseCard }} border-2">
@@ -199,18 +199,18 @@ $sinPadding = true;
                                     @else
                                     <span class="badge bg-{{ $info['clase'] }}">
                                         @if($diasRestantesFicha !== null)
-                                            @if($diasRestantesFicha < 0)
-                                                Vencido hace {{ abs($diasRestantesFicha) }} días
-                                            @elseif($diasRestantesFicha == 0)
-                                                Vence hoy
+                                        @if($diasRestantesFicha < 0)
+                                            Vencido hace {{ abs($diasRestantesFicha) }} días
+                                            @elseif($diasRestantesFicha==0)
+                                            Vence hoy
                                             @else
-                                                {{ $diasRestantesFicha }} días restantes
+                                            {{ $diasRestantesFicha }} días restantes
                                             @endif
-                                        @else
+                                            @else
                                             {{ $info['mensaje'] }}
-                                        @endif
-                                    </span>
-                                    @endif
+                                            @endif
+                                            </span>
+                                            @endif
                                 </div>
                                 @elseif($esExentoTecno)
                                 {{-- Vehículo Nuevo - Exención por tiempo --}}

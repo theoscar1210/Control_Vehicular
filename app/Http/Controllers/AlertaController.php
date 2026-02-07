@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Alerta;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Notifications\DocumentoVencidoNotification;
 
 class AlertaController extends Controller
@@ -192,6 +191,11 @@ class AlertaController extends Controller
     public function unreadCount()
     {
         $user = Auth::user();
+
+        // ADMIN no recibe alertas
+        if ($user->rol === 'ADMIN') {
+            return response()->json(['unread' => 0]);
+        }
 
         $count = Alerta::where(function ($q) use ($user) {
                 $q->where('visible_para', 'TODOS')->orWhere('visible_para', $user->rol);

@@ -56,30 +56,37 @@
 
             @php
             $currentUser = auth()->user();
-            $alertasMenu = \App\Models\Alerta::with([
-            'documentoVehiculo.vehiculo.conductor',
-            'documentoConductor.conductor',
-            'usuariosQueLeyeron'
-            ])
-            ->whereNull('deleted_at')
-            ->activas() // Solo alertas no solucionadas
-            ->conDocumentoVigente() // Solo alertas de documentos no reemplazados
-            ->where(function($q) use ($currentUser) {
-            $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
-            })
-            ->noLeidasPor($currentUser->id_usuario)
-            ->orderByDesc('fecha_alerta')
-            ->take(5)
-            ->get();
 
-            $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
-            ->activas() // Solo alertas no solucionadas
-            ->conDocumentoVigente() // Solo alertas de documentos no reemplazados
-            ->where(function($q) use ($currentUser) {
-            $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
-            })
-            ->noLeidasPor($currentUser->id_usuario)
-            ->count();
+            // ADMIN no ve alertas en la campanita
+            if ($currentUser->rol === 'ADMIN') {
+                $alertasMenu = collect();
+                $totalAlertasNoLeidas = 0;
+            } else {
+                $alertasMenu = \App\Models\Alerta::with([
+                'documentoVehiculo.vehiculo.conductor',
+                'documentoConductor.conductor',
+                'usuariosQueLeyeron'
+                ])
+                ->whereNull('deleted_at')
+                ->activas()
+                ->conDocumentoVigente()
+                ->where(function($q) use ($currentUser) {
+                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
+                })
+                ->noLeidasPor($currentUser->id_usuario)
+                ->orderByDesc('fecha_alerta')
+                ->take(5)
+                ->get();
+
+                $totalAlertasNoLeidas = \App\Models\Alerta::whereNull('deleted_at')
+                ->activas()
+                ->conDocumentoVigente()
+                ->where(function($q) use ($currentUser) {
+                $q->where('visible_para','TODOS')->orWhere('visible_para', $currentUser->rol);
+                })
+                ->noLeidasPor($currentUser->id_usuario)
+                ->count();
+            }
             @endphp
             <ul class="navbar-nav ms-auto align-items-center">
                 {{-- Notificaciones con Dropdown --}}
