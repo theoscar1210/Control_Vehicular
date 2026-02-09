@@ -88,7 +88,8 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-{{ $claseBorde }}">
+                    <button type="submit" class="btn btn-{{ $claseBorde }}"
+                        onclick="this.disabled=true; this.innerHTML='<span class=\'spinner-border spinner-border-sm me-1\'></span> Refrendando...'; this.closest('form').submit();">
                         <i class="fa-solid fa-save me-1"></i> Refrendar Categoría
                     </button>
                 </div>

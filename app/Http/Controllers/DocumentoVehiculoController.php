@@ -99,6 +99,7 @@ class DocumentoVehiculoController extends Controller
                 $ultimoDocumento = DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)
                     ->where('tipo_documento', $tipo)
                     ->where('estado', '!=', 'REEMPLAZADO')
+                    ->lockForUpdate()
                     ->orderByDesc('version')
                     ->first();
 

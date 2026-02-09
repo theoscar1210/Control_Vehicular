@@ -105,7 +105,8 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fa-solid fa-times me-1"></i> Cancelar
                     </button>
-                    <button type="submit" class="btn text-white" style="background-color:#5B8238;">
+                    <button type="submit" class="btn text-white" style="background-color:#5B8238;"
+                        onclick="this.disabled=true; this.innerHTML='<span class=\'spinner-border spinner-border-sm me-1\'></span> Renovando...'; this.closest('form').submit();">
                         <i class="fa-solid fa-check-circle me-1"></i> Renovar SOAT
                     </button>
                 </div>

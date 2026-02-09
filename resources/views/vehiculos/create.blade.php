@@ -908,7 +908,13 @@ $vehiculoId = request()->query('vehiculo');
         forms.forEach(form => {
             form.addEventListener("submit", function(e) {
                 const btn = form.querySelector("button[type='submit']");
-                if (!btn || btn.disabled) return;
+                if (!btn) return;
+
+                // Si el botón ya está deshabilitado, bloquear el envío
+                if (btn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
 
                 btn.disabled = true;
                 const loadingText = btn.getAttribute("data-loading-text") || "Procesando...";
