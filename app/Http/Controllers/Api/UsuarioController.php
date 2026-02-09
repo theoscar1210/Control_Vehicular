@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 
 class UsuarioController extends Controller
 {
@@ -25,7 +26,7 @@ class UsuarioController extends Controller
             'apellido' => 'required|string|max:100',
             'usuario' => 'required|string|max:50|unique:usuarios,usuario',
             'email' => 'required|email|max:255|unique:usuarios,email',
-            'password' => 'required|string|min:6',
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()],
             'rol' => 'required|in:ADMIN,SST,PORTERIA',
             'activo' => 'nullable|boolean',
         ]);
@@ -48,7 +49,7 @@ class UsuarioController extends Controller
             'apellido' => 'sometimes|required|string|max:100',
             'usuario' => "sometimes|required|string|max:50|unique:usuarios,usuario,{$usuario->id_usuario},id_usuario",
             'email' => "sometimes|required|email|max:255|unique:usuarios,email,{$usuario->id_usuario},id_usuario",
-            'password' => 'nullable|string|min:6',
+            'password' => ['nullable', 'string', Password::min(8)->mixedCase()->numbers()],
             'rol' => 'nullable|in:ADMIN,SST,PORTERIA',
             'activo' => 'nullable|boolean',
         ]);

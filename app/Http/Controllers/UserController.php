@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -28,7 +29,7 @@ class UserController extends Controller
             'apellido' => 'required|string|max:100',
             'usuario'  => 'required|string|max:50|unique:usuarios,usuario',
             'email'    => 'required|email|unique:usuarios,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers(), 'confirmed'],
             'rol'      => 'required|in:ADMIN,SST,PORTERIA',
             'activo'   => 'nullable|in:0,1',
         ]);
@@ -56,7 +57,7 @@ class UserController extends Controller
             'apellido' => 'required|string|max:100',
             'usuario'  => 'required|string|max:50|unique:usuarios,usuario,' . $id . ',id_usuario',
             'email'    => 'required|email|unique:usuarios,email,' . $id . ',id_usuario',
-            'password' => 'nullable|string|min:6|confirmed',
+            'password' => ['nullable', 'string', Password::min(8)->mixedCase()->numbers(), 'confirmed'],
             'rol'      => 'required|in:ADMIN,SST,PORTERIA',
             'activo'   => 'nullable|in:0,1',
         ]);

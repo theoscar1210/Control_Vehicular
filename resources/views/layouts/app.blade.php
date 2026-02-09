@@ -383,6 +383,36 @@
         });
     </script>
 
+    @auth
+    <script>
+        // Auto-logout por inactividad (sincronizado con session.lifetime)
+        (function() {
+            const SESSION_LIFETIME_MS = {{ config('session.lifetime') }} * 60 * 1000;
+            const WARNING_BEFORE_MS = 60 * 1000; // Avisar 1 minuto antes
+            let inactivityTimer, warningTimer;
+
+            function resetTimers() {
+                clearTimeout(inactivityTimer);
+                clearTimeout(warningTimer);
+
+                warningTimer = setTimeout(function() {
+                    alert('Tu sesion se cerrara en 1 minuto por inactividad.');
+                }, SESSION_LIFETIME_MS - WARNING_BEFORE_MS);
+
+                inactivityTimer = setTimeout(function() {
+                    window.location.href = '{{ route("login") }}';
+                }, SESSION_LIFETIME_MS);
+            }
+
+            ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(evt) {
+                document.addEventListener(evt, resetTimers, { passive: true });
+            });
+
+            resetTimers();
+        })();
+    </script>
+    @endauth
+
 </body>
 
 </html>

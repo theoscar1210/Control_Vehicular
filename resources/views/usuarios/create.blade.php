@@ -54,13 +54,13 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-semibold text-secondary">Contraseña</label>
-                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" minlength="6" maxlength="10" title="La contraseña debe tener entre 6 y 10 caracteres" required>
-                        <small class="text-muted">Debe tener entre 6 y 10 caracteres.</small>
+                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" minlength="8" required>
+                        <small class="text-muted">Min. 8 caracteres, una mayuscula, una minuscula y un numero.</small>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-semibold text-secondary">Confirmar contraseña</label>
-                        <input name="password_confirmation" type="password" class="form-control rounded-3 border-success-subtle" minlength="6" maxlength="10" title="Debe coincidir con la contraseña anterior" required>
+                        <input name="password_confirmation" type="password" class="form-control rounded-3 border-success-subtle" minlength="8" required>
 
                     </div>
                 </div>
