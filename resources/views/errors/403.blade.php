@@ -24,14 +24,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
+            padding: 1rem;
         }
         .error-container {
             text-align: center;
-            padding: 3rem;
-            max-width: 500px;
+            padding: 2rem;
         }
         .error-icon {
-            font-size: 6rem;
+            font-size: 5rem;
             color: #dc3545;
             margin-bottom: 1.5rem;
             animation: shake 0.5s ease-in-out;
@@ -42,13 +43,13 @@
             75% { transform: translateX(10px); }
         }
         .error-code {
-            font-size: 5rem;
+            font-size: 4rem;
             font-weight: 700;
             color: #5B8238;
             margin-bottom: 0.5rem;
         }
         .error-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 1rem;
@@ -56,7 +57,7 @@
         .error-message {
             color: #666;
             margin-bottom: 2rem;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         .btn-home {
             background-color: #5B8238;
@@ -97,12 +98,19 @@
             max-height: 60px;
             margin-bottom: 1rem;
         }
+        @media (max-width: 576px) {
+            .error-icon { font-size: 3.5rem; }
+            .error-code { font-size: 3rem; }
+            .error-title { font-size: 1.2rem; }
+            .error-container { padding: 1.5rem; }
+            .logo-img { max-height: 45px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid" style="max-width: 500px;">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
+            <div class="col-12">
                 <div class="card card-custom">
                     <div class="card-body error-container">
                         <!-- Logo -->
