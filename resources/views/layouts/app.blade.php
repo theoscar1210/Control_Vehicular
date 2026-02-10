@@ -207,13 +207,18 @@
         <div class="collapse" id="vehiculosSubmenu">
             <ul class="list-unstyled ps-3">
                 <li>
-                    <a class="nav-link" href="{{ route('vehiculos.index') }}">
-                        <i class="fas fa-list me-2"></i>Listado de Vehículos
+                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'EMPLEADO']) }}">
+                        <i class="fas fa-building me-2"></i>Empleados
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="{{ route('vehiculos.create') }}">
-                        <i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo
+                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'CONTRATISTA']) }}">
+                        <i class="fas fa-hard-hat me-2"></i>Contratistas
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'FAMILIAR']) }}">
+                        <i class="fas fa-people-roof me-2"></i>Familiares
                     </a>
                 </li>
             </ul>
@@ -226,13 +231,18 @@
         <div class="collapse" id="conductoresSubmenu">
             <ul class="list-unstyled ps-3">
                 <li>
-                    <a class="nav-link" href="{{ route('conductores.index') }}">
-                        <i class="fas fa-list me-2"></i>Listado de Conductores
+                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'EMPLEADO']) }}">
+                        <i class="fas fa-building me-2"></i>Empleados
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" href="{{ route('conductores.create') }}">
-                        <i class="fas fa-user-plus me-2"></i>Nuevo Conductor
+                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'CONTRATISTA']) }}">
+                        <i class="fas fa-hard-hat me-2"></i>Contratistas
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'FAMILIAR']) }}">
+                        <i class="fas fa-people-roof me-2"></i>Familiares
                     </a>
                 </li>
             </ul>
@@ -257,7 +267,7 @@
 
         <span class="text-uppercase fw-bold d-block ">Acciones Rápidas</span>
 
-        <a class="nav-link" href="{{ route('vehiculos.create') }}">
+        <a class="nav-link" href="{{ route('vehiculos.create', ['clasificacion' => 'EMPLEADO']) }}">
             <i class="fas fa-plus-circle me-2"></i>Nuevo Registro
         </a>
 

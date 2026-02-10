@@ -20,7 +20,7 @@ class Vehiculo extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['placa', 'marca', 'modelo', 'color', 'tipo', 'id_propietario', 'id_conductor', 'estado'])
+            ->logOnly(['placa', 'marca', 'modelo', 'color', 'tipo', 'id_propietario', 'id_conductor', 'estado', 'clasificacion'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->setDescriptionForEvent(fn(string $eventName) => "Vehículo {$this->placa} {$eventName}");
@@ -45,6 +45,7 @@ class Vehiculo extends Model
         'id_propietario',
         'id_conductor',
         'estado',
+        'clasificacion',
         'creado_por',
         'fecha_registro',
         'fecha_matricula',
@@ -329,6 +330,17 @@ class Vehiculo extends Model
             'fecha' => $vencimiento
         ];
     }
+
+    /**
+     * Scope para filtrar por clasificacion
+     */
+    public function scopeClasificacion($query, string $clasificacion)
+    {
+        return $query->where('clasificacion', $clasificacion);
+    }
+
+    /** Clasificaciones disponibles */
+    public const CLASIFICACIONES = ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'];
 
     /**
      * Scope para programar eliminación automática

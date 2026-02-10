@@ -28,10 +28,9 @@ class VehiculoFactory extends Factory
             'id_propietario' => Propietario::factory(),
             'id_conductor' => null,
             'estado' => 'Activo',
+            'clasificacion' => 'EMPLEADO',
             'creado_por' => null,
             'fecha_registro' => now(),
-
-
         ];
     }
 
@@ -42,8 +41,19 @@ class VehiculoFactory extends Factory
         }
         return $this->state(fn() => ['id_conductor' => Conductor::factory()]);
     }
+
     public function inactive()
     {
         return $this->state(fn() => ['estado' => 'Inactivo']);
+    }
+
+    public function contratista()
+    {
+        return $this->state(fn() => ['clasificacion' => 'CONTRATISTA']);
+    }
+
+    public function familiar()
+    {
+        return $this->state(fn() => ['clasificacion' => 'FAMILIAR']);
     }
 }

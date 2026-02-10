@@ -25,6 +25,7 @@ class StoreVehiculoRequest extends FormRequest
             'color' => 'required|string|max:30',
             'tipo' => 'required|in:Carro,Moto',
             'id_propietario' => 'required|exists:propietarios,id_propietario',
+            'clasificacion' => 'nullable|in:EMPLEADO,CONTRATISTA,FAMILIAR',
         ];
     }
 }

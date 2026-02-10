@@ -21,8 +21,19 @@ class ConductorFactory extends Factory
             'telefono' => $this->faker->optional()->phoneNumber,
             'telefono_emergencia' => $this->faker->optional()->phoneNumber,
             'activo' => 1,
+            'clasificacion' => 'EMPLEADO',
             'creado_por' => null,
             'fecha_registro' => now(),
         ];
+    }
+
+    public function contratista()
+    {
+        return $this->state(fn() => ['clasificacion' => 'CONTRATISTA']);
+    }
+
+    public function familiar()
+    {
+        return $this->state(fn() => ['clasificacion' => 'FAMILIAR']);
     }
 }

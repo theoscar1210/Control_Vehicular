@@ -6,7 +6,7 @@ $sinPadding = true;
 
 @extends('layouts.app')
 
-@section('title', 'Gestión de Vehículos')
+@section('title', $titulo ?? 'Gestión de Vehículos')
 
 @section('content')
 <br><br><br>
@@ -18,7 +18,7 @@ $sinPadding = true;
         <div>
             <h3 class="fw-bold text-dark mb-1">
                 <i class="fa-solid fa-cars me-2" style="color:#5B8238;"></i>
-                Gestión de Vehículos
+                {{ $titulo ?? 'Gestión de Vehículos' }}
             </h3>
             <p class="text-muted small mb-0">
                 <i class="fa-solid fa-list-check me-1"></i>
@@ -28,8 +28,8 @@ $sinPadding = true;
 
         @if (Auth::user()->rol === 'ADMIN' || Auth::user()->rol === 'SST')
         <div class="d-flex gap-2">
-            {{-- Botón Papelera --}}
-            @if(isset($eliminadosCount) && $eliminadosCount > 0)
+            {{-- Botón Papelera - Solo ADMIN --}}
+            @if(Auth::user()->rol === 'ADMIN' && isset($eliminadosCount) && $eliminadosCount > 0)
             <a href="{{ route('vehiculos.trashed') }}"
                 class="btn btn-outline-danger px-3 py-2 shadow-sm position-relative"
                 style="border-radius:12px;"
@@ -43,7 +43,7 @@ $sinPadding = true;
             @endif
 
             {{-- Botón Nuevo --}}
-            <a href="{{ route('vehiculos.create') }}"
+            <a href="{{ route('vehiculos.create', ['clasificacion' => $clasificacion ?? 'EMPLEADO']) }}"
                 class="btn px-4 py-2 shadow-sm"
                 style="background-color:#5B8238;color:white;border-radius:12px;">
                 <i class="fa-solid fa-plus-circle me-2"></i>Nuevo Vehículo
@@ -75,7 +75,7 @@ $sinPadding = true;
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fa-solid fa-table-list me-2"></i>
-                    Listado de Vehículos
+                    {{ $titulo ?? 'Listado de Vehículos' }}
                 </h5>
 
             </div>
@@ -85,6 +85,7 @@ $sinPadding = true;
             {{-- BUSCADOR --}}
             <div class="p-4 pb-3 bg-light border-bottom">
                 <form method="GET" action="{{ route('vehiculos.index') }}" class="row g-3">
+                    <input type="hidden" name="clasificacion" value="{{ $clasificacion ?? 'EMPLEADO' }}">
                     <div class="col-md-10">
                         <div class="input-group shadow-sm">
                             <span class="input-group-text bg-white border-end-0">

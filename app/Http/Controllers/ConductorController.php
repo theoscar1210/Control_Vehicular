@@ -22,7 +22,13 @@ class ConductorController extends Controller
      */
     public function index(Request $request)
     {
+        $clasificacion = $request->query('clasificacion', 'EMPLEADO');
+        if (!in_array($clasificacion, Conductor::CLASIFICACIONES)) {
+            $clasificacion = 'EMPLEADO';
+        }
+
         $query = Conductor::with(['vehiculos', 'documentosConductor'])
+            ->clasificacion($clasificacion)
             ->orderBy('nombre');
 
         // Búsqueda (sanitizada contra caracteres especiales LIKE)
@@ -42,7 +48,14 @@ class ConductorController extends Controller
         // Contar conductores eliminados para mostrar badge
         $eliminadosCount = Conductor::onlyTrashed()->count();
 
-        return view('conductores.index', compact('conductores', 'eliminadosCount'));
+        $titulos = [
+            'EMPLEADO' => 'Conductores Empleados',
+            'CONTRATISTA' => 'Conductores Contratistas',
+            'FAMILIAR' => 'Conductores Familiares',
+        ];
+        $titulo = $titulos[$clasificacion];
+
+        return view('conductores.index', compact('conductores', 'eliminadosCount', 'clasificacion', 'titulo'));
     }
 
     /**
@@ -70,12 +83,22 @@ class ConductorController extends Controller
     /**
      * Mostrar formulario de creación de conductor.
      */
-    public function create()
+    public function create(Request $request)
     {
+        $clasificacion = $request->query('clasificacion', 'EMPLEADO');
+        if (!in_array($clasificacion, Conductor::CLASIFICACIONES)) {
+            $clasificacion = 'EMPLEADO';
+        }
+
         // Trae todos los vehículos disponibles
         $vehiculos = Vehiculo::orderBy('placa')->get();
 
-        return view('conductores.create', compact('vehiculos'));
+        // Para FAMILIAR: lista de empleados para vincular
+        $empleados = $clasificacion === 'FAMILIAR'
+            ? Conductor::where('clasificacion', 'EMPLEADO')->orderBy('nombre')->get()
+            : collect();
+
+        return view('conductores.create', compact('vehiculos', 'clasificacion', 'empleados'));
     }
 
     /**
@@ -94,6 +117,8 @@ class ConductorController extends Controller
             'telefono' => $validated['telefono'] ?? null,
             'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
             'activo' => $request->has('activo') ? boolval($request->input('activo')) : true,
+            'clasificacion' => $validated['clasificacion'] ?? 'EMPLEADO',
+            'empleado_id' => $validated['empleado_id'] ?? null,
             'creado_por' => Auth::id(),
         ]);
 
@@ -213,7 +238,8 @@ class ConductorController extends Controller
             Alerta::generarAlertasDocumentoConductor($documento);
         }
 
-        return redirect()->route('conductores.index')->with('success', 'Conductor creado correctamente.');
+        $clasificacion = $validated['clasificacion'] ?? 'EMPLEADO';
+        return redirect()->route('conductores.index', ['clasificacion' => $clasificacion])->with('success', 'Conductor creado correctamente.');
     }
 
     /**

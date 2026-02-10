@@ -27,6 +27,8 @@ class Conductor extends Model
         'telefono',
         'telefono_emergencia',
         'activo',
+        'clasificacion',
+        'empleado_id',
         'creado_por',
         'fecha_registro',
     ];
@@ -42,7 +44,7 @@ class Conductor extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['nombre', 'apellido', 'tipo_doc', 'identificacion', 'telefono', 'activo'])
+            ->logOnly(['nombre', 'apellido', 'tipo_doc', 'identificacion', 'telefono', 'activo', 'clasificacion'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->setDescriptionForEvent(fn(string $eventName) => "Conductor {$this->nombre} {$this->apellido} {$eventName}");
@@ -119,4 +121,31 @@ class Conductor extends Model
     {
         return $this->belongsTo(Usuario::class, 'creado_por', 'id_usuario');
     }
+
+    /**
+     * Relación: empleado al que está vinculado este familiar
+     */
+    public function empleadoRelacionado()
+    {
+        return $this->belongsTo(Conductor::class, 'empleado_id', 'id_conductor');
+    }
+
+    /**
+     * Relación: familiares vinculados a este empleado
+     */
+    public function familiares()
+    {
+        return $this->hasMany(Conductor::class, 'empleado_id', 'id_conductor');
+    }
+
+    /**
+     * Scope para filtrar por clasificacion
+     */
+    public function scopeClasificacion($query, string $clasificacion)
+    {
+        return $query->where('clasificacion', $clasificacion);
+    }
+
+    /** Clasificaciones disponibles */
+    public const CLASIFICACIONES = ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'];
 }

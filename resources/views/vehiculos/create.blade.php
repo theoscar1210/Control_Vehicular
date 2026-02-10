@@ -17,32 +17,6 @@ $vehiculoId = request()->query('vehiculo');
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-    .btn-reset-flow {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        z-index: 1000;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.05);
-        }
-    }
-
-    .btn-reset-flow:hover {
-        animation: none;
-        transform: scale(1.1);
-    }
-
     .border-success-thick {
         border: 2px solid #198754 !important;
     }
@@ -69,13 +43,13 @@ $vehiculoId = request()->query('vehiculo');
     <div class="d-flex justify-content-between align-items-center mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0 mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('vehiculos.index') }}"><i class="fa-solid fa-car"></i> Vehículos</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('vehiculos.index', ['clasificacion' => $clasificacion ?? 'EMPLEADO']) }}"><i class="fa-solid fa-car"></i> Vehículos</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Nuevo Registro</li>
             </ol>
         </nav>
 
         @if($propietario || request()->query('vehiculo'))
-        <a href="{{ route('vehiculos.create') }}" class="btn btn-universal">
+        <a href="{{ route('vehiculos.create', ['clasificacion' => $clasificacion ?? 'EMPLEADO']) }}" class="btn btn-universal">
             <i class="fa-solid fa-rotate-left me-2"></i>Nuevo Registro
         </a>
         @endif
@@ -384,6 +358,7 @@ $vehiculoId = request()->query('vehiculo');
 
                     <form action="{{ route('vehiculos.store') }}" method="POST" class="form-con-loader">
                         @csrf
+                        <input type="hidden" name="clasificacion" value="{{ $clasificacion ?? 'EMPLEADO' }}">
                         @if($propietario)
                         <input type="hidden" name="id_propietario" value="{{ $propietario->id_propietario }}">
                         @endif
@@ -827,17 +802,7 @@ $vehiculoId = request()->query('vehiculo');
 
     </div>
 </div>
-<br>
-{{-- Botón flotante para reiniciar (solo visible después de crear propietario) --}}
-@if($propietario || request()->query('vehiculo'))
-<a href="{{ route('vehiculos.create') }}"
-    class="btn btn-universal  btn-reset-flow"
-    data-bs-toggle="tooltip"
-    data-bs-placement="left"
-    title="Reiniciar y crear nuevo registro completo">
-    <i class="fa-solid fa-plus me-2"></i>Nuevo Registro
-</a>
-@endif
+
 {{-- Footer --}}
 <footer class="text-center mt-5 mb-3 text-muted small">
     © 2025 Club Campestre Altos del Chicalá. Todos los derechos reservados.
