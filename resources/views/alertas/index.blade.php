@@ -135,15 +135,7 @@
                                         </span>
                                         @endif
                                         @if($clasificacionAlerta)
-                                        @php
-                                            $clsBadgeAlerta = match($clasificacionAlerta) {
-                                                'EMPLEADO' => 'primary',
-                                                'CONTRATISTA' => 'warning',
-                                                'EXTERNO' => 'info',
-                                                default => 'secondary',
-                                            };
-                                        @endphp
-                                        <span class="badge bg-{{ $clsBadgeAlerta }}">
+                                        <span class="badge bg-{{ \App\Models\Vehiculo::CLASIFICACION_BADGES[$clasificacionAlerta] ?? 'secondary' }}">
                                             <i class="fas fa-tags me-1"></i>{{ ucfirst(strtolower($clasificacionAlerta)) }}
                                         </span>
                                         @endif

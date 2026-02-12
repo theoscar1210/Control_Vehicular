@@ -91,15 +91,15 @@ $sinPadding = true;
         <div class="card-body">
             <form method="GET" action="{{ route('reportes.historico') }}" id="filtrosForm">
                 <div class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold"><i class="fas fa-calendar me-1"></i> Fecha Inicio</label>
                         <input type="date" name="fecha_inicio" class="form-control" value="{{ $fechaInicio }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold"><i class="fas fa-calendar me-1"></i> Fecha Fin</label>
                         <input type="date" name="fecha_fin" class="form-control" value="{{ $fechaFin }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold"><i class="fas fa-file me-1"></i> Tipo Documento</label>
                         <select name="tipo_documento" class="form-select">
                             <option value="">Todos los tipos</option>
@@ -115,10 +115,19 @@ $sinPadding = true;
                             </optgroup>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold"><i class="fas fa-car me-1"></i> Placa</label>
                         <input type="text" name="placa" class="form-control text-uppercase"
                             placeholder="ABC123" value="{{ request('placa') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold"><i class="fas fa-tags me-1"></i> Clasificaci&oacute;n</label>
+                        <select name="clasificacion" class="form-select">
+                            <option value="">Todas</option>
+                            @foreach(\App\Models\Vehiculo::CLASIFICACIONES as $clas)
+                            <option value="{{ $clas }}" {{ request('clasificacion') == $clas ? 'selected' : '' }}>{{ ucfirst(strtolower($clas)) }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn px-4" style="background-color: #5B8238; color: white;">
@@ -236,8 +245,9 @@ $sinPadding = true;
                                 <tr>
                                     <th class="px-3">Fecha</th>
                                     <th>Placa</th>
+                                    <th>Clasificaci&oacute;n</th>
                                     <th>Tipo Doc.</th>
-                                    <th>Acción</th>
+                                    <th>Acci&oacute;n</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
@@ -246,6 +256,7 @@ $sinPadding = true;
                                 <tr>
                                     <td class="px-3 text-muted">{{ \Carbon\Carbon::parse($doc->fecha_registro)->format('d/m/Y') }}</td>
                                     <td class="fw-medium" style="color: #5B8238;">{{ $doc->vehiculo->placa ?? 'N/A' }}</td>
+                                    <td><span class="badge bg-{{ $doc->vehiculo->clasificacion_badge ?? 'secondary' }}">{{ $doc->vehiculo->clasificacion_label ?? 'N/A' }}</span></td>
                                     <td>{{ $doc->tipo_documento }}</td>
                                     <td>
                                         <span class="badge bg-{{ $doc->version > 1 ? 'success' : 'primary' }}">
@@ -260,7 +271,7 @@ $sinPadding = true;
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">
+                                    <td colspan="6" class="text-center py-4 text-muted">
                                         No hay registros en este período
                                     </td>
                                 </tr>
@@ -289,8 +300,9 @@ $sinPadding = true;
                                 <tr>
                                     <th class="px-3">Fecha</th>
                                     <th>Conductor</th>
+                                    <th>Clasificaci&oacute;n</th>
                                     <th>Tipo Doc.</th>
-                                    <th>Acción</th>
+                                    <th>Acci&oacute;n</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
@@ -299,6 +311,7 @@ $sinPadding = true;
                                 <tr>
                                     <td class="px-3 text-muted">{{ \Carbon\Carbon::parse($doc->fecha_registro)->format('d/m/Y') }}</td>
                                     <td class="fw-medium">{{ $doc->conductor->nombre ?? '' }} {{ $doc->conductor->apellido ?? '' }}</td>
+                                    <td><span class="badge bg-{{ $doc->conductor->clasificacion_badge ?? 'secondary' }}">{{ $doc->conductor->clasificacion_label ?? 'N/A' }}</span></td>
                                     <td>{{ $doc->tipo_documento }}</td>
                                     <td>
                                         <span class="badge bg-{{ $doc->version > 1 ? 'success' : 'primary' }}">
@@ -313,7 +326,7 @@ $sinPadding = true;
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">
+                                    <td colspan="6" class="text-center py-4 text-muted">
                                         No hay registros en este período
                                     </td>
                                 </tr>

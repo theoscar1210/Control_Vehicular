@@ -132,4 +132,21 @@ class Conductor extends Model
 
     /** Clasificaciones disponibles */
     public const CLASIFICACIONES = ['EMPLEADO', 'EXTERNO', 'CONTRATISTA'];
+
+    /** Mapa de colores Bootstrap para badges de clasificación */
+    public const CLASIFICACION_BADGES = [
+        'EMPLEADO' => 'primary',
+        'CONTRATISTA' => 'warning',
+        'EXTERNO' => 'info',
+    ];
+
+    public function getClasificacionBadgeAttribute(): string
+    {
+        return self::CLASIFICACION_BADGES[$this->clasificacion] ?? 'secondary';
+    }
+
+    public function getClasificacionLabelAttribute(): string
+    {
+        return ucfirst(strtolower($this->clasificacion ?? 'N/A'));
+    }
 }

@@ -50,16 +50,8 @@ $sinPadding = true;
                     </div>
                     <div class="col-auto text-end">
                         @if($conductor->clasificacion)
-                        @php
-                            $clsFichaBadge = match($conductor->clasificacion) {
-                                'EMPLEADO' => 'light',
-                                'CONTRATISTA' => 'warning',
-                                'EXTERNO' => 'info',
-                                default => 'secondary',
-                            };
-                        @endphp
-                        <span class="badge bg-{{ $clsFichaBadge }} {{ $conductor->clasificacion === 'EMPLEADO' ? 'text-dark' : '' }} px-3 py-2 mb-1">
-                            <i class="fas fa-tags me-1"></i>{{ ucfirst(strtolower($conductor->clasificacion)) }}
+                        <span class="badge bg-{{ $conductor->clasificacion_badge }} px-3 py-2 mb-1">
+                            <i class="fas fa-tags me-1"></i>{{ $conductor->clasificacion_label }}
                         </span><br>
                         @endif
                         <span class="badge bg-{{ $estadoGeneral['clase'] }} px-3 py-2">
@@ -106,14 +98,7 @@ $sinPadding = true;
                             <tr>
                                 <td class="text-muted">Clasificación:</td>
                                 <td>
-                                    @php
-                                    $badgeClasif = match($conductor->clasificacion) {
-                                        'CONTRATISTA' => 'warning',
-                                        'EXTERNO' => 'info',
-                                        default => 'primary',
-                                    };
-                                    @endphp
-                                    <span class="badge bg-{{ $badgeClasif }}">{{ $conductor->clasificacion ?? 'EMPLEADO' }}</span>
+                                    <span class="badge bg-{{ $conductor->clasificacion_badge }}">{{ $conductor->clasificacion_label }}</span>
                                 </td>
                             </tr>
                         </table>

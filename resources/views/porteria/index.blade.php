@@ -198,14 +198,7 @@ $sinPadding = true;
                         <tr>
                             <td class="fw-bold">Clasificación:</td>
                             <td>
-                                @php
-                                $badgePClasif = match($vehiculo->clasificacion ?? 'EMPLEADO') {
-                                    'CONTRATISTA' => 'warning',
-                                    'EXTERNO' => 'info',
-                                    default => 'primary',
-                                };
-                                @endphp
-                                <span class="badge bg-{{ $badgePClasif }}">{{ $vehiculo->clasificacion ?? 'EMPLEADO' }}</span>
+                                <span class="badge bg-{{ $vehiculo->clasificacion_badge }}">{{ $vehiculo->clasificacion_label }}</span>
                             </td>
                         </tr>
                     </table>
@@ -548,15 +541,7 @@ $sinPadding = true;
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Clasificación</small>
-                                        @php
-                                            $clsBadgePorteria = match($clasificacionAlerta) {
-                                                'EMPLEADO' => 'primary',
-                                                'CONTRATISTA' => 'warning',
-                                                'EXTERNO' => 'info',
-                                                default => 'secondary',
-                                            };
-                                        @endphp
-                                        <span class="badge bg-{{ $clsBadgePorteria }}">{{ ucfirst(strtolower($clasificacionAlerta)) }}</span>
+                                        <span class="badge bg-{{ \App\Models\Vehiculo::CLASIFICACION_BADGES[$clasificacionAlerta] ?? 'secondary' }}">{{ ucfirst(strtolower($clasificacionAlerta)) }}</span>
                                     </div>
                                 </div>
                             </div>

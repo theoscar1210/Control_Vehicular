@@ -182,7 +182,7 @@
         <div class="conductor-header">
             <h3>{{ $conductor->nombre }} {{ $conductor->apellido }}
                 @if($conductor->clasificacion)
-                <span class="badge badge-{{ $conductor->clasificacion === 'CONTRATISTA' ? 'warning' : ($conductor->clasificacion === 'EXTERNO' ? 'secondary' : 'success') }}" style="font-size: 8px; vertical-align: middle;">{{ ucfirst(strtolower($conductor->clasificacion)) }}</span>
+                <span class="badge badge-{{ $conductor->clasificacion_badge }}" style="font-size: 8px; vertical-align: middle;">{{ $conductor->clasificacion_label }}</span>
                 @endif
             </h3>
             <small>

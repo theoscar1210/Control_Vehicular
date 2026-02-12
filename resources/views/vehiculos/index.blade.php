@@ -238,16 +238,8 @@ $sinPadding = true;
 
                             {{-- CLASIFICACIÓN --}}
                             <td class="text-center">
-                                @php
-                                    $clsBadge = match($vehiculo->clasificacion) {
-                                        'EMPLEADO' => 'primary',
-                                        'CONTRATISTA' => 'warning',
-                                        'EXTERNO' => 'info',
-                                        default => 'secondary',
-                                    };
-                                @endphp
-                                <span class="badge bg-{{ $clsBadge }} px-2 py-1">
-                                    {{ ucfirst(strtolower($vehiculo->clasificacion ?? 'N/A')) }}
+                                <span class="badge bg-{{ $vehiculo->clasificacion_badge }} px-2 py-1">
+                                    {{ $vehiculo->clasificacion_label }}
                                 </span>
                             </td>
 

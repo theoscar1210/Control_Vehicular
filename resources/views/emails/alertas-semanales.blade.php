@@ -165,7 +165,16 @@
                                     <span class="conductor">{{ $conductorEmail }}</span>
                                     @endif
                                     @if($clasificacionEmail)
-                                    <span style="background-color: #6c757d; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-left: 5px;">{{ ucfirst(strtolower($clasificacionEmail)) }}</span>
+                                    @php
+                                    $emailBadgeColors = [
+                                        'EMPLEADO' => '#0d6efd',
+                                        'CONTRATISTA' => '#ffc107',
+                                        'EXTERNO' => '#0dcaf0',
+                                    ];
+                                    $emailBadgeBg = $emailBadgeColors[$clasificacionEmail] ?? '#6c757d';
+                                    $emailBadgeText = in_array($clasificacionEmail, ['CONTRATISTA', 'EXTERNO']) ? '#000' : '#fff';
+                                    @endphp
+                                    <span style="background-color: {{ $emailBadgeBg }}; color: {{ $emailBadgeText }}; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-left: 5px;">{{ ucfirst(strtolower($clasificacionEmail)) }}</span>
                                     @endif
                                 </div>
                                 @endif

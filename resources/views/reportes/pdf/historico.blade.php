@@ -136,6 +136,7 @@
             <tr>
                 <th>Fecha</th>
                 <th>Placa</th>
+                <th>Clasificación</th>
                 <th>Documento</th>
                 <th>Número</th>
                 <th>Acción</th>
@@ -148,6 +149,7 @@
             <tr>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_registro)->format('d/m/Y H:i') }}</td>
                 <td><strong>{{ $doc->vehiculo->placa ?? 'N/A' }}</strong></td>
+                <td>{{ $doc->vehiculo->clasificacion_label ?? 'N/A' }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td class="{{ $doc->version > 1 ? 'renovacion' : 'nuevo' }}">{{ $doc->version > 1 ? 'Renovación' : 'Nuevo' }}</td>
@@ -156,7 +158,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" style="text-align: center;">Sin registros en este período</td>
+                <td colspan="8" style="text-align: center;">Sin registros en este período</td>
             </tr>
             @endforelse
         </tbody>
@@ -168,6 +170,7 @@
             <tr>
                 <th>Fecha</th>
                 <th>Conductor</th>
+                <th>Clasificación</th>
                 <th>Documento</th>
                 <th>Número</th>
                 <th>Acción</th>
@@ -180,6 +183,7 @@
             <tr>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_registro)->format('d/m/Y H:i') }}</td>
                 <td><strong>{{ $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A' }}</strong></td>
+                <td>{{ $doc->conductor->clasificacion_label ?? 'N/A' }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td class="{{ $doc->version > 1 ? 'renovacion' : 'nuevo' }}">{{ $doc->version > 1 ? 'Renovación' : 'Nuevo' }}</td>
@@ -188,7 +192,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" style="text-align: center;">Sin registros en este período</td>
+                <td colspan="8" style="text-align: center;">Sin registros en este período</td>
             </tr>
             @endforelse
         </tbody>

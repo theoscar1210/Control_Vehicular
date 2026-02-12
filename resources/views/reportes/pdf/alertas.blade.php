@@ -149,7 +149,7 @@
             @php $dias = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false); @endphp
             <tr>
                 <td><strong>{{ $doc->vehiculo->placa ?? 'N/A' }}</strong></td>
-                <td>{{ ucfirst(strtolower($doc->vehiculo->clasificacion ?? 'N/A')) }}</td>
+                <td>{{ $doc->vehiculo->clasificacion_label ?? 'N/A' }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</td>
@@ -182,7 +182,7 @@
             @php $dias = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false); @endphp
             <tr>
                 <td><strong>{{ $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A' }}</strong></td>
-                <td>{{ ucfirst(strtolower($doc->conductor->clasificacion ?? 'N/A')) }}</td>
+                <td>{{ $doc->conductor->clasificacion_label ?? 'N/A' }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</td>

@@ -172,7 +172,7 @@ $sinPadding = true;
                             <td class="px-4">
                                 <strong style="color: #5B8238;">{{ $vehiculo->placa }}</strong>
                                 @if($vehiculo->clasificacion && $vehiculo->clasificacion !== 'EMPLEADO')
-                                <br><span class="badge bg-{{ $vehiculo->clasificacion === 'CONTRATISTA' ? 'warning' : 'info' }}" style="font-size: 0.6rem;">{{ $vehiculo->clasificacion }}</span>
+                                <br><span class="badge bg-{{ $vehiculo->clasificacion_badge }}" style="font-size: 0.6rem;">{{ $vehiculo->clasificacion_label }}</span>
                                 @endif
                             </td>
                             <td>

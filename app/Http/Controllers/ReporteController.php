@@ -7,7 +7,6 @@ use App\Models\Propietario;
 use App\Models\Conductor;
 use App\Models\DocumentoVehiculo;
 use App\Models\DocumentoConductor;
-use App\Models\Alerta;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -493,6 +492,8 @@ class ReporteController extends Controller
         $tipoDocumento = $request->input('tipo_documento');
         $placa = $request->input('placa');
 
+        $clasificacion = $request->input('clasificacion');
+
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
@@ -506,6 +507,12 @@ class ReporteController extends Controller
             });
         }
 
+        if ($clasificacion) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
+        }
+
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
         $queryConductores = DocumentoConductor::with(['conductor'])
@@ -513,6 +520,12 @@ class ReporteController extends Controller
 
         if ($tipoDocumento) {
             $queryConductores->where('tipo_documento', $tipoDocumento);
+        }
+
+        if ($clasificacion) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
         }
 
         $historialConductores = $queryConductores->orderByDesc('fecha_registro')->get();
@@ -850,6 +863,7 @@ class ReporteController extends Controller
         $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
         $tipoDocumento = $request->input('tipo_documento');
         $placa = $request->input('placa');
+        $clasificacion = $request->input('clasificacion');
 
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
@@ -864,6 +878,12 @@ class ReporteController extends Controller
             });
         }
 
+        if ($clasificacion) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
+        }
+
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
         $queryConductores = DocumentoConductor::with(['conductor'])
@@ -871,6 +891,12 @@ class ReporteController extends Controller
 
         if ($tipoDocumento) {
             $queryConductores->where('tipo_documento', $tipoDocumento);
+        }
+
+        if ($clasificacion) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
         }
 
         $historialConductores = $queryConductores->orderByDesc('fecha_registro')->get();
@@ -1165,6 +1191,7 @@ class ReporteController extends Controller
         $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
         $tipoDocumento = $request->input('tipo_documento');
         $placa = $request->input('placa');
+        $clasificacion = $request->input('clasificacion');
 
         $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
@@ -1179,6 +1206,12 @@ class ReporteController extends Controller
             });
         }
 
+        if ($clasificacion) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
+        }
+
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
         $queryConductores = DocumentoConductor::with(['conductor'])
@@ -1186,6 +1219,12 @@ class ReporteController extends Controller
 
         if ($tipoDocumento) {
             $queryConductores->where('tipo_documento', $tipoDocumento);
+        }
+
+        if ($clasificacion) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
+                $q->where('clasificacion', $clasificacion);
+            });
         }
 
         $historialConductores = $queryConductores->orderByDesc('fecha_registro')->get();
@@ -1207,7 +1246,7 @@ class ReporteController extends Controller
             };
 
             // Encabezados
-            fputcsv($file, array_map($limpiar, ['Fecha Registro', 'Hora', 'Tipo Entidad', 'Placa/Nombre', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Expedicion', 'Fecha Vencimiento', 'Estado', 'Accion', 'Version']), ';');
+            fputcsv($file, array_map($limpiar, ['Fecha Registro', 'Hora', 'Tipo Entidad', 'Placa/Nombre', 'Clasificacion', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Expedicion', 'Fecha Vencimiento', 'Estado', 'Accion', 'Version']), ';');
 
             foreach ($historialVehiculos as $doc) {
                 fputcsv($file, array_map($limpiar, [
@@ -1215,6 +1254,7 @@ class ReporteController extends Controller
                     Carbon::parse($doc->fecha_registro)->format('H:i'),
                     'Vehiculo',
                     $doc->vehiculo->placa ?? 'N/A',
+                    $doc->vehiculo->clasificacion_label ?? 'N/A',
                     $doc->vehiculo && $doc->vehiculo->propietario ? $doc->vehiculo->propietario->nombre . ' ' . $doc->vehiculo->propietario->apellido : '-',
                     $doc->tipo_documento,
                     $doc->numero_documento ?? '-',
@@ -1232,6 +1272,7 @@ class ReporteController extends Controller
                     Carbon::parse($doc->fecha_registro)->format('H:i'),
                     'Conductor',
                     $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A',
+                    $doc->conductor->clasificacion_label ?? 'N/A',
                     '-',
                     $doc->tipo_documento,
                     $doc->numero_documento ?? '-',
