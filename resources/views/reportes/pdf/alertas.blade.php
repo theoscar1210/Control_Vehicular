@@ -136,6 +136,7 @@
         <thead>
             <tr>
                 <th>Placa</th>
+                <th>Clasificación</th>
                 <th>Documento</th>
                 <th>Número</th>
                 <th>Vencimiento</th>
@@ -148,6 +149,7 @@
             @php $dias = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false); @endphp
             <tr>
                 <td><strong>{{ $doc->vehiculo->placa ?? 'N/A' }}</strong></td>
+                <td>{{ ucfirst(strtolower($doc->vehiculo->clasificacion ?? 'N/A')) }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</td>
@@ -156,7 +158,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" style="text-align: center;">Sin alertas de vehículos</td>
+                <td colspan="7" style="text-align: center;">Sin alertas de vehículos</td>
             </tr>
             @endforelse
         </tbody>
@@ -167,6 +169,7 @@
         <thead>
             <tr>
                 <th>Conductor</th>
+                <th>Clasificación</th>
                 <th>Documento</th>
                 <th>Número</th>
                 <th>Vencimiento</th>
@@ -179,6 +182,7 @@
             @php $dias = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($doc->fecha_vencimiento), false); @endphp
             <tr>
                 <td><strong>{{ $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A' }}</strong></td>
+                <td>{{ ucfirst(strtolower($doc->conductor->clasificacion ?? 'N/A')) }}</td>
                 <td>{{ $doc->tipo_documento }}</td>
                 <td>{{ $doc->numero_documento }}</td>
                 <td>{{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}</td>
@@ -187,7 +191,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" style="text-align: center;">Sin alertas de conductores</td>
+                <td colspan="7" style="text-align: center;">Sin alertas de conductores</td>
             </tr>
             @endforelse
         </tbody>

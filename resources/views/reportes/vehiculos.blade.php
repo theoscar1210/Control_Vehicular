@@ -122,6 +122,15 @@ $sinPadding = true;
                             </option>
                         </select>
                     </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold"><i class="fas fa-tags me-1"></i> Clasificación</label>
+                        <select name="clasificacion" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="EMPLEADO" {{ request('clasificacion') == 'EMPLEADO' ? 'selected' : '' }}>Empleado</option>
+                            <option value="CONTRATISTA" {{ request('clasificacion') == 'CONTRATISTA' ? 'selected' : '' }}>Contratista</option>
+                            <option value="EXTERNO" {{ request('clasificacion') == 'EXTERNO' ? 'selected' : '' }}>Externo</option>
+                        </select>
+                    </div>
                     <div class="col-12">
                         <button type="submit" class="btn px-4" style="background-color: #5B8238; color: white;">
                             <i class="fas fa-search me-1"></i> Buscar

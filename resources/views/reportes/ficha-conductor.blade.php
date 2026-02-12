@@ -49,6 +49,19 @@ $sinPadding = true;
                         <small>{{ $conductor->tipo_doc }} {{ $conductor->identificacion }}</small>
                     </div>
                     <div class="col-auto text-end">
+                        @if($conductor->clasificacion)
+                        @php
+                            $clsFichaBadge = match($conductor->clasificacion) {
+                                'EMPLEADO' => 'light',
+                                'CONTRATISTA' => 'warning',
+                                'EXTERNO' => 'info',
+                                default => 'secondary',
+                            };
+                        @endphp
+                        <span class="badge bg-{{ $clsFichaBadge }} {{ $conductor->clasificacion === 'EMPLEADO' ? 'text-dark' : '' }} px-3 py-2 mb-1">
+                            <i class="fas fa-tags me-1"></i>{{ ucfirst(strtolower($conductor->clasificacion)) }}
+                        </span><br>
+                        @endif
                         <span class="badge bg-{{ $estadoGeneral['clase'] }} px-3 py-2">
                             <i class="{{ $estadoGeneral['icono'] }} me-1"></i>
                             {{ $estadoGeneral['texto'] }}

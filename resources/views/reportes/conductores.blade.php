@@ -76,12 +76,12 @@ $sinPadding = true;
         <div class="card-body">
             <form method="GET" action="{{ route('reportes.conductores') }}" id="filtrosForm">
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-search me-1"></i> Buscar</label>
                         <input type="text" name="buscar" class="form-control"
-                            placeholder="Nombre, apellido o identificacion..." value="{{ request('buscar') }}">
+                            placeholder="Nombre, apellido o identificación..." value="{{ request('buscar') }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-user me-1"></i> Conductor</label>
                         <select name="conductor" class="form-select">
                             <option value="">Todos los conductores</option>
@@ -92,7 +92,7 @@ $sinPadding = true;
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-semibold"><i class="fas fa-traffic-light me-1"></i> Estado Licencia</label>
                         <select name="estado_licencia" class="form-select">
                             <option value="">Todos los estados</option>
@@ -100,6 +100,15 @@ $sinPadding = true;
                             <option value="POR_VENCER" {{ request('estado_licencia') == 'POR_VENCER' ? 'selected' : '' }}>Por Vencer</option>
                             <option value="VENCIDO" {{ request('estado_licencia') == 'VENCIDO' ? 'selected' : '' }}>Vencidas</option>
                             <option value="SIN_DOCUMENTOS" {{ request('estado_licencia') == 'SIN_DOCUMENTOS' ? 'selected' : '' }}>Sin Licencia</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold"><i class="fas fa-tags me-1"></i> Clasificación</label>
+                        <select name="clasificacion" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="EMPLEADO" {{ request('clasificacion') == 'EMPLEADO' ? 'selected' : '' }}>Empleado</option>
+                            <option value="CONTRATISTA" {{ request('clasificacion') == 'CONTRATISTA' ? 'selected' : '' }}>Contratista</option>
+                            <option value="EXTERNO" {{ request('clasificacion') == 'EXTERNO' ? 'selected' : '' }}>Externo</option>
                         </select>
                     </div>
                     <div class="col-12">

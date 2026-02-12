@@ -180,7 +180,11 @@
     @endphp
     <div class="conductor">
         <div class="conductor-header">
-            <h3>{{ $conductor->nombre }} {{ $conductor->apellido }}</h3>
+            <h3>{{ $conductor->nombre }} {{ $conductor->apellido }}
+                @if($conductor->clasificacion)
+                <span class="badge badge-{{ $conductor->clasificacion === 'CONTRATISTA' ? 'warning' : ($conductor->clasificacion === 'EXTERNO' ? 'secondary' : 'success') }}" style="font-size: 8px; vertical-align: middle;">{{ ucfirst(strtolower($conductor->clasificacion)) }}</span>
+                @endif
+            </h3>
             <small>
                 {{ $conductor->tipo_doc }} {{ $conductor->identificacion }}
                 @if($conductor->telefono) | Tel: {{ $conductor->telefono }} @endif

@@ -75,11 +75,13 @@
                             $tipoDocumento = null;
                             $placaAlerta = null;
                             $conductorAlerta = null;
+                            $clasificacionAlerta = null;
 
                             if ($alerta->documentoVehiculo) {
                                 $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
                                 if ($alerta->documentoVehiculo->vehiculo) {
                                     $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                                    $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
                                     if ($alerta->documentoVehiculo->vehiculo->conductor) {
                                         $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
                                     }
@@ -90,6 +92,7 @@
                                 $tipoDocumento = $alerta->documentoConductor->tipo_documento;
                                 if ($alerta->documentoConductor->conductor) {
                                     $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                    $clasificacionAlerta = $alerta->documentoConductor->conductor->clasificacion;
                                 }
                             }
 
@@ -118,7 +121,7 @@
                                         </small>
                                     </div>
 
-                                    {{-- Información de Placa y Conductor --}}
+                                    {{-- Información de Placa, Conductor y Clasificación --}}
                                     @if($placaAlerta || $conductorAlerta)
                                     <div class="mb-2">
                                         @if($placaAlerta)
@@ -127,8 +130,21 @@
                                         </span>
                                         @endif
                                         @if($conductorAlerta)
-                                        <span class="text-primary">
+                                        <span class="text-primary me-2">
                                             <i class="fas fa-user me-1"></i>{{ $conductorAlerta }}
+                                        </span>
+                                        @endif
+                                        @if($clasificacionAlerta)
+                                        @php
+                                            $clsBadgeAlerta = match($clasificacionAlerta) {
+                                                'EMPLEADO' => 'primary',
+                                                'CONTRATISTA' => 'warning',
+                                                'EXTERNO' => 'info',
+                                                default => 'secondary',
+                                            };
+                                        @endphp
+                                        <span class="badge bg-{{ $clsBadgeAlerta }}">
+                                            <i class="fas fa-tags me-1"></i>{{ ucfirst(strtolower($clasificacionAlerta)) }}
                                         </span>
                                         @endif
                                     </div>

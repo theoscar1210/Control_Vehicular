@@ -130,7 +130,7 @@ $sinPadding = true;
                             </optgroup>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-semibold">Estado</label>
                         <select name="estado_alerta" class="form-select">
                             <option value="TODOS">Todos</option>
@@ -138,7 +138,16 @@ $sinPadding = true;
                             <option value="VENCIDO" {{ request('estado_alerta') == 'VENCIDO' ? 'selected' : '' }}>Vencidos</option>
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Clasificación</label>
+                        <select name="clasificacion" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="EMPLEADO" {{ request('clasificacion') == 'EMPLEADO' ? 'selected' : '' }}>Empleado</option>
+                            <option value="CONTRATISTA" {{ request('clasificacion') == 'CONTRATISTA' ? 'selected' : '' }}>Contratista</option>
+                            <option value="EXTERNO" {{ request('clasificacion') == 'EXTERNO' ? 'selected' : '' }}>Externo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn w-100" style="background-color: #5B8238; color: white;">
                             <i class="fas fa-search me-1"></i> Filtrar
                         </button>

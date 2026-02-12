@@ -430,12 +430,14 @@ $sinPadding = true;
                     $conductorId = null;
                     $tipoDocumento = null;
                     $vehiculoInfo = null;
+                    $clasificacionAlerta = null;
 
                     if ($alerta->documentoVehiculo) {
                         $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
                         if ($alerta->documentoVehiculo->vehiculo) {
                             $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
                             $vehiculoInfo = $alerta->documentoVehiculo->vehiculo->marca . ' ' . $alerta->documentoVehiculo->vehiculo->modelo;
+                            $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
                             if ($alerta->documentoVehiculo->vehiculo->conductor) {
                                 $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
                                 $conductorId = $alerta->documentoVehiculo->vehiculo->conductor->id_conductor;
@@ -448,6 +450,7 @@ $sinPadding = true;
                         if ($alerta->documentoConductor->conductor) {
                             $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
                             $conductorId = $alerta->documentoConductor->conductor->id_conductor;
+                            $clasificacionAlerta = $alerta->documentoConductor->conductor->clasificacion;
                         }
                     }
 
@@ -532,6 +535,29 @@ $sinPadding = true;
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
                                     @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- Clasificación --}}
+                            @if($clasificacionAlerta)
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-secondary bg-opacity-10 me-3">
+                                        <i class="fas fa-tags text-secondary"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Clasificación</small>
+                                        @php
+                                            $clsBadgePorteria = match($clasificacionAlerta) {
+                                                'EMPLEADO' => 'primary',
+                                                'CONTRATISTA' => 'warning',
+                                                'EXTERNO' => 'info',
+                                                default => 'secondary',
+                                            };
+                                        @endphp
+                                        <span class="badge bg-{{ $clsBadgePorteria }}">{{ ucfirst(strtolower($clasificacionAlerta)) }}</span>
+                                    </div>
                                 </div>
                             </div>
                             @endif

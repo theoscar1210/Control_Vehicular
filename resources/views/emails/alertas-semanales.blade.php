@@ -137,29 +137,35 @@
 
                         @foreach($alertas as $alerta)
                             @php
-                                // Obtener placa y conductor
+                                // Obtener placa, conductor y clasificación
                                 $placaEmail = null;
                                 $conductorEmail = null;
+                                $clasificacionEmail = null;
                                 if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
                                     $placaEmail = $alerta->documentoVehiculo->vehiculo->placa;
+                                    $clasificacionEmail = $alerta->documentoVehiculo->vehiculo->clasificacion;
                                     if ($alerta->documentoVehiculo->vehiculo->conductor) {
                                         $conductorEmail = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
                                     }
                                 }
                                 if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
                                     $conductorEmail = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                    $clasificacionEmail = $alerta->documentoConductor->conductor->clasificacion;
                                 }
                             @endphp
                             <div class="alert-item {{ $alerta->tipo_vencimiento === 'PROXIMO_VENCER' ? 'warning' : '' }}">
                                 <strong>{{ $alerta->mensaje }}</strong>
 
-                                @if($placaEmail || $conductorEmail)
+                                @if($placaEmail || $conductorEmail || $clasificacionEmail)
                                 <div class="alert-info">
                                     @if($placaEmail)
-                                    <span class="placa">🚗 {{ $placaEmail }}</span>
+                                    <span class="placa">{{ $placaEmail }}</span>
                                     @endif
                                     @if($conductorEmail)
-                                    <span class="conductor">👤 {{ $conductorEmail }}</span>
+                                    <span class="conductor">{{ $conductorEmail }}</span>
+                                    @endif
+                                    @if($clasificacionEmail)
+                                    <span style="background-color: #6c757d; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-left: 5px;">{{ ucfirst(strtolower($clasificacionEmail)) }}</span>
                                     @endif
                                 </div>
                                 @endif

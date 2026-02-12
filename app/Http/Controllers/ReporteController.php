@@ -76,6 +76,10 @@ class ReporteController extends Controller
             $query->where('placa', 'LIKE', '%' . strtoupper($request->placa) . '%');
         }
 
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
+        }
+
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
@@ -180,6 +184,14 @@ class ReporteController extends Controller
             $queryVehiculos->where('tipo_documento', $tipoFiltro);
         }
 
+        $clasificacionFiltro = $request->input('clasificacion');
+
+        if ($clasificacionFiltro) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
+        }
+
         // Filtrar por estado basado en fecha
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
             if ($estadoFiltro === 'POR_VENCER') {
@@ -199,6 +211,12 @@ class ReporteController extends Controller
 
         if ($tipoFiltro) {
             $queryConductores->where('tipo_documento', $tipoFiltro);
+        }
+
+        if ($clasificacionFiltro) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
         }
 
         // Filtrar por estado basado en fecha
@@ -319,6 +337,10 @@ class ReporteController extends Controller
                   ->orWhere('apellido', 'LIKE', "%{$buscar}%")
                   ->orWhere('identificacion', 'LIKE', "%{$buscar}%");
             });
+        }
+
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
         }
 
         $conductores = $query->orderBy('nombre')->get();
@@ -585,6 +607,10 @@ class ReporteController extends Controller
             $query->where('placa', 'LIKE', '%' . strtoupper($request->placa) . '%');
         }
 
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
+        }
+
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
@@ -622,6 +648,14 @@ class ReporteController extends Controller
             $queryVehiculos->where('tipo_documento', $tipoFiltro);
         }
 
+        $clasificacionFiltro = $request->input('clasificacion');
+
+        if ($clasificacionFiltro) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
+        }
+
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
             if ($estadoFiltro === 'POR_VENCER') {
                 $queryVehiculos->where('fecha_vencimiento', '>=', $hoy)
@@ -639,6 +673,12 @@ class ReporteController extends Controller
 
         if ($tipoFiltro) {
             $queryConductores->where('tipo_documento', $tipoFiltro);
+        }
+
+        if ($clasificacionFiltro) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
         }
 
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
@@ -710,6 +750,10 @@ class ReporteController extends Controller
             });
         }
 
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
+        }
+
         $conductores = $query->orderBy('nombre')->get();
 
         $conductores = $conductores->map(function($conductor) {
@@ -744,6 +788,10 @@ class ReporteController extends Controller
             });
         }
 
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
+        }
+
         $conductores = $query->orderBy('nombre')->get();
 
         $filename = 'reporte_conductores_' . date('Y-m-d') . '.csv';
@@ -762,7 +810,7 @@ class ReporteController extends Controller
             };
 
             fputcsv($file, array_map($limpiar, [
-                'Nombre', 'Apellido', 'Tipo Doc', 'Identificacion', 'Telefono',
+                'Nombre', 'Apellido', 'Tipo Doc', 'Identificacion', 'Clasificacion', 'Telefono',
                 'Tel. Emergencia', 'Activo', 'Num. Licencia', 'Categoria',
                 'Categorias Adicionales', 'Vencimiento Licencia', 'Estado Licencia',
                 'Vehiculos Asignados'
@@ -777,6 +825,7 @@ class ReporteController extends Controller
                     $c->apellido,
                     $c->tipo_doc,
                     $c->identificacion,
+                    ucfirst(strtolower($c->clasificacion ?? 'N/A')),
                     $c->telefono ?? '-',
                     $c->telefono_emergencia ?? '-',
                     $c->activo ? 'Si' : 'No',
@@ -852,6 +901,10 @@ class ReporteController extends Controller
             $query->where('placa', 'LIKE', '%' . strtoupper($request->placa) . '%');
         }
 
+        if ($request->filled('clasificacion')) {
+            $query->where('clasificacion', $request->clasificacion);
+        }
+
         $vehiculos = $query->orderBy('placa')->get();
 
         $vehiculos = $vehiculos->map(function($vehiculo) {
@@ -882,7 +935,7 @@ class ReporteController extends Controller
             };
 
             // Encabezados
-            fputcsv($file, array_map($limpiar, ['Placa', 'Tipo', 'Marca', 'Modelo', 'Color', 'Año', 'Propietario', 'Documento Propietario', 'Conductor', 'Estado Documental', 'SOAT Vence', 'Tecno Vence']), ';');
+            fputcsv($file, array_map($limpiar, ['Placa', 'Tipo', 'Marca', 'Modelo', 'Color', 'Año', 'Clasificacion', 'Propietario', 'Documento Propietario', 'Conductor', 'Estado Documental', 'SOAT Vence', 'Tecno Vence']), ';');
 
             foreach ($vehiculos as $v) {
                 $soatVence = $v->documentos->where('tipo_documento', 'SOAT')->first();
@@ -895,6 +948,7 @@ class ReporteController extends Controller
                     $v->modelo,
                     $v->color,
                     $v->anio ?? '-',
+                    ucfirst(strtolower($v->clasificacion ?? 'N/A')),
                     $v->propietario ? $v->propietario->nombre . ' ' . $v->propietario->apellido : 'Sin propietario',
                     $v->propietario ? $v->propietario->tipo_doc . ' ' . $v->propietario->identificacion : '-',
                     $v->conductor ? $v->conductor->nombre . ' ' . $v->conductor->apellido : 'Sin conductor',
@@ -926,6 +980,14 @@ class ReporteController extends Controller
             $queryVehiculos->where('tipo_documento', $tipoFiltro);
         }
 
+        $clasificacionFiltro = $request->input('clasificacion');
+
+        if ($clasificacionFiltro) {
+            $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
+        }
+
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
             if ($estadoFiltro === 'POR_VENCER') {
                 $queryVehiculos->where('fecha_vencimiento', '>=', $hoy)
@@ -943,6 +1005,12 @@ class ReporteController extends Controller
 
         if ($tipoFiltro) {
             $queryConductores->where('tipo_documento', $tipoFiltro);
+        }
+
+        if ($clasificacionFiltro) {
+            $queryConductores->whereHas('conductor', function($q) use ($clasificacionFiltro) {
+                $q->where('clasificacion', $clasificacionFiltro);
+            });
         }
 
         if ($estadoFiltro && $estadoFiltro !== 'TODOS') {
@@ -973,7 +1041,7 @@ class ReporteController extends Controller
             };
 
             // Encabezados
-            fputcsv($file, array_map($limpiar, ['Tipo Entidad', 'Placa/Nombre', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Vencimiento', 'Estado', 'Dias Restantes', 'Urgencia']), ';');
+            fputcsv($file, array_map($limpiar, ['Tipo Entidad', 'Placa/Nombre', 'Clasificacion', 'Propietario', 'Tipo Documento', 'Numero Documento', 'Fecha Vencimiento', 'Estado', 'Dias Restantes', 'Urgencia']), ';');
 
             foreach ($documentosVehiculos as $doc) {
                 $dias = Carbon::now()->diffInDays(Carbon::parse($doc->fecha_vencimiento), false);
@@ -982,6 +1050,7 @@ class ReporteController extends Controller
                 fputcsv($file, array_map($limpiar, [
                     'Vehiculo',
                     $doc->vehiculo->placa ?? 'N/A',
+                    ucfirst(strtolower($doc->vehiculo->clasificacion ?? 'N/A')),
                     $doc->vehiculo && $doc->vehiculo->propietario ? $doc->vehiculo->propietario->nombre . ' ' . $doc->vehiculo->propietario->apellido : '-',
                     $doc->tipo_documento,
                     $doc->numero_documento ?? '-',
@@ -999,6 +1068,7 @@ class ReporteController extends Controller
                 fputcsv($file, array_map($limpiar, [
                     'Conductor',
                     $doc->conductor ? $doc->conductor->nombre . ' ' . $doc->conductor->apellido : 'N/A',
+                    ucfirst(strtolower($doc->conductor->clasificacion ?? 'N/A')),
                     '-',
                     $doc->tipo_documento,
                     $doc->numero_documento ?? '-',

@@ -156,6 +156,7 @@
                 <th>Tipo</th>
                 <th>Marca</th>
                 <th>Modelo</th>
+                <th>Clasificación</th>
                 <th>Propietario</th>
                 <th>Conductor</th>
                 <th>Estado Documental</th>
@@ -168,13 +169,14 @@
                 <td>{{ $v->tipo }}</td>
                 <td>{{ $v->marca }}</td>
                 <td>{{ $v->modelo }}</td>
+                <td>{{ ucfirst(strtolower($v->clasificacion ?? 'N/A')) }}</td>
                 <td>{{ $v->propietario ? $v->propietario->nombre . ' ' . $v->propietario->apellido : '-' }}</td>
                 <td>{{ $v->conductor ? $v->conductor->nombre . ' ' . $v->conductor->apellido : '-' }}</td>
                 <td class="estado-{{ strtolower($v->estado_general['estado']) }}">{{ $v->estado_general['texto'] }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="7" style="text-align: center; padding: 20px;">No hay vehículos registrados</td>
+                <td colspan="8" style="text-align: center; padding: 20px;">No hay vehículos registrados</td>
             </tr>
             @endforelse
         </tbody>
