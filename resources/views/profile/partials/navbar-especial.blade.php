@@ -23,12 +23,17 @@
                     <a class="nav-link" href="{{ route('porteria.index') }}">Portería</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('vehiculos.index') }}">Vehículos</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('conductores.index') }}">Conductores</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Vehículos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('vehiculos.index') }}"><i class="fas fa-list me-2"></i>Listado de Vehículos</a></li>
+                        <li><a class="dropdown-item" href="{{ route('vehiculos.create') }}"><i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ route('conductores.index') }}"><i class="fas fa-id-card-clip me-2"></i>Gestión de Conductores</a></li>
+                        <li><a class="dropdown-item" href="{{ route('conductores.create') }}"><i class="fas fa-plus-circle me-2"></i>Nuevo Conductor</a></li>
+                    </ul>
                 </li>
 
 

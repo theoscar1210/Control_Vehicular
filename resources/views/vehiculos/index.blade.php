@@ -132,6 +132,10 @@ $sinPadding = true;
                                 Tecnomecánica
                             </th>
                             <th class="py-3 text-center">
+                                <i class="fa-solid fa-tags me-1 text-muted"></i>
+                                Clasificación
+                            </th>
+                            <th class="py-3 text-center">
                                 <i class="fa-solid fa-toggle-on me-1 text-muted"></i>
                                 Estado
                             </th>
@@ -157,15 +161,8 @@ $sinPadding = true;
 
                             {{-- VEHÍCULO --}}
                             <td>
-                                <div class="d-flex align-items-center">
-
-                                    <div>
-                                        <div class="fw-semibold">{{ $vehiculo->marca }} {{ $vehiculo->modelo }}</div>
-                                        <small class="text-muted">
-                                            {{ $vehiculo->tipo }}
-                                        </small>
-                                    </div>
-                                </div>
+                                <div class="fw-semibold">{{ $vehiculo->marca }}</div>
+                                <small class="text-muted">{{ $vehiculo->tipo }}</small>
                             </td>
 
                             {{-- PROPIETARIO --}}
@@ -239,6 +236,21 @@ $sinPadding = true;
                                 @endif
                             </td>
 
+                            {{-- CLASIFICACIÓN --}}
+                            <td class="text-center">
+                                @php
+                                    $clsBadge = match($vehiculo->clasificacion) {
+                                        'EMPLEADO' => 'primary',
+                                        'CONTRATISTA' => 'warning',
+                                        'EXTERNO' => 'info',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $clsBadge }} px-2 py-1">
+                                    {{ ucfirst(strtolower($vehiculo->clasificacion ?? 'N/A')) }}
+                                </span>
+                            </td>
+
                             {{-- ESTADO VEHÍCULO --}}
                             <td class="text-center">
                                 @if($vehiculo->estado === 'Activo')
@@ -296,7 +308,7 @@ $sinPadding = true;
 
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="8" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fa-solid fa-inbox fs-1 mb-3 d-block" style="opacity:0.3;"></i>
                                     <h5>No se encontraron vehículos</h5>

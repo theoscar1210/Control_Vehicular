@@ -199,13 +199,37 @@
         </a>
         @endif
 
-        <a class="nav-link" href="{{ route('vehiculos.index') }}">
-            <i class="fas fa-car me-2"></i>Gestión de Vehículos
+        {{-- Submenú Vehículos --}}
+        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuVehiculos" role="button" aria-expanded="false">
+            <span><i class="fas fa-car me-2"></i>Vehículos</span>
+            <i class="fas fa-chevron-down small"></i>
         </a>
+        <div class="collapse" id="menuVehiculos">
+            <a class="nav-link ps-4" href="{{ route('vehiculos.index') }}">
+                <i class="fas fa-list me-2"></i>Listado
+            </a>
+            @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+            <a class="nav-link ps-4" href="{{ route('vehiculos.create') }}">
+                <i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo
+            </a>
+            @endif
+        </div>
 
-        <a class="nav-link" href="{{ route('conductores.index') }}">
-            <i class="fas fa-id-card-clip me-2"></i>Gestión de Conductores
+        {{-- Submenú Conductores --}}
+        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#menuConductores" role="button" aria-expanded="false">
+            <span><i class="fas fa-id-card-clip me-2"></i>Conductores</span>
+            <i class="fas fa-chevron-down small"></i>
         </a>
+        <div class="collapse" id="menuConductores">
+            <a class="nav-link ps-4" href="{{ route('conductores.index') }}">
+                <i class="fas fa-list me-2"></i>Listado
+            </a>
+            @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+            <a class="nav-link ps-4" href="{{ route('conductores.create') }}">
+                <i class="fas fa-plus-circle me-2"></i>Nuevo Conductor
+            </a>
+            @endif
+        </div>
 
         <a class="nav-link" href="{{ route('reportes.centro') }}">
             <i class="fas fa-chart-bar me-2"></i>Centro de Reportes
@@ -226,8 +250,11 @@
 
         <span class="text-uppercase fw-bold d-block ">Acciones Rápidas</span>
 
-        <a class="nav-link" href="{{ route('vehiculos.create', ['clasificacion' => 'EMPLEADO']) }}">
-            <i class="fas fa-plus-circle me-2"></i>Nuevo Registro
+        <a class="nav-link" href="{{ route('vehiculos.create') }}">
+            <i class="fas fa-plus-circle me-2"></i>Nuevo Vehículo
+        </a>
+        <a class="nav-link" href="{{ route('conductores.create') }}">
+            <i class="fas fa-plus-circle me-2"></i>Nuevo Conductor
         </a>
 
         @endif

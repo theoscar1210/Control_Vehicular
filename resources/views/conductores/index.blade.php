@@ -139,6 +139,10 @@ $sinPadding = true;
                                 Licencia
                             </th>
                             <th class="py-3 text-center">
+                                <i class="fa-solid fa-tags me-1 text-muted"></i>
+                                Clasificación
+                            </th>
+                            <th class="py-3 text-center">
                                 <i class="fa-solid fa-toggle-on me-1 text-muted"></i>
                                 Estado
                             </th>
@@ -165,17 +169,10 @@ $sinPadding = true;
                         <tr class="conductor-row">
                             {{-- CONDUCTOR --}}
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-2" style="background-color:#E8F5E9; color:#5B8238;">
-                                        {{ strtoupper(substr($conductor->nombre, 0, 1)) }}{{ strtoupper(substr($conductor->apellido, 0, 1)) }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-semibold">{{ $conductor->nombre }} {{ $conductor->apellido }}</div>
-                                        <small class="text-muted">
-                                            Registrado: {{ \Carbon\Carbon::parse($conductor->fecha_registro)->format('d/m/Y') }}
-                                        </small>
-                                    </div>
-                                </div>
+                                <div class="fw-semibold">{{ $conductor->nombre }} {{ $conductor->apellido }}</div>
+                                <small class="text-muted">
+                                    Registrado: {{ \Carbon\Carbon::parse($conductor->fecha_registro)->format('d/m/Y') }}
+                                </small>
                             </td>
 
                             {{-- IDENTIFICACIÓN --}}
@@ -249,6 +246,21 @@ $sinPadding = true;
                                 @endif
                             </td>
 
+                            {{-- CLASIFICACIÓN --}}
+                            <td class="text-center">
+                                @php
+                                    $clsBadge = match($conductor->clasificacion) {
+                                        'EMPLEADO' => 'primary',
+                                        'CONTRATISTA' => 'warning',
+                                        'EXTERNO' => 'info',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $clsBadge }} px-2 py-1">
+                                    {{ ucfirst(strtolower($conductor->clasificacion ?? 'N/A')) }}
+                                </span>
+                            </td>
+
                             {{-- ESTADO --}}
                             <td class="text-center">
                                 @if($conductor->activo)
@@ -306,7 +318,7 @@ $sinPadding = true;
 
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="8" class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fa-solid fa-inbox fs-1 mb-3 d-block" style="opacity:0.3;"></i>
                                     <h5>No se encontraron conductores</h5>
@@ -363,17 +375,6 @@ $sinPadding = true;
         box-shadow: inset 0 0 0 9999px rgba(91, 130, 56, 0.03);
     }
 
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 0.85rem;
-    }
-
     .btn:hover {
         opacity: 0.85;
         transition: opacity 0.2s ease-in-out;
@@ -408,11 +409,6 @@ $sinPadding = true;
             gap: 0.5rem !important;
         }
 
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            font-size: 0.75rem;
-        }
     }
 </style>
 
