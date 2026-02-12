@@ -46,6 +46,7 @@ class Vehiculo extends Model
         'id_conductor',
         'estado',
         'clasificacion',
+        'observaciones',
         'creado_por',
         'fecha_registro',
         'fecha_matricula',
@@ -340,7 +341,7 @@ class Vehiculo extends Model
     }
 
     /** Clasificaciones disponibles */
-    public const CLASIFICACIONES = ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'];
+    public const CLASIFICACIONES = ['EMPLEADO', 'EXTERNO', 'CONTRATISTA'];
 
     /**
      * Scope para programar eliminación automática

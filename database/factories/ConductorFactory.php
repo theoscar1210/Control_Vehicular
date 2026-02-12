@@ -32,8 +32,8 @@ class ConductorFactory extends Factory
         return $this->state(fn() => ['clasificacion' => 'CONTRATISTA']);
     }
 
-    public function familiar()
+    public function externo()
     {
-        return $this->state(fn() => ['clasificacion' => 'FAMILIAR']);
+        return $this->state(fn() => ['clasificacion' => 'EXTERNO']);
     }
 }

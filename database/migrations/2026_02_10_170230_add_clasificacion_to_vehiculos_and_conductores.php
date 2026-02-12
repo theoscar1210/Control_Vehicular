@@ -18,30 +18,38 @@ return new class extends Migration
      */
     public function up(): void
     {
+        $driver = Schema::getConnection()->getDriverName();
+
         Schema::table('vehiculos', function (Blueprint $table) {
             $table->enum('clasificacion', ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'])
                   ->default('EMPLEADO')
                   ->after('estado');
         });
 
-        Schema::table('conductores', function (Blueprint $table) {
+        Schema::table('conductores', function (Blueprint $table) use ($driver) {
             $table->enum('clasificacion', ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'])
                   ->default('EMPLEADO')
                   ->after('activo');
             $table->unsignedBigInteger('empleado_id')
                   ->nullable()
                   ->after('clasificacion');
-            $table->foreign('empleado_id')
-                  ->references('id_conductor')
-                  ->on('conductores')
-                  ->onDelete('set null');
+            if ($driver === 'mysql') {
+                $table->foreign('empleado_id')
+                      ->references('id_conductor')
+                      ->on('conductores')
+                      ->onDelete('set null');
+            }
         });
     }
 
     public function down(): void
     {
-        Schema::table('conductores', function (Blueprint $table) {
-            $table->dropForeign(['empleado_id']);
+        $driver = Schema::getConnection()->getDriverName();
+
+        Schema::table('conductores', function (Blueprint $table) use ($driver) {
+            if ($driver === 'mysql') {
+                $table->dropForeign(['empleado_id']);
+            }
             $table->dropColumn(['clasificacion', 'empleado_id']);
         });
 

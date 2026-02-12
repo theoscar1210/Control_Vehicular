@@ -194,7 +194,7 @@ $vehiculoId = request()->query('vehiculo');
                     <form action="{{ route('vehiculos.create') }}" method="GET" id="form-buscar-propietario"></form>
 
                     @php
-                        $propEncontrado = isset($propietarioBuscado) && $propietarioBuscado;
+                    $propEncontrado = isset($propietarioBuscado) && $propietarioBuscado;
                     @endphp
 
                     @if($propietario)
@@ -358,7 +358,6 @@ $vehiculoId = request()->query('vehiculo');
 
                     <form action="{{ route('vehiculos.store') }}" method="POST" class="form-con-loader">
                         @csrf
-                        <input type="hidden" name="clasificacion" value="{{ $clasificacion ?? 'EMPLEADO' }}">
                         @if($propietario)
                         <input type="hidden" name="id_propietario" value="{{ $propietario->id_propietario }}">
                         @endif
@@ -421,7 +420,25 @@ $vehiculoId = request()->query('vehiculo');
                                 @enderror
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label">Clasificación</label>
+                                <select name="clasificacion" class="form-select @error('clasificacion') is-invalid @enderror"
+                                    {{ $propietario ? '' : 'disabled' }}>
+                                    @foreach($clasificaciones as $clas)
+                                    <option value="{{ $clas }}" {{ old('clasificacion', 'EMPLEADO') === $clas ? 'selected' : '' }}>{{ $clas }}</option>
+                                    @endforeach
+                                </select>
+                                @error('clasificacion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
+                            <div class="col-12">
+                                <label class="form-label">Observaciones <span class="text-muted fw-normal">(opcional)</span></label>
+                                <textarea name="observaciones" class="form-control" rows="2"
+                                    placeholder="Notas adicionales sobre el vehículo..."
+                                    {{ $propietario ? '' : 'disabled' }}>{{ old('observaciones') }}</textarea>
+                            </div>
 
                         </div>
 
@@ -453,7 +470,7 @@ $vehiculoId = request()->query('vehiculo');
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-header text-white">
-                    <i class="fa-solid fa-id-card me-2"></i>2. Licencia de Tránsito
+                    <i class="fa-solid fa-id-card me-2"></i>3. Licencia de Tránsito
                 </div>
                 <div class="card-body">
 
@@ -574,7 +591,7 @@ $vehiculoId = request()->query('vehiculo');
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-header text-white">
-                    <i class="fa-solid fa-shield-halved me-2"></i>3. Documento SOAT
+                    <i class="fa-solid fa-shield-halved me-2"></i>4. Documento SOAT
                 </div>
                 <div class="card-body">
 
@@ -656,7 +673,7 @@ $vehiculoId = request()->query('vehiculo');
         <div class="col-12 col-lg-6">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-header ">
-                    <i class="fa-solid fa-screwdriver-wrench me-2"></i>4. Documento Tecnomecánica
+                    <i class="fa-solid fa-screwdriver-wrench me-2"></i>5. Documento Tecnomecánica
                 </div>
                 <div class="card-body">
                     @if(!$vehiculoId)

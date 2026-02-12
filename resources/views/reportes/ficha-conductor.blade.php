@@ -90,6 +90,19 @@ $sinPadding = true;
                                     @endif
                                 </td>
                             </tr>
+                            <tr>
+                                <td class="text-muted">Clasificación:</td>
+                                <td>
+                                    @php
+                                    $badgeClasif = match($conductor->clasificacion) {
+                                        'CONTRATISTA' => 'warning',
+                                        'EXTERNO' => 'info',
+                                        default => 'primary',
+                                    };
+                                    @endphp
+                                    <span class="badge bg-{{ $badgeClasif }}">{{ $conductor->clasificacion ?? 'EMPLEADO' }}</span>
+                                </td>
+                            </tr>
                         </table>
                     </div>
 

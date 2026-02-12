@@ -199,54 +199,13 @@
         </a>
         @endif
 
-        <!-- Gestión de Vehículos con submenú -->
-        <a class="nav-link" data-bs-toggle="collapse" href="#vehiculosSubmenu" role="button" aria-expanded="false" aria-controls="vehiculosSubmenu">
+        <a class="nav-link" href="{{ route('vehiculos.index') }}">
             <i class="fas fa-car me-2"></i>Gestión de Vehículos
-            <i class="fas fa-chevron-down float-end"></i>
         </a>
-        <div class="collapse" id="vehiculosSubmenu">
-            <ul class="list-unstyled ps-3">
-                <li>
-                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'EMPLEADO']) }}">
-                        <i class="fas fa-building me-2"></i>Empleados
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'CONTRATISTA']) }}">
-                        <i class="fas fa-hard-hat me-2"></i>Contratistas
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ route('vehiculos.index', ['clasificacion' => 'FAMILIAR']) }}">
-                        <i class="fas fa-people-roof me-2"></i>Familiares
-                    </a>
-                </li>
-            </ul>
-        </div>
 
-        <a class="nav-link" data-bs-toggle="collapse" href="#conductoresSubmenu" role="button">
+        <a class="nav-link" href="{{ route('conductores.index') }}">
             <i class="fas fa-id-card-clip me-2"></i>Gestión de Conductores
-            <i class="fas fa-chevron-down float-end"></i>
         </a>
-        <div class="collapse" id="conductoresSubmenu">
-            <ul class="list-unstyled ps-3">
-                <li>
-                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'EMPLEADO']) }}">
-                        <i class="fas fa-building me-2"></i>Empleados
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'CONTRATISTA']) }}">
-                        <i class="fas fa-hard-hat me-2"></i>Contratistas
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="{{ route('conductores.index', ['clasificacion' => 'FAMILIAR']) }}">
-                        <i class="fas fa-people-roof me-2"></i>Familiares
-                    </a>
-                </li>
-            </ul>
-        </div>
 
         <a class="nav-link" href="{{ route('reportes.centro') }}">
             <i class="fas fa-chart-bar me-2"></i>Centro de Reportes

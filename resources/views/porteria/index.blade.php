@@ -195,6 +195,19 @@ $sinPadding = true;
                                 <span class="badge bg-info">{{ $vehiculo->tipo ?? 'N/A' }}</span>
                             </td>
                         </tr>
+                        <tr>
+                            <td class="fw-bold">Clasificación:</td>
+                            <td>
+                                @php
+                                $badgePClasif = match($vehiculo->clasificacion ?? 'EMPLEADO') {
+                                    'CONTRATISTA' => 'warning',
+                                    'EXTERNO' => 'info',
+                                    default => 'primary',
+                                };
+                                @endphp
+                                <span class="badge bg-{{ $badgePClasif }}">{{ $vehiculo->clasificacion ?? 'EMPLEADO' }}</span>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 

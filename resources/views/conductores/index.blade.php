@@ -6,7 +6,7 @@ $sinPadding = true;
 
 @extends('layouts.app')
 
-@section('title', $titulo ?? 'Gestión de Conductores')
+@section('title', 'Gestión de Conductores')
 
 @section('content')
 <br><br><br>
@@ -18,7 +18,7 @@ $sinPadding = true;
         <div>
             <h3 class="fw-bold text-dark mb-1">
                 <i class="fa-solid fa-id-card-clip me-2" style="color:#5B8238;"></i>
-                {{ $titulo ?? 'Gestión de Conductores' }}
+                Gestión de Conductores
             </h3>
             <p class="text-muted small mb-0">
                 <i class="fa-solid fa-list-check me-1"></i>
@@ -43,7 +43,7 @@ $sinPadding = true;
             @endif
 
             {{-- Boton Nuevo --}}
-            <a href="{{ route('conductores.create', ['clasificacion' => $clasificacion ?? 'EMPLEADO']) }}"
+            <a href="{{ route('conductores.create') }}"
                 class="btn px-4 py-2 shadow-sm"
                 style="background-color:#5B8238;color:white;border-radius:12px;">
                 <i class="fa-solid fa-plus-circle me-2"></i>Nuevo Conductor
@@ -83,7 +83,7 @@ $sinPadding = true;
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fa-solid fa-table-list me-2"></i>
-                    {{ $titulo ?? 'Listado de Conductores' }}
+                    Listado de Conductores
                 </h5>
             </div>
         </div>
@@ -92,7 +92,6 @@ $sinPadding = true;
             {{-- BUSCADOR --}}
             <div class="p-4 pb-3 bg-light border-bottom">
                 <form method="GET" action="{{ route('conductores.index') }}" class="row g-3">
-                    <input type="hidden" name="clasificacion" value="{{ $clasificacion ?? 'EMPLEADO' }}">
                     <div class="col-md-10">
                         <div class="input-group shadow-sm">
                             <span class="input-group-text bg-white border-end-0">

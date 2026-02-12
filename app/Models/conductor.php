@@ -28,7 +28,7 @@ class Conductor extends Model
         'telefono_emergencia',
         'activo',
         'clasificacion',
-        'empleado_id',
+        'observaciones',
         'creado_por',
         'fecha_registro',
     ];
@@ -123,22 +123,6 @@ class Conductor extends Model
     }
 
     /**
-     * Relación: empleado al que está vinculado este familiar
-     */
-    public function empleadoRelacionado()
-    {
-        return $this->belongsTo(Conductor::class, 'empleado_id', 'id_conductor');
-    }
-
-    /**
-     * Relación: familiares vinculados a este empleado
-     */
-    public function familiares()
-    {
-        return $this->hasMany(Conductor::class, 'empleado_id', 'id_conductor');
-    }
-
-    /**
      * Scope para filtrar por clasificacion
      */
     public function scopeClasificacion($query, string $clasificacion)
@@ -147,5 +131,5 @@ class Conductor extends Model
     }
 
     /** Clasificaciones disponibles */
-    public const CLASIFICACIONES = ['EMPLEADO', 'CONTRATISTA', 'FAMILIAR'];
+    public const CLASIFICACIONES = ['EMPLEADO', 'EXTERNO', 'CONTRATISTA'];
 }

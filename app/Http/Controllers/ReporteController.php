@@ -382,7 +382,7 @@ class ReporteController extends Controller
             'vehiculos' => function($q) {
                 $q->where('estado', 'Activo');
             },
-            'documentosConductor'
+            'documentosConductor',
         ])->findOrFail($id);
 
         $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();
@@ -401,7 +401,7 @@ class ReporteController extends Controller
             'vehiculos' => function($q) {
                 $q->where('estado', 'Activo');
             },
-            'documentosConductor'
+            'documentosConductor',
         ])->findOrFail($id);
 
         $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();

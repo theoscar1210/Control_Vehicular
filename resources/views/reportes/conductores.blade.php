@@ -152,6 +152,16 @@ $sinPadding = true;
                                     </div>
                                     <div>
                                         <strong>{{ $conductor->nombre }} {{ $conductor->apellido }}</strong>
+                                        @if($conductor->clasificacion && $conductor->clasificacion !== 'EMPLEADO')
+                                        @php
+                                        $badgeClas = match($conductor->clasificacion) {
+                                            'CONTRATISTA' => 'warning',
+                                            'EXTERNO' => 'info',
+                                            default => 'secondary',
+                                        };
+                                        @endphp
+                                        <span class="badge bg-{{ $badgeClas }} ms-1" style="font-size: 0.65rem;">{{ $conductor->clasificacion }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

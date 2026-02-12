@@ -27,8 +27,8 @@ class StoreConductorRequest extends FormRequest
             'telefono' => 'nullable|string|max:30',
             'telefono_emergencia' => 'nullable|string|max:30',
             'activo' => 'nullable|boolean',
-            'clasificacion' => 'nullable|in:EMPLEADO,CONTRATISTA,FAMILIAR',
-            'empleado_id' => 'nullable|required_if:clasificacion,FAMILIAR|exists:conductores,id_conductor',
+            'clasificacion' => 'nullable|in:EMPLEADO,EXTERNO,CONTRATISTA',
+            'observaciones' => 'nullable|string|max:1000',
             'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
 
             'documento_tipo' => 'nullable|string|in:Licencia Conducción,Certificado Médico,ARL,EPS,Otro',

@@ -20,13 +20,12 @@ class VehiculoController extends Controller
      */
     public function index(Request $request)
     {
-        $clasificacion = $request->query('clasificacion', 'EMPLEADO');
-        if (!in_array($clasificacion, Vehiculo::CLASIFICACIONES)) {
-            $clasificacion = 'EMPLEADO';
-        }
+        $query = Vehiculo::with(['propietario', 'conductor', 'documentosVehiculo']);
 
-        $query = Vehiculo::with(['propietario', 'conductor', 'documentosVehiculo'])
-            ->clasificacion($clasificacion);
+        // Filtro opcional por clasificacion
+        if ($request->filled('clasificacion') && in_array($request->clasificacion, Vehiculo::CLASIFICACIONES)) {
+            $query->clasificacion($request->clasificacion);
+        }
 
         // Búsqueda (sanitizada contra caracteres especiales LIKE)
         if ($request->filled('search')) {
@@ -43,18 +42,9 @@ class VehiculoController extends Controller
         }
 
         $vehiculos = $query->paginate(15)->withQueryString();
-
-        // Contar vehículos eliminados para mostrar badge
         $eliminadosCount = Vehiculo::onlyTrashed()->count();
 
-        $titulos = [
-            'EMPLEADO' => 'Vehículos de Empleados',
-            'CONTRATISTA' => 'Vehículos de Contratistas',
-            'FAMILIAR' => 'Vehículos de Familiares',
-        ];
-        $titulo = $titulos[$clasificacion];
-
-        return view('vehiculos.index', compact('vehiculos', 'eliminadosCount', 'clasificacion', 'titulo'));
+        return view('vehiculos.index', compact('vehiculos', 'eliminadosCount'));
     }
 
     /**
@@ -84,11 +74,6 @@ class VehiculoController extends Controller
      */
     public function create(Request $request)
     {
-        $clasificacion = $request->query('clasificacion', 'EMPLEADO');
-        if (!in_array($clasificacion, Vehiculo::CLASIFICACIONES)) {
-            $clasificacion = 'EMPLEADO';
-        }
-
         // Obtener propietario si existe en la sesión o URL
         $propietarioId = session('propietario_id') ?? $request->query('propietario');
         $propietario = $propietarioId ? Propietario::find($propietarioId) : null;
@@ -104,7 +89,9 @@ class VehiculoController extends Controller
             $propietarioBuscado = Propietario::where('identificacion', $identificacionBuscada)->first();
         }
 
-        return view('vehiculos.create', compact('propietario', 'vehiculo', 'propietarioBuscado', 'identificacionBuscada', 'clasificacion'));
+        $clasificaciones = Vehiculo::CLASIFICACIONES;
+
+        return view('vehiculos.create', compact('propietario', 'vehiculo', 'propietarioBuscado', 'identificacionBuscada', 'clasificaciones'));
     }
 
     /**
@@ -124,6 +111,7 @@ class VehiculoController extends Controller
                 'tipo'           => $validated['tipo'],
                 'id_propietario' => $validated['id_propietario'],
                 'clasificacion'  => $validated['clasificacion'] ?? 'EMPLEADO',
+                'observaciones'  => $validated['observaciones'] ?? null,
                 'estado'         => 'Activo',
                 'creado_por'     => auth()->id() ?? null,
                 'fecha_registro' => now(),
@@ -131,7 +119,7 @@ class VehiculoController extends Controller
 
             // Redirigir con el ID del vehículo para continuar con documentos
             return redirect()
-                ->route('vehiculos.create', ['vehiculo' => $vehiculo->id_vehiculo, 'clasificacion' => $vehiculo->clasificacion])
+                ->route('vehiculos.create', ['vehiculo' => $vehiculo->id_vehiculo])
                 ->with('success', '¡Vehículo creado correctamente! Ahora puedes agregar los documentos.');
         } catch (\Exception $e) {
             Log::error('Error al crear vehículo', [

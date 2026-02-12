@@ -23,36 +23,12 @@
                     <a class="nav-link" href="{{ route('porteria.index') }}">Portería</a>
                 </li>
 
-                <!-- Gestión de Vehículos con submenú -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="vehiculosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Gestión de Vehículos
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="vehiculosDropdown">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('vehiculos.index') }}">
-                                <i class="fa-solid fa-car me-2 text-muted"></i>Listado de Vehículos
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('vehiculos.create') }}">
-                                <i class="fa-solid fa-plus me-2 text-muted"></i>Nuevo Vehículo
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('conductores.index') }}">
-                                <i class="fa-solid fa-id-card-clip me-2 text-muted"></i>Listado de Conductores
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('conductores.create') }}">
-                                <i class="fa-solid fa-user-plus me-2 text-muted"></i>Registrar Conductor
-                            </a>
-                        </li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('vehiculos.index') }}">Vehículos</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('conductores.index') }}">Conductores</a>
                 </li>
 
 
