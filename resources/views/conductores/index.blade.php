@@ -161,7 +161,7 @@ $sinPadding = true;
 
                             // Obtener licencia activa - usar accessors del modelo para estado y clase
                             $licencia = $conductor->documentosConductor
-                                ->where('tipo_documento', 'Licencia Conducción')
+                                ->where('tipo_documento', 'LICENCIA CONDUCCION')
                                 ->where('activo', true)
                                 ->first();
                         @endphp

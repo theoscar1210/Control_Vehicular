@@ -128,7 +128,7 @@ $sinPadding = true;
                                 --}}
                             </optgroup>
                             <optgroup label="Conductores">
-                                <option value="Licencia Conduccion" {{ request('tipo_documento') == 'Licencia Conduccion' ? 'selected' : '' }}>Licencia Conduccion</option>
+                                <option value="LICENCIA CONDUCCION" {{ request('tipo_documento') == 'LICENCIA CONDUCCION' ? 'selected' : '' }}>Licencia Conducción</option>
                                 {{-- Comentados para futuras actualizaciones
                                 <option value="EPS" {{ request('tipo_documento') == 'EPS' ? 'selected' : '' }}>EPS</option>
                                 <option value="ARL" {{ request('tipo_documento') == 'ARL' ? 'selected' : '' }}>ARL</option>

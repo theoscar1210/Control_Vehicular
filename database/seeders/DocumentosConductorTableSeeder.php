@@ -20,13 +20,13 @@ class DocumentosConductorTableSeeder extends Seeder
             return;
         }
 
-        $tiposDocumento = ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico'];
+        $tiposDocumento = ['LICENCIA CONDUCCION', 'EPS', 'ARL', 'CERTIFICADO MEDICO'];
         $categoriasLicencia = ['A1', 'A2', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
         $entidades = [
-            'Licencia Conducción' => ['Secretaría de Movilidad'],
+            'LICENCIA CONDUCCION' => ['Secretaría de Movilidad'],
             'EPS' => ['Sura EPS', 'Nueva EPS', 'Sanitas', 'Compensar', 'Famisanar'],
             'ARL' => ['Sura ARL', 'Positiva ARL', 'Colmena ARL', 'AXA Colpatria ARL'],
-            'Certificado Médico' => ['IPS Salud Total', 'Centro Médico Colsanitas', 'Clínica del Country'],
+            'CERTIFICADO MEDICO' => ['IPS Salud Total', 'Centro Médico Colsanitas', 'Clínica del Country'],
         ];
 
         foreach ($conductores as $conductor) {
@@ -49,7 +49,7 @@ class DocumentosConductorTableSeeder extends Seeder
                 }
 
                 // Licencias tienen vencimiento más largo
-                if ($tipo === 'Licencia Conducción' && $estado === 'VIGENTE') {
+                if ($tipo === 'LICENCIA CONDUCCION' && $estado === 'VIGENTE') {
                     $fechaVencimiento = Carbon::now()->addYears(rand(2, 8));
                 }
 
@@ -58,10 +58,10 @@ class DocumentosConductorTableSeeder extends Seeder
 
                 // Generar número de documento realista
                 $numDoc = match($tipo) {
-                    'Licencia Conducción' => 'LIC-' . $conductor->identificacion,
+                    'LICENCIA CONDUCCION' => 'LIC-' . $conductor->identificacion,
                     'EPS' => 'EPS-' . rand(100000, 999999),
                     'ARL' => 'ARL-' . rand(100000, 999999),
-                    'Certificado Médico' => 'CM-' . date('Y') . '-' . rand(1000, 9999),
+                    'CERTIFICADO MEDICO' => 'CM-' . date('Y') . '-' . rand(1000, 9999),
                     default => 'DOC-' . rand(100000, 999999),
                 };
 
@@ -77,7 +77,7 @@ class DocumentosConductorTableSeeder extends Seeder
                 ];
 
                 // Agregar categoría solo para licencias
-                if ($tipo === 'Licencia Conducción') {
+                if ($tipo === 'LICENCIA CONDUCCION') {
                     $attributes['categoria_licencia'] = $categoriasLicencia[array_rand($categoriasLicencia)];
                 }
 

@@ -176,7 +176,7 @@
 
     @forelse($conductores as $conductor)
     @php
-        $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->first();
+        $licencia = $conductor->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->first();
     @endphp
     <div class="conductor">
         <div class="conductor-header">

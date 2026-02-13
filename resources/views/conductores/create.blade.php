@@ -179,7 +179,7 @@
                     <div class="col-sm-6 col-lg-4">
                         <label class="form-label fw-semibold">Tipo de Documento</label>
                         <select name="documento_tipo" id="documento_tipo" class="form-select rounded-3 border-success-subtle">
-                            <option value="Licencia Conducción">Licencia Conducción</option>
+                            <option value="LICENCIA CONDUCCION">Licencia Conducción</option>
                         </select>
                     </div>
                     <div class="col-sm-6 col-lg-4">
@@ -213,6 +213,11 @@
                                 <option value="B2" {{ old('categoria_licencia')=='B2'?'selected':'' }}>B2 - Camiones, Buses</option>
                                 <option value="B3" {{ old('categoria_licencia')=='B3'?'selected':'' }}>B3 - Vehículos Articulados</option>
                             </optgroup>
+                            <optgroup label="Servicio Público">
+                                <option value="C1" {{ old('categoria_licencia')=='C1'?'selected':'' }}>C1 - Taxi</option>
+                                <option value="C2" {{ old('categoria_licencia')=='C2'?'selected':'' }}>C2 - Bus/Buseta Público</option>
+                                <option value="C3" {{ old('categoria_licencia')=='C3'?'selected':'' }}>C3 - Carga Pública</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="col-sm-6">
@@ -229,7 +234,7 @@
                     <div class="col-12" id="seccion_categorias_adicionales">
                         <label class="form-label fw-semibold">Categorías Adicionales <span class="text-muted fw-normal">(opcional)</span></label>
                         <div class="d-flex flex-wrap gap-3">
-                            @foreach(['A1','A2','B1','B2','B3'] as $cat)
+                            @foreach(['A1','A2','B1','B2','B3','C1','C2','C3'] as $cat)
                             <div class="form-check">
                                 <input class="form-check-input categoria-adicional" type="checkbox"
                                     name="categorias_adicionales[]" value="{{ $cat }}" id="cat_{{ $cat }}"
@@ -305,7 +310,7 @@
         const seccionCatAd = document.getElementById('seccion_categorias_adicionales');
         const vencimientoPrincipal = document.getElementById('vencimiento_principal');
 
-        if (tipoDoc === 'Licencia Conducción') {
+        if (tipoDoc === 'LICENCIA CONDUCCION') {
             seccionCat.style.display = 'block';
             seccionCatAd.style.display = 'block';
             vencimientoPrincipal.style.display = 'block';

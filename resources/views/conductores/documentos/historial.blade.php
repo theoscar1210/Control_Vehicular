@@ -13,7 +13,7 @@ $porVencer = $documentosActivos->filter(fn($d) => $d->estado === 'POR_VENCER')->
 $vencidos = $documentosActivos->filter(fn($d) => $d->estado === 'VENCIDO')->count();
 
 // Licencia activa
-$licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')->first();
+$licencia = $documentosActivos->where('tipo_documento', 'LICENCIA CONDUCCION')->first();
 @endphp
 
 @extends('layouts.app')
@@ -130,7 +130,7 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
             <div class="row">
                 @foreach($documentosActivos as $doc)
                 {{-- LICENCIA DE CONDUCCIÓN --}}
-                @if($doc->tipo_documento === 'Licencia Conducción')
+                @if($doc->tipo_documento === 'LICENCIA CONDUCCION')
                 @include('conductores.documentos.partials.card-licencia', [
                     'doc' => $doc,
                     'conductor' => $conductor
@@ -226,7 +226,7 @@ $licencia = $documentosActivos->where('tipo_documento', 'Licencia Conducción')-
                                 <td>{{ $h->tipo_documento }}</td>
                                 <td><span class="badge bg-secondary">v{{ $h->version }}</span></td>
                                 <td>
-                                    @if($h->tipo_documento === 'Licencia Conducción')
+                                    @if($h->tipo_documento === 'LICENCIA CONDUCCION')
                                         @php
                                             $cats = $h->todas_categorias;
                                         @endphp

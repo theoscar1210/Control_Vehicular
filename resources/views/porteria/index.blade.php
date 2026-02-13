@@ -337,16 +337,16 @@ $sinPadding = true;
 
                 {{-- Licencia del Conductor --}}
                 <div class="col-6 col-md-3 mb-3">
-                    <div class="card h-100 border-{{ $estadosDocumentos['conductor_Licencia Conducción']['clase'] ?? 'secondary' }}">
+                    <div class="card h-100 border-{{ $estadosDocumentos['conductor_LICENCIA CONDUCCION']['clase'] ?? 'secondary' }}">
                         <div class="card-body text-center py-3">
-                            <i class="fas fa-id-card fa-2x mb-2 text-{{ $estadosDocumentos['conductor_Licencia Conducción']['clase'] ?? 'secondary' }}"></i>
+                            <i class="fas fa-id-card fa-2x mb-2 text-{{ $estadosDocumentos['conductor_LICENCIA CONDUCCION']['clase'] ?? 'secondary' }}"></i>
                             <h6 class="card-title mb-1">Licencia</h6>
-                            <span class="badge bg-{{ $estadosDocumentos['conductor_Licencia Conducción']['clase'] ?? 'secondary' }}">
-                                {{ $estadosDocumentos['conductor_Licencia Conducción']['mensaje'] ?? 'Sin registro' }}
+                            <span class="badge bg-{{ $estadosDocumentos['conductor_LICENCIA CONDUCCION']['clase'] ?? 'secondary' }}">
+                                {{ $estadosDocumentos['conductor_LICENCIA CONDUCCION']['mensaje'] ?? 'Sin registro' }}
                             </span>
-                            @if(isset($estadosDocumentos['conductor_Licencia Conducción']['fecha']))
+                            @if(isset($estadosDocumentos['conductor_LICENCIA CONDUCCION']['fecha']))
                             <p class="small text-muted mb-0 mt-1">
-                                Vence: {{ $estadosDocumentos['conductor_Licencia Conducción']['fecha'] }}
+                                Vence: {{ $estadosDocumentos['conductor_LICENCIA CONDUCCION']['fecha'] }}
                             </p>
                             @endif
                         </div>

@@ -22,7 +22,7 @@ class DocumentoConductorController extends Controller
     {
         $data = $request->validate([
             'id_conductor' => 'required|integer|exists:conductores,id_conductor',
-            'tipo_documento' => 'required|in:Licencia Conducción,EPS,ARL,Certificado Médico,Otro',
+            'tipo_documento' => 'required|in:LICENCIA CONDUCCION,EPS,ARL,CERTIFICADO MEDICO,OTRO',
             'numero_documento' => 'required|string|max:50',
             'entidad_emisora' => 'nullable|string|max:100',
             'fecha_emision' => 'nullable|date',
@@ -45,7 +45,7 @@ class DocumentoConductorController extends Controller
     public function update(Request $request, DocumentoConductor $documentoConductor)
     {
         $data = $request->validate([
-            'tipo_documento' => 'sometimes|required|in:Licencia Conducción,EPS,ARL,Certificado Médico,Otro',
+            'tipo_documento' => 'sometimes|required|in:LICENCIA CONDUCCION,EPS,ARL,CERTIFICADO MEDICO,OTRO',
             'numero_documento' => "sometimes|required|string|max:50",
             'entidad_emisora' => 'nullable|string|max:100',
             'fecha_emision' => 'nullable|date',

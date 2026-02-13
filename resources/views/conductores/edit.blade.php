@@ -153,7 +153,7 @@
 
                         {{-- Categorías Monitoreadas para Alertas --}}
                         @php
-                            $licenciaActiva = $documentos->where('tipo_documento', 'Licencia Conducción')->where('activo', true)->first();
+                            $licenciaActiva = $documentos->where('tipo_documento', 'LICENCIA CONDUCCION')->where('activo', true)->first();
                         @endphp
                         @if($licenciaActiva)
                         <div class="border rounded-3 p-3 mb-4 bg-warning-subtle">
@@ -221,7 +221,7 @@
                                 <label class="form-label fw-semibold">Tipo</label>
                                 <select name="documento_tipo" id="documento_tipo_edit" class="form-select border-success-subtle">
                                     <option value="">-- Seleccionar --</option>
-                                    <option value="Licencia Conducción" {{ old('documento_tipo') == 'Licencia Conducción' ? 'selected' : '' }}>Licencia Conducción</option>
+                                    <option value="LICENCIA CONDUCCION" {{ old('documento_tipo') == 'LICENCIA CONDUCCION' ? 'selected' : '' }}>Licencia Conducción</option>
                                     {{-- Opciones deshabilitadas para futuras actualizaciones --}}
                                     {{-- <option value="EPS" {{ old('documento_tipo') == 'EPS' ? 'selected' : '' }}>EPS</option> --}}
                                     {{-- <option value="ARL" {{ old('documento_tipo') == 'ARL' ? 'selected' : '' }}>ARL</option> --}}
@@ -242,6 +242,11 @@
                                         <option value="B1" {{ old('categoria_licencia') == 'B1' ? 'selected' : '' }}>B1 - Automóviles, Camperos, Camionetas</option>
                                         <option value="B2" {{ old('categoria_licencia') == 'B2' ? 'selected' : '' }}>B2 - Camiones, Buses</option>
                                         <option value="B3" {{ old('categoria_licencia') == 'B3' ? 'selected' : '' }}>B3 - Vehículos Articulados</option>
+                                    </optgroup>
+                                    <optgroup label="Servicio Público">
+                                        <option value="C1" {{ old('categoria_licencia') == 'C1' ? 'selected' : '' }}>C1 - Taxi</option>
+                                        <option value="C2" {{ old('categoria_licencia') == 'C2' ? 'selected' : '' }}>C2 - Bus/Buseta Público</option>
+                                        <option value="C3" {{ old('categoria_licencia') == 'C3' ? 'selected' : '' }}>C3 - Carga Pública</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -284,7 +289,7 @@
         const seccionCategoria = document.getElementById('seccion_categoria_edit');
 
         function toggleCategoriaLicencia() {
-            if (tipoDocSelect.value === 'Licencia Conducción') {
+            if (tipoDocSelect.value === 'LICENCIA CONDUCCION') {
                 seccionCategoria.style.display = 'block';
             } else {
                 seccionCategoria.style.display = 'none';
