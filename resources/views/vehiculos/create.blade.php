@@ -503,7 +503,7 @@ $vehiculoId = request()->query('vehiculo');
                                 </label>
                                 <input type="text"
                                     name="numero_documento"
-                                    class="form-control @error('numero_documento') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('numero_documento') is-invalid @enderror"
                                     value="{{ old('numero_documento') }}"
                                     required>
 
@@ -517,7 +517,7 @@ $vehiculoId = request()->query('vehiculo');
                                 <label class="form-label">Entidad Emisora</label>
                                 <input type="text"
                                     name="entidad_emisora"
-                                    class="form-control @error('entidad_emisora') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('entidad_emisora') is-invalid @enderror"
                                     value="{{ old('entidad_emisora') }}"
                                     placeholder="Ej: Secretaría de Tránsito">
 
@@ -611,7 +611,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-md-6">
                                 <label class="form-label">Número <span class="text-danger">*</span></label>
                                 <input type="text" name="numero_documento"
-                                    class="form-control @error('numero_documento') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('numero_documento') is-invalid @enderror"
                                     value="{{ old('numero_documento') }}" required>
                                 @error('numero_documento')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -621,7 +621,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-md-6">
                                 <label class="form-label">Entidad Emisora</label>
                                 <input type="text" name="entidad_emisora"
-                                    class="form-control @error('entidad_emisora') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('entidad_emisora') is-invalid @enderror"
                                     value="{{ old('tipo_documento') == 'SOAT' ? old('entidad_emisora') : '' }}"
                                     placeholder="Ej: Seguros del Estado">
                                 @error('entidad_emisora')
@@ -758,7 +758,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-md-6">
                                 <label class="form-label">Número <span class="text-danger">*</span></label>
                                 <input type="text" name="numero_documento"
-                                    class="form-control @error('numero_documento') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('numero_documento') is-invalid @enderror"
                                     value="{{ old('numero_documento') }}" required>
                                 @error('numero_documento')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -768,7 +768,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-md-6">
                                 <label class="form-label">Centro de Revisión</label>
                                 <input type="text" name="entidad_emisora"
-                                    class="form-control @error('entidad_emisora') is-invalid @enderror"
+                                    class="form-control text-uppercase @error('entidad_emisora') is-invalid @enderror"
                                     value="{{ old('tipo_documento') == 'TECNOMECANICA' ? old('entidad_emisora') : '' }}"
                                     placeholder="Ej: CDA Fontibón">
                                 @error('entidad_emisora')

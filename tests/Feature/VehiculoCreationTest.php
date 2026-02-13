@@ -37,7 +37,7 @@ class VehiculoCreationTest extends TestCase
                 'marca' => 'Toyota',
                 'modelo' => 'Corolla 2024',
                 'color' => 'Blanco',
-                'tipo' => 'Carro',
+                'tipo' => 'CARRO',
                 'id_propietario' => $propietario->id_propietario,
             ]);
 
@@ -48,7 +48,7 @@ class VehiculoCreationTest extends TestCase
             'placa' => 'ABC123',
             'marca' => 'Toyota',
             'id_propietario' => $propietario->id_propietario,
-            'estado' => 'Activo',
+            'estado' => 'ACTIVO',
         ]);
     }
 
@@ -65,7 +65,7 @@ class VehiculoCreationTest extends TestCase
                 'marca' => 'Mazda',
                 'modelo' => 'CX-5',
                 'color' => 'Rojo',
-                'tipo' => 'Carro',
+                'tipo' => 'CARRO',
                 'id_propietario' => $propietario->id_propietario,
             ]);
 
@@ -92,7 +92,7 @@ class VehiculoCreationTest extends TestCase
                 'marca' => 'Chevrolet',
                 'modelo' => 'Spark',
                 'color' => 'Negro',
-                'tipo' => 'Carro',
+                'tipo' => 'CARRO',
                 'id_propietario' => $propietario->id_propietario,
             ]);
 
@@ -144,7 +144,7 @@ class VehiculoCreationTest extends TestCase
                 'marca' => 'Honda',
                 'modelo' => 'Civic',
                 'color' => 'Azul',
-                'tipo' => 'Carro',
+                'tipo' => 'CARRO',
                 'id_propietario' => 99999,
             ]);
 
@@ -161,7 +161,7 @@ class VehiculoCreationTest extends TestCase
             'marca' => 'Test',
             'modelo' => 'Test',
             'color' => 'Test',
-            'tipo' => 'Carro',
+            'tipo' => 'CARRO',
             'id_propietario' => 1,
         ]);
 
@@ -186,7 +186,7 @@ class VehiculoCreationTest extends TestCase
                 'marca' => 'Test',
                 'modelo' => 'Test',
                 'color' => 'Test',
-                'tipo' => 'Carro',
+                'tipo' => 'CARRO',
                 'id_propietario' => $propietario->id_propietario,
             ]);
 

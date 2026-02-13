@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('documentos_conductor', function (Blueprint $table) {
             $table->id('id_doc_conductor');
             $table->unsignedBigInteger('id_conductor');
-            $table->enum('tipo_documento', ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro']);
+            $table->enum('tipo_documento', ['LICENCIA CONDUCCION', 'EPS', 'ARL', 'CERTIFICADO MEDICO', 'OTRO']);
             $table->string('numero_documento', 50);
             $table->string('entidad_emisora', 100)->nullable();
             $table->date('fecha_emision')->nullable();

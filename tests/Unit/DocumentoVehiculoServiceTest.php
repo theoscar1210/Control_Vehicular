@@ -55,7 +55,7 @@ class DocumentoVehiculoServiceTest extends TestCase
         $vehiculo = Vehiculo::factory()->create();
 
         $doc = $this->service->crearDocumento($vehiculo, [
-            'tipo_documento' => 'Tarjeta Propiedad',
+            'tipo_documento' => 'TARJETA PROPIEDAD',
             'numero_documento' => 'TP-999',
             'fecha_emision' => Carbon::today()->format('Y-m-d'),
         ]);
@@ -240,7 +240,7 @@ class DocumentoVehiculoServiceTest extends TestCase
     public function test_no_es_renovable_tarjeta_propiedad(): void
     {
         $doc = DocumentoVehiculo::factory()->state([
-            'tipo_documento' => 'Tarjeta Propiedad',
+            'tipo_documento' => 'TARJETA PROPIEDAD',
             'fecha_vencimiento' => null,
             'activo' => 1,
         ])->create();
@@ -264,6 +264,6 @@ class DocumentoVehiculoServiceTest extends TestCase
     {
         $this->assertTrue($this->service->requiereVencimiento('SOAT'));
         $this->assertTrue($this->service->requiereVencimiento('Tecnomecanica'));
-        $this->assertFalse($this->service->requiereVencimiento('Tarjeta Propiedad'));
+        $this->assertFalse($this->service->requiereVencimiento('TARJETA PROPIEDAD'));
     }
 }

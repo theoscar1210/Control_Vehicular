@@ -19,7 +19,7 @@ class DocumentoVehiculo extends Model
     use HasFactory, LogsActivity, UppercaseFields;
 
     protected array $uppercaseFields = [
-        'tipo_documento', 'numero_documento', 'estado',
+        'tipo_documento', 'numero_documento', 'estado', 'entidad_emisora',
     ];
 
     protected static function booted(): void

@@ -74,7 +74,7 @@ class AlertaServiceTest extends TestCase
     public function test_no_genera_alerta_sin_fecha_vencimiento(): void
     {
         $doc = DocumentoVehiculo::factory()->state([
-            'tipo_documento' => 'Tarjeta Propiedad',
+            'tipo_documento' => 'TARJETA PROPIEDAD',
             'fecha_vencimiento' => null,
             'estado' => 'VIGENTE',
         ])->create();

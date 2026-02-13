@@ -61,7 +61,7 @@ class DocumentStatusService
         $hoy = Carbon::today();
         $estados = [];
 
-        $tiposVehiculo = ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA'];
+        $tiposVehiculo = ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD'];
         foreach ($tiposVehiculo as $tipo) {
             $doc = $vehiculo->documentos
                 ->where('tipo_documento', $tipo)

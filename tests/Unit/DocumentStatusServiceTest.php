@@ -169,7 +169,7 @@ class DocumentStatusServiceTest extends TestCase
         $this->assertEquals('success', $estados['vehiculo_SOAT']['clase']);
         $this->assertNotNull($estados['vehiculo_SOAT']['documento']);
         // Tecnomecanica sin registro
-        $this->assertEquals('SIN_REGISTRO', $estados['vehiculo_Tecnomecanica']['estado']);
+        $this->assertEquals('SIN_REGISTRO', $estados['vehiculo_TECNOMECANICA']['estado']);
     }
 
     // ─── getClaseEstado ──────────────────────────────────────────────

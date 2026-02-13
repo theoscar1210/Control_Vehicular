@@ -31,7 +31,7 @@ class ReporteController extends Controller
             $limite20Dias = Carbon::today()->addDays(20);
 
             return [
-                'total_vehiculos' => Vehiculo::where('estado', 'Activo')->count(),
+                'total_vehiculos' => Vehiculo::where('estado', 'ACTIVO')->count(),
                 'total_propietarios' => Propietario::count(),
                 'total_conductores' => Conductor::where('activo', 1)->count(),
                 'docs_vigentes' => DocumentoVehiculo::where('activo', 1)
@@ -494,7 +494,7 @@ class ReporteController extends Controller
 
         $clasificacion = $request->input('clasificacion');
 
-        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo' => fn($q) => $q->withTrashed()->with('propietario')])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -503,19 +503,19 @@ class ReporteController extends Controller
 
         if ($placa) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($placa) {
-                $q->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
+                $q->withTrashed()->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
             });
         }
 
         if ($clasificacion) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
-        $queryConductores = DocumentoConductor::with(['conductor'])
+        $queryConductores = DocumentoConductor::with(['conductor' => fn($q) => $q->withTrashed()])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -524,7 +524,7 @@ class ReporteController extends Controller
 
         if ($clasificacion) {
             $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 
@@ -865,7 +865,7 @@ class ReporteController extends Controller
         $placa = $request->input('placa');
         $clasificacion = $request->input('clasificacion');
 
-        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo' => fn($q) => $q->withTrashed()->with('propietario')])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -874,19 +874,19 @@ class ReporteController extends Controller
 
         if ($placa) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($placa) {
-                $q->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
+                $q->withTrashed()->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
             });
         }
 
         if ($clasificacion) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
-        $queryConductores = DocumentoConductor::with(['conductor'])
+        $queryConductores = DocumentoConductor::with(['conductor' => fn($q) => $q->withTrashed()])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -895,7 +895,7 @@ class ReporteController extends Controller
 
         if ($clasificacion) {
             $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 
@@ -1193,7 +1193,7 @@ class ReporteController extends Controller
         $placa = $request->input('placa');
         $clasificacion = $request->input('clasificacion');
 
-        $queryVehiculos = DocumentoVehiculo::with(['vehiculo.propietario'])
+        $queryVehiculos = DocumentoVehiculo::with(['vehiculo' => fn($q) => $q->withTrashed()->with('propietario')])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -1202,19 +1202,19 @@ class ReporteController extends Controller
 
         if ($placa) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($placa) {
-                $q->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
+                $q->withTrashed()->where('placa', 'LIKE', '%' . strtoupper($placa) . '%');
             });
         }
 
         if ($clasificacion) {
             $queryVehiculos->whereHas('vehiculo', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 
         $historialVehiculos = $queryVehiculos->orderByDesc('fecha_registro')->get();
 
-        $queryConductores = DocumentoConductor::with(['conductor'])
+        $queryConductores = DocumentoConductor::with(['conductor' => fn($q) => $q->withTrashed()])
             ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin . ' 23:59:59']);
 
         if ($tipoDocumento) {
@@ -1223,7 +1223,7 @@ class ReporteController extends Controller
 
         if ($clasificacion) {
             $queryConductores->whereHas('conductor', function($q) use ($clasificacion) {
-                $q->where('clasificacion', $clasificacion);
+                $q->withTrashed()->where('clasificacion', $clasificacion);
             });
         }
 

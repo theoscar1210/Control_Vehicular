@@ -122,9 +122,9 @@ $sinPadding = true;
                     @php
                     $esExentoTecno = false;
                     $fechaPrimeraRevFicha = null;
-                    $esTarjetaPropiedad = ($tipo === 'Tarjeta Propiedad');
+                    $esTarjetaPropiedad = ($tipo === 'vehiculo_TARJETA PROPIEDAD');
 
-                    if ($tipo === 'Tecnomecanica' && !$info['documento']) {
+                    if ($tipo === 'vehiculo_TECNOMECANICA' && !$info['documento']) {
                     $requiereTecnoFicha = $vehiculo->requiereTecnomecanica();
                     $fechaPrimeraRevFicha = $vehiculo->fechaPrimeraTecnomecanica();
                     $esExentoTecno = $vehiculo->fecha_matricula && !$requiereTecnoFicha;
@@ -150,14 +150,14 @@ $sinPadding = true;
                                     <h6 class="card-title mb-0">
                                         @php
                                         $iconos = [
-                                        'SOAT' => 'fas fa-shield-alt',
-                                        'Tecnomecanica' => 'fas fa-tools',
-                                        'Tarjeta Propiedad' => 'fas fa-credit-card',
-                                        'Póliza' => 'fas fa-file-contract',
-                                        'conductor_Licencia Conducción' => 'fas fa-id-card'
+                                        'vehiculo_SOAT' => 'fas fa-shield-alt',
+                                        'vehiculo_TECNOMECANICA' => 'fas fa-tools',
+                                        'vehiculo_TARJETA PROPIEDAD' => 'fas fa-credit-card',
+                                        'conductor_LICENCIA CONDUCCION' => 'fas fa-id-card'
                                         ];
                                         $icono = $iconos[$tipo] ?? 'fas fa-file';
-                                        $nombreTipo = str_replace('conductor_', '', $tipo);
+                                        $nombreTipo = str_replace(['vehiculo_', 'conductor_'], '', $tipo);
+                                        $nombreTipo = ucwords(strtolower($nombreTipo));
                                         @endphp
                                         <i class="{{ $icono }} me-1"></i>
                                         {{ $nombreTipo }}

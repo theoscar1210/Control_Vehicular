@@ -16,11 +16,11 @@ class DocumentoConductorFactory extends Factory
     {
         // Valores alineados con el ENUM definido en la DB para documentos de conductor
         $tipos = [
-            'Licencia Conducción',
+            'LICENCIA CONDUCCION',
             'EPS',
             'ARL',
-            'Certificado Médico',
-            'Otro'
+            'CERTIFICADO MEDICO',
+            'OTRO'
         ];
         $tipo = $this->faker->randomElement($tipos);
 

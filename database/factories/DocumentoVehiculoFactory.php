@@ -15,7 +15,7 @@ class DocumentoVehiculoFactory extends Factory
     public function definition(): array
     {
         // Valores alineados con el ENUM definido en la DB
-        $tipos = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
+        $tipos = ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA', 'OTRO'];
         $tipo = $this->faker->randomElement($tipos);
 
         // Generar fecha_emision entre hace 3 años y hoy; vencimiento entre -30 días y +365 días

@@ -283,10 +283,11 @@
             <tbody>
                 @foreach($estadosDocumentos as $tipo => $info)
                 @php
-                    $nombreTipo = str_replace('conductor_', 'Conductor - ', $tipo);
+                    $nombreTipo = str_replace(['vehiculo_', 'conductor_'], ['', 'Conductor - '], $tipo);
+                    $nombreTipo = ucwords(strtolower($nombreTipo));
                     $esExentoPdf = false;
                     $fechaPrimeraRevPdf = null;
-                    if ($tipo === 'Tecnomecanica' && !$info['documento']) {
+                    if ($tipo === 'vehiculo_TECNOMECANICA' && !$info['documento']) {
                         $requiereTecnoPdf = $vehiculo->requiereTecnomecanica();
                         $fechaPrimeraRevPdf = $vehiculo->fechaPrimeraTecnomecanica();
                         $esExentoPdf = $vehiculo->fecha_matricula && !$requiereTecnoPdf;

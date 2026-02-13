@@ -16,7 +16,7 @@ class VehiculoFactory extends Factory
 
     public function definition()
     {
-        $tipos = ['Carro', 'Moto', 'Camion', 'Otro'];
+        $tipos = ['CARRO', 'MOTO', 'CAMION', 'OTRO'];
         return [
             'placa' => strtoupper($this->faker->bothify('???-####')),
             'marca' => $this->faker->company(),
@@ -27,7 +27,7 @@ class VehiculoFactory extends Factory
             //por defecto creara propietario si no se pasa uno
             'id_propietario' => Propietario::factory(),
             'id_conductor' => null,
-            'estado' => 'Activo',
+            'estado' => 'ACTIVO',
             'clasificacion' => 'EMPLEADO',
             'creado_por' => null,
             'fecha_registro' => now(),
@@ -44,7 +44,7 @@ class VehiculoFactory extends Factory
 
     public function inactive()
     {
-        return $this->state(fn() => ['estado' => 'Inactivo']);
+        return $this->state(fn() => ['estado' => 'INACTIVO']);
     }
 
     public function contratista()

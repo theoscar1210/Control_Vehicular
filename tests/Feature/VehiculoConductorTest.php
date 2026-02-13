@@ -81,10 +81,10 @@ class VehiculoConductorTest extends TestCase
             'marca' => 'Toyota',
             'modelo' => 'Corolla 2023',
             'color' => 'Blanco',
-            'tipo' => 'Carro',
+            'tipo' => 'CARRO',
             'id_propietario' => $propietario->id_propietario,
             'id_conductor' => $conductor->id_conductor,
-            'estado' => 'Activo',
+            'estado' => 'ACTIVO',
         ]);
 
         $this->assertDatabaseHas('vehiculos', [
@@ -226,7 +226,7 @@ class VehiculoConductorTest extends TestCase
             'placa' => 'XYZ789',
             'marca' => 'Chevrolet',
             'modelo' => 'Spark 2022',
-            'tipo' => 'Carro',
+            'tipo' => 'CARRO',
             'id_propietario' => $propietario->id_propietario,
             'id_conductor' => $conductor->id_conductor,
         ]);

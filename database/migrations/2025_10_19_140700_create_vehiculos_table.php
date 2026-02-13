@@ -13,10 +13,10 @@ return new class extends Migration {
             $table->string('marca', 50);
             $table->string('modelo', 50)->nullable();
             $table->string('color', 50)->nullable();
-            $table->enum('tipo', ['Carro', 'Moto', 'Camion', 'Otro']);
+            $table->enum('tipo', ['CARRO', 'MOTO', 'CAMION', 'OTRO']);
             $table->unsignedBigInteger('id_propietario');
             $table->unsignedBigInteger('id_conductor')->nullable();
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
+            $table->enum('estado', ['ACTIVO', 'INACTIVO'])->default('ACTIVO');
             $table->unsignedBigInteger('creado_por')->nullable();
             $table->timestamp('fecha_registro')->useCurrent();
             $table->foreign('id_propietario')->references('id_propietario')->on('propietarios')->onDelete('cascade');

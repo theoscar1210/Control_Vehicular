@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('documentos_vehiculo', function (Blueprint $table) {
             $table->id('id_doc_vehiculo');
             $table->unsignedBigInteger('id_vehiculo');
-            $table->enum('tipo_documento', ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro']);
+            $table->enum('tipo_documento', ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA', 'OTRO']);
             $table->string('numero_documento', 50);
             $table->string('entidad_emisora', 100)->nullable();
             $table->date('fecha_emision')->nullable();
