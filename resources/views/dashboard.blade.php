@@ -98,11 +98,12 @@ $rol = $user->rol ?? 'N/A';
         @php
         $iconos = [
         'SOAT' => ['icon' => 'bi-shield-check-fill', 'color' => 'success'],
-        'Licencia Conducción' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
-        'Tecnomecanica' => ['icon' => 'bi-tools', 'color' => 'danger'],
-        'Tarjeta Propiedad' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
+        'LICENCIA CONDUCCION' => ['icon' => 'bi-person-vcard-fill', 'color' => 'info'],
+        'TECNOMECANICA' => ['icon' => 'bi-tools', 'color' => 'danger'],
+        'TARJETA PROPIEDAD' => ['icon' => 'bi-credit-card-fill', 'color' => 'warning']
         ];
-        $config = $iconos[$a->tipo_vencimiento] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
+        $tipoDocDash = $a->documentoVehiculo?->tipo_documento ?? $a->documentoConductor?->tipo_documento;
+        $config = $iconos[$tipoDocDash] ?? ['icon' => 'bi-exclamation-triangle-fill', 'color' => 'warning'];
 
         // Obtener placa, conductor e IDs para enlaces
         $placaDash = null;

@@ -179,8 +179,8 @@ $sinPadding = true;
                                     id="estado"
                                     name="estado"
                                     required>
-                                    <option value="Activo" {{ old('estado', $vehiculo->estado) == 'Activo' ? 'selected' : '' }}>Activo</option>
-                                    <option value="Inactivo" {{ old('estado', $vehiculo->estado) == 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
+                                    <option value="ACTIVO" {{ old('estado', $vehiculo->estado) == 'ACTIVO' ? 'selected' : '' }}>Activo</option>
+                                    <option value="INACTIVO" {{ old('estado', $vehiculo->estado) == 'INACTIVO' ? 'selected' : '' }}>Inactivo</option>
                                 </select>
                                 @error('estado')
                                 <div class="invalid-feedback">{{ $message }}</div>

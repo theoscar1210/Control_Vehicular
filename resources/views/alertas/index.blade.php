@@ -63,12 +63,12 @@
                             // Iconos por tipo de documento
                             $iconos = [
                                 'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
-                                'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
-                                'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'primary'],
-                                'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'secondary'],
+                                'LICENCIA CONDUCCION' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
+                                'TECNOMECANICA' => ['icon' => 'fas fa-tools', 'color' => 'primary'],
+                                'TARJETA PROPIEDAD' => ['icon' => 'fas fa-credit-card', 'color' => 'secondary'],
                                 'EPS' => ['icon' => 'fas fa-hospital', 'color' => 'info'],
                                 'ARL' => ['icon' => 'fas fa-hard-hat', 'color' => 'warning'],
-                                'Certificado Médico' => ['icon' => 'fas fa-notes-medical', 'color' => 'success'],
+                                'CERTIFICADO MEDICO' => ['icon' => 'fas fa-notes-medical', 'color' => 'success'],
                             ];
 
                             // Obtener tipo de documento del documento relacionado

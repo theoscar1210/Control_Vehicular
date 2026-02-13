@@ -111,11 +111,12 @@
                     @php
                     $iconosMenuE = [
                     'SOAT' => ['icon' => 'fas fa-shield-alt', 'color' => 'success'],
-                    'Licencia Conducción' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
-                    'Tecnomecanica' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
-                    'Tarjeta Propiedad' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
+                    'LICENCIA CONDUCCION' => ['icon' => 'fas fa-id-card', 'color' => 'info'],
+                    'TECNOMECANICA' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
+                    'TARJETA PROPIEDAD' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                     ];
-                    $configMenuE = $iconosMenuE[$alerta->tipo_vencimiento] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
+                    $tipoDocMenuE = $alerta->documentoVehiculo?->tipo_documento ?? $alerta->documentoConductor?->tipo_documento;
+                    $configMenuE = $iconosMenuE[$tipoDocMenuE] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
 
                     // Obtener placa y conductor
                     $placaMenuE = null;

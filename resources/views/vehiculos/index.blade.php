@@ -245,7 +245,7 @@ $sinPadding = true;
 
                             {{-- ESTADO VEHÍCULO --}}
                             <td class="text-center">
-                                @if($vehiculo->estado === 'Activo')
+                                @if($vehiculo->estado === 'ACTIVO')
                                 <span class="badge bg-success px-3 py-2">
                                     <i class="fa-solid fa-circle-check me-1"></i>Activo
                                 </span>

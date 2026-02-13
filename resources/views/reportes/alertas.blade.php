@@ -121,8 +121,8 @@ $sinPadding = true;
                             <option value="">Todos</option>
                             <optgroup label="Vehiculos">
                                 <option value="SOAT" {{ request('tipo_documento') == 'SOAT' ? 'selected' : '' }}>SOAT</option>
-                                <option value="Tecnomecanica" {{ request('tipo_documento') == 'Tecnomecanica' ? 'selected' : '' }}>Tecnomecanica</option>
-                                <option value="Tarjeta Propiedad" {{ request('tipo_documento') == 'Tarjeta Propiedad' ? 'selected' : '' }}>Tarjeta Propiedad</option>
+                                <option value="TECNOMECANICA" {{ request('tipo_documento') == 'TECNOMECANICA' ? 'selected' : '' }}>Tecnomecánica</option>
+                                <option value="TARJETA PROPIEDAD" {{ request('tipo_documento') == 'TARJETA PROPIEDAD' ? 'selected' : '' }}>Tarjeta Propiedad</option>
                                 {{-- Comentados para futuras actualizaciones
                                 <option value="Poliza" {{ request('tipo_documento') == 'Poliza' ? 'selected' : '' }}>Poliza</option>
                                 <option value="Otro" {{ request('tipo_documento') == 'Otro' ? 'selected' : '' }}>Otro</option>

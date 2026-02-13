@@ -119,7 +119,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
 
         <div class="card-body p-4">
             @php
-                $tieneTecnomecanica = $documentosActivos->where('tipo_documento', 'Tecnomecanica')->isNotEmpty();
+                $tieneTecnomecanica = $documentosActivos->where('tipo_documento', 'TECNOMECANICA')->isNotEmpty();
                 $requiereTecnoHist = $vehiculo->requiereTecnomecanica();
                 $fechaPrimeraRevHist = $vehiculo->fechaPrimeraTecnomecanica();
                 $esVehiculoNuevoHist = $vehiculo->fecha_matricula && !$requiereTecnoHist;
@@ -142,7 +142,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                 @endif
 
                 {{-- TECNOMECÁNICA --}}
-                @if($doc->tipo_documento === 'Tecnomecanica')
+                @if($doc->tipo_documento === 'TECNOMECANICA')
                 @include('vehiculos.documentos.partials.card-tecnomecanica', [
                 'doc' => $doc,
                 'vehiculo' => $vehiculo
@@ -150,7 +150,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                 @endif
 
                 {{-- OTROS DOCUMENTOS --}}
-                @if(!in_array($doc->tipo_documento, ['SOAT', 'Tecnomecanica']))
+                @if(!in_array($doc->tipo_documento, ['SOAT', 'TECNOMECANICA']))
                 <div class="col-md-6 col-lg-4 mb-3">
                     <div class="card h-100 border-info" style="border-width: 2px;">
                         <div class="card-header bg-info text-white">
@@ -276,7 +276,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
     ])
     @endif
 
-    @if($doc->tipo_documento === 'Tecnomecanica')
+    @if($doc->tipo_documento === 'TECNOMECANICA')
     @include('vehiculos.documentos.partials.modal-renovar-tecnomecanica', [
     'doc' => $doc,
     'vehiculo' => $vehiculo,
@@ -299,7 +299,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                 </div>
                 <form action="{{ route('vehiculos.documentos.store', $vehiculo->id_vehiculo) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="tipo_documento" value="Tecnomecanica">
+                    <input type="hidden" name="tipo_documento" value="TECNOMECANICA">
 
                     <div class="modal-body">
                         <div class="alert alert-info mb-3">
