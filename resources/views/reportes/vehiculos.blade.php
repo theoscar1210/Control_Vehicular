@@ -26,7 +26,7 @@ $sinPadding = true;
         </div>
 
         <div>
-            <a href="{{ route('reportes.centro') }}" class="btn btn-universal">
+            <a href="{{ route('reportes.centro') }}" class="btn btn-secondary px-3 py-2" style="border-radius:12px;">
                 <i class="fas fa-arrow-left me-1"></i> Volver
             </a>
         </div>
