@@ -263,7 +263,7 @@ class DocumentoVehiculoServiceTest extends TestCase
     public function test_requiere_vencimiento(): void
     {
         $this->assertTrue($this->service->requiereVencimiento('SOAT'));
-        $this->assertTrue($this->service->requiereVencimiento('Tecnomecanica'));
+        $this->assertTrue($this->service->requiereVencimiento('TECNOMECANICA'));
         $this->assertFalse($this->service->requiereVencimiento('TARJETA PROPIEDAD'));
     }
 }
