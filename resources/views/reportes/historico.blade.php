@@ -25,19 +25,20 @@ $sinPadding = true;
             <small class="text-muted">Cronología de documentos para auditoría y trazabilidad</small>
         </div>
 
-        <div>
+        <div class="d-flex align-items-center gap-2">
             <a href="{{ route('reportes.centro') }}" class="btn btn-secondary px-3 py-2" style="border-radius:12px;">
                 <i class="fas fa-arrow-left me-1"></i> Volver
             </a>
-        </div>
 
-        <div class="btn-group">
-            <button type="button" class="btn btn-success" onclick="exportarReporte('excel')">
-                <i class="fas fa-file-excel me-1"></i> Excel
-            </button>
-            <button type="button" class="btn btn-danger" onclick="exportarReporte('pdf')">
-                <i class="fas fa-file-pdf me-1"></i> PDF
-            </button>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" onclick="exportarReporte('excel')">
+                    <i class="fas fa-file-excel me-1"></i> Excel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="exportarReporte('pdf')">
+                    <i class="fas fa-file-pdf me-1"></i> PDF
+                </button>
+            </div>
         </div>
     </div>
 
