@@ -126,25 +126,25 @@ $sinPadding = true;
                             </td>
                             <td>
                                 @if($veh->conductor)
-                                    <i class="fas fa-user text-success me-1"></i>
-                                    {{ $veh->conductor->nombre }} {{ $veh->conductor->apellido }}
-                                    <small class="text-muted d-block">{{ $veh->conductor->identificacion }}</small>
+                                <i class="fas fa-user text-success me-1"></i>
+                                {{ $veh->conductor->nombre }} {{ $veh->conductor->apellido }}
+                                <small class="text-muted d-block">{{ $veh->conductor->identificacion }}</small>
                                 @else
-                                    <span class="text-muted">Sin asignar</span>
+                                <span class="text-muted">Sin asignar</span>
                                 @endif
                             </td>
                             <td>
                                 @if($veh->propietario)
-                                    <i class="fas fa-user-tie text-primary me-1"></i>
-                                    {{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }}
-                                    <small class="text-muted d-block">{{ $veh->propietario->identificacion }}</small>
+                                <i class="fas fa-user-tie text-primary me-1"></i>
+                                {{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }}
+                                <small class="text-muted d-block">{{ $veh->propietario->identificacion }}</small>
                                 @else
-                                    <span class="text-muted">Sin propietario</span>
+                                <span class="text-muted">Sin propietario</span>
                                 @endif
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('porteria.index', ['busqueda' => $veh->placa, 'tipo_busqueda' => 'placa']) }}"
-                                   class="btn btn-sm btn-success">
+                                    class="btn btn-sm btn-success">
                                     <i class="fas fa-eye me-1"></i>Ver detalles
                                 </a>
                             </td>
@@ -280,10 +280,10 @@ $sinPadding = true;
                 {{-- Tecnomecánica --}}
                 <div class="col-6 col-md-3 mb-3">
                     @php
-                        $tecnoEstado = $estadosDocumentos['vehiculo_Tecnomecanica'] ?? null;
-                        $requiereTecnoPort = $vehiculo->requiereTecnomecanica();
-                        $fechaPrimeraRevPort = $vehiculo->fechaPrimeraTecnomecanica();
-                        $esVehiculoNuevoExento = $vehiculo->fecha_matricula && !$requiereTecnoPort && (!$tecnoEstado || ($tecnoEstado['mensaje'] ?? '') === 'Sin registro');
+                    $tecnoEstado = $estadosDocumentos['vehiculo_Tecnomecanica'] ?? null;
+                    $requiereTecnoPort = $vehiculo->requiereTecnomecanica();
+                    $fechaPrimeraRevPort = $vehiculo->fechaPrimeraTecnomecanica();
+                    $esVehiculoNuevoExento = $vehiculo->fecha_matricula && !$requiereTecnoPort && (!$tecnoEstado || ($tecnoEstado['mensaje'] ?? '') === 'Sin registro');
                     @endphp
                     <div class="card h-100 border-{{ $esVehiculoNuevoExento ? 'success' : ($tecnoEstado['clase'] ?? 'secondary') }}">
                         <div class="card-body text-center py-3">
@@ -315,8 +315,8 @@ $sinPadding = true;
 
                 {{-- Tarjeta de Propiedad (No tiene vencimiento) --}}
                 @php
-                    $tarjetaPropiedad = $estadosDocumentos['vehiculo_Tarjeta Propiedad'] ?? null;
-                    $tieneTarjeta = $tarjetaPropiedad && ($tarjetaPropiedad['estado'] ?? 'SIN_REGISTRO') !== 'SIN_REGISTRO';
+                $tarjetaPropiedad = $estadosDocumentos['vehiculo_Tarjeta Propiedad'] ?? null;
+                $tieneTarjeta = $tarjetaPropiedad && ($tarjetaPropiedad['estado'] ?? 'SIN_REGISTRO') !== 'SIN_REGISTRO';
                 @endphp
                 <div class="col-6 col-md-3 mb-3">
                     <div class="card h-100 border-{{ $tieneTarjeta ? 'success' : 'secondary' }}">
@@ -418,39 +418,39 @@ $sinPadding = true;
             <div class="row g-3">
                 @foreach($alertas as $alerta)
                 @php
-                    $placaAlerta = null;
-                    $conductorAlerta = null;
-                    $conductorId = null;
-                    $tipoDocumento = null;
-                    $vehiculoInfo = null;
-                    $clasificacionAlerta = null;
+                $placaAlerta = null;
+                $conductorAlerta = null;
+                $conductorId = null;
+                $tipoDocumento = null;
+                $vehiculoInfo = null;
+                $clasificacionAlerta = null;
 
-                    if ($alerta->documentoVehiculo) {
-                        $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
-                        if ($alerta->documentoVehiculo->vehiculo) {
-                            $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
-                            $vehiculoInfo = $alerta->documentoVehiculo->vehiculo->marca . ' ' . $alerta->documentoVehiculo->vehiculo->modelo;
-                            $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
-                            if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                                $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
-                                $conductorId = $alerta->documentoVehiculo->vehiculo->conductor->id_conductor;
-                            }
-                        }
-                    }
+                if ($alerta->documentoVehiculo) {
+                $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
+                if ($alerta->documentoVehiculo->vehiculo) {
+                $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                $vehiculoInfo = $alerta->documentoVehiculo->vehiculo->marca . ' ' . $alerta->documentoVehiculo->vehiculo->modelo;
+                $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
+                if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                $conductorId = $alerta->documentoVehiculo->vehiculo->conductor->id_conductor;
+                }
+                }
+                }
 
-                    if ($alerta->documentoConductor) {
-                        $tipoDocumento = $alerta->documentoConductor->tipo_documento;
-                        if ($alerta->documentoConductor->conductor) {
-                            $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
-                            $conductorId = $alerta->documentoConductor->conductor->id_conductor;
-                            $clasificacionAlerta = $alerta->documentoConductor->conductor->clasificacion;
-                        }
-                    }
+                if ($alerta->documentoConductor) {
+                $tipoDocumento = $alerta->documentoConductor->tipo_documento;
+                if ($alerta->documentoConductor->conductor) {
+                $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                $conductorId = $alerta->documentoConductor->conductor->id_conductor;
+                $clasificacionAlerta = $alerta->documentoConductor->conductor->clasificacion;
+                }
+                }
 
-                    $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
-                    $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
-                    $colorBorde = $esVencido ? 'danger' : 'warning';
-                    $colorFondo = $esVencido ? 'rgba(220, 53, 69, 0.08)' : 'rgba(255, 193, 7, 0.08)';
+                $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
+                $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
+                $colorBorde = $esVencido ? 'danger' : 'warning';
+                $colorFondo = $esVencido ? 'rgba(220, 53, 69, 0.08)' : 'rgba(255, 193, 7, 0.08)';
                 @endphp
 
                 <div class="col-12 col-md-6 col-xl-4">
@@ -524,7 +524,7 @@ $sinPadding = true;
                                     </div>
                                     @if(isset($conductorId))
                                     <a href="{{ route('reportes.ficha.conductor', $conductorId) }}"
-                                       class="btn btn-sm btn-outline-secondary rounded-circle" title="Ver ficha">
+                                        class="btn btn-sm btn-outline-secondary rounded-circle" title="Ver ficha">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
                                     @endif
@@ -565,16 +565,11 @@ $sinPadding = true;
                                 </form>
                                 @if($placaAlerta)
                                 <a href="{{ route('porteria.index', ['busqueda' => $placaAlerta, 'tipo_busqueda' => 'placa']) }}"
-                                   class="btn btn-outline-primary btn-sm" title="Ver vehículo">
+                                    class="btn btn-outline-primary btn-sm" title="Ver vehículo">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @endif
-                                @if(isset($conductorId))
-                                <a href="{{ route('conductores.documentos.historial', $conductorId) }}"
-                                   class="btn btn-outline-info btn-sm" title="Ver documentos">
-                                    <i class="fas fa-file-lines"></i>
-                                </a>
-                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -599,31 +594,31 @@ $sinPadding = true;
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tipoBusqueda = document.getElementById('tipoBusqueda');
-    const inputBusqueda = document.querySelector('input[name="busqueda"]');
-    const labelBusqueda = document.getElementById('labelBusqueda');
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoBusqueda = document.getElementById('tipoBusqueda');
+        const inputBusqueda = document.querySelector('input[name="busqueda"]');
+        const labelBusqueda = document.getElementById('labelBusqueda');
 
-    const placeholders = {
-        'todo': 'Placa, nombre, cédula...',
-        'placa': 'Ej: ABC123',
-        'conductor': 'Nombre o apellido del conductor',
-        'propietario': 'Nombre o apellido del propietario',
-        'documento': 'Número de cédula o documento'
-    };
+        const placeholders = {
+            'todo': 'Placa, nombre, cédula...',
+            'placa': 'Ej: ABC123',
+            'conductor': 'Nombre o apellido del conductor',
+            'propietario': 'Nombre o apellido del propietario',
+            'documento': 'Número de cédula o documento'
+        };
 
-    const labels = {
-        'todo': 'Término de búsqueda:',
-        'placa': 'Placa del vehículo:',
-        'conductor': 'Nombre del conductor:',
-        'propietario': 'Nombre del propietario:',
-        'documento': 'Número de documento:'
-    };
+        const labels = {
+            'todo': 'Término de búsqueda:',
+            'placa': 'Placa del vehículo:',
+            'conductor': 'Nombre del conductor:',
+            'propietario': 'Nombre del propietario:',
+            'documento': 'Número de documento:'
+        };
 
-    tipoBusqueda.addEventListener('change', function() {
-        inputBusqueda.placeholder = placeholders[this.value] || placeholders['todo'];
-        labelBusqueda.textContent = labels[this.value] || labels['todo'];
+        tipoBusqueda.addEventListener('change', function() {
+            inputBusqueda.placeholder = placeholders[this.value] || placeholders['todo'];
+            labelBusqueda.textContent = labels[this.value] || labels['todo'];
+        });
     });
-});
 </script>
 @endsection
