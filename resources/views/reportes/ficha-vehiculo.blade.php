@@ -29,15 +29,17 @@ $sinPadding = true;
         <div>
             <a href="{{ route('reportes.conductores') }}" class="btn btn-universal">
                 <i class="fas fa-arrow-left me-1"></i> Volver
-        </div>
+            </a>
 
-        <div class="btn-group">
-            <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
-                <i class="fas fa-print me-1"></i> Imprimir
-            </button>
-            <button type="button" class="btn btn-danger" onclick="exportarPDF()">
-                <i class="fas fa-file-pdf me-1"></i> PDF
-            </button>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                    <i class="fas fa-print me-1"></i> Imprimir
+                </button>
+                <button type="button" class="btn btn-danger" onclick="exportarPDF()">
+                    <i class="fas fa-file-pdf me-1"></i> PDF
+                </button>
+            </div>
         </div>
     </div>
 
