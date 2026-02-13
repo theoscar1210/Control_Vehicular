@@ -16,8 +16,12 @@ $sinPadding = true;
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
+                    @if(auth()->user()->rol === 'PORTERIA')
+                    <li class="breadcrumb-item"><a href="{{ route('porteria.index') }}" style="color: #5B8238;">Portería</a></li>
+                    @else
                     <li class="breadcrumb-item"><a href="{{ route('reportes.centro') }}" style="color: #5B8238;">Reportes</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('reportes.conductores') }}" style="color: #5B8238;">Conductores</a></li>
+                    @endif
                     <li class="breadcrumb-item active">{{ $conductor->nombre }} {{ $conductor->apellido }}</li>
                 </ol>
             </nav>
@@ -25,9 +29,15 @@ $sinPadding = true;
         </div>
 
         <div class="d-flex align-items-center gap-2">
+            @if(auth()->user()->rol === 'PORTERIA')
+            <a href="{{ route('porteria.index') }}" class="btn btn-universal">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+            @else
             <a href="{{ route('reportes.conductores') }}" class="btn btn-universal">
                 <i class="fas fa-arrow-left me-1"></i> Volver
             </a>
+            @endif
 
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
@@ -108,6 +118,12 @@ $sinPadding = true;
                                     <span class="badge bg-{{ $conductor->clasificacion_badge }}">{{ $conductor->clasificacion_label }}</span>
                                 </td>
                             </tr>
+                            @if($conductor->observaciones)
+                            <tr>
+                                <td class="text-muted">Observaciones:</td>
+                                <td>{{ $conductor->observaciones }}</td>
+                            </tr>
+                            @endif
                         </table>
                     </div>
 

@@ -76,11 +76,14 @@
                             $placaAlerta = null;
                             $conductorAlerta = null;
                             $clasificacionAlerta = null;
+                            $vehiculoIdAlerta = null;
+                            $conductorIdAlerta = null;
 
                             if ($alerta->documentoVehiculo) {
                                 $tipoDocumento = $alerta->documentoVehiculo->tipo_documento;
                                 if ($alerta->documentoVehiculo->vehiculo) {
                                     $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
+                                    $vehiculoIdAlerta = $alerta->documentoVehiculo->vehiculo->id_vehiculo;
                                     $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
                                     if ($alerta->documentoVehiculo->vehiculo->conductor) {
                                         $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
@@ -92,6 +95,7 @@
                                 $tipoDocumento = $alerta->documentoConductor->tipo_documento;
                                 if ($alerta->documentoConductor->conductor) {
                                     $conductorAlerta = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                                    $conductorIdAlerta = $alerta->documentoConductor->conductor->id_conductor;
                                     $clasificacionAlerta = $alerta->documentoConductor->conductor->clasificacion;
                                 }
                             }
@@ -161,18 +165,34 @@
                                             {{ $esVencido ? 'Vencido' : 'Próximo a vencer' }}
                                         </span>
 
-                                        @if($esNoLeida)
-                                            <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}" class="ms-auto">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                                    <i class="fas fa-check me-1"></i>Marcar leída
-                                                </button>
-                                            </form>
-                                        @else
-                                            <span class="ms-auto text-success">
-                                                <i class="fas fa-check-circle me-1"></i>Leída
-                                            </span>
-                                        @endif
+                                        <div class="ms-auto d-flex align-items-center gap-2">
+                                            @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                                                @if($vehiculoIdAlerta)
+                                                <a href="{{ route('vehiculos.documentos.historial.completo', $vehiculoIdAlerta) }}"
+                                                    class="btn btn-sm btn-outline-primary" title="Ir a renovar documento">
+                                                    <i class="fas fa-sync-alt me-1"></i>Renovar
+                                                </a>
+                                                @elseif($conductorIdAlerta)
+                                                <a href="{{ route('conductores.documentos.historial', $conductorIdAlerta) }}"
+                                                    class="btn btn-sm btn-outline-primary" title="Ir a renovar documento">
+                                                    <i class="fas fa-sync-alt me-1"></i>Renovar
+                                                </a>
+                                                @endif
+                                            @endif
+
+                                            @if($esNoLeida)
+                                                <form method="POST" action="{{ route('alertas.read', $alerta->id_alerta) }}">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-check me-1"></i>Marcar leída
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Leída
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>

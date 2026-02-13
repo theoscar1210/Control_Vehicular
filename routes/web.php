@@ -43,6 +43,16 @@ Route::middleware(['auth', 'nocache'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | FICHA CONDUCTOR - Acceso: ADMIN, SST, PORTERIA (solo lectura)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:ADMIN,SST,PORTERIA'])->group(function () {
+        Route::get('/reportes/conductor/{id}/ficha', [ReporteController::class, 'fichaConductor'])->name('reportes.ficha.conductor');
+        Route::get('/reportes/conductor/{id}/ficha/pdf', [ReporteController::class, 'fichaConductorPdf'])->name('reportes.ficha.conductor.pdf');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | ALERTAS - Acceso: ADMIN, SST, PORTERIA (ver y marcar leídas)
     |--------------------------------------------------------------------------
     */
@@ -183,9 +193,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             // Reporte por Conductor
             Route::get('/conductores', [ReporteController::class, 'conductores'])->name('conductores');
 
-            // Ficha detallada de un conductor
-            Route::get('/conductor/{id}/ficha', [ReporteController::class, 'fichaConductor'])->name('ficha.conductor');
-            Route::get('/conductor/{id}/ficha/pdf', [ReporteController::class, 'fichaConductorPdf'])->name('ficha.conductor.pdf');
+            // Ficha detallada de un conductor (movida fuera para permitir acceso PORTERIA)
 
             // Reporte Histórico
             Route::get('/historico', [ReporteController::class, 'historico'])->name('historico');

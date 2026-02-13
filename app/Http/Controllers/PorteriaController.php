@@ -95,7 +95,7 @@ class PorteriaController extends Controller
                 // Búsqueda por placa (parcial o completa)
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->where('placa', 'LIKE', "%{$busqueda}%")
-                    ->where('estado', 'Activo')
+                    ->where('estado', 'ACTIVO')
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -114,7 +114,7 @@ class PorteriaController extends Controller
                                  ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                           });
                     })
-                    ->where('estado', 'Activo')
+                    ->where('estado', 'ACTIVO')
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -130,7 +130,7 @@ class PorteriaController extends Controller
                           ->orWhere('apellido', 'LIKE', "%{$busqueda}%")
                           ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                     })
-                    ->where('estado', 'Activo')
+                    ->where('estado', 'ACTIVO')
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -141,7 +141,7 @@ class PorteriaController extends Controller
             case 'documento':
                 // Búsqueda por número de documento de identidad (conductor o propietario)
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
-                    ->where('estado', 'Activo')
+                    ->where('estado', 'ACTIVO')
                     ->where(function ($q) use ($busqueda) {
                         $q->whereHas('conductor', function ($q2) use ($busqueda) {
                             $q2->where('identificacion', 'LIKE', "%{$busqueda}%");
@@ -161,7 +161,7 @@ class PorteriaController extends Controller
             default:
                 // Búsqueda global (placa, conductor, propietario, documento)
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
-                    ->where('estado', 'Activo')
+                    ->where('estado', 'ACTIVO')
                     ->where(function ($q) use ($busqueda) {
                         // Buscar por placa
                         $q->where('placa', 'LIKE', "%{$busqueda}%")

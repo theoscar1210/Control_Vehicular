@@ -280,7 +280,7 @@ $sinPadding = true;
                 {{-- Tecnomecánica --}}
                 <div class="col-6 col-md-3 mb-3">
                     @php
-                    $tecnoEstado = $estadosDocumentos['vehiculo_Tecnomecanica'] ?? null;
+                    $tecnoEstado = $estadosDocumentos['vehiculo_TECNOMECANICA'] ?? null;
                     $requiereTecnoPort = $vehiculo->requiereTecnomecanica();
                     $fechaPrimeraRevPort = $vehiculo->fechaPrimeraTecnomecanica();
                     $esVehiculoNuevoExento = $vehiculo->fecha_matricula && !$requiereTecnoPort && (!$tecnoEstado || ($tecnoEstado['mensaje'] ?? '') === 'Sin registro');
@@ -315,7 +315,7 @@ $sinPadding = true;
 
                 {{-- Tarjeta de Propiedad (No tiene vencimiento) --}}
                 @php
-                $tarjetaPropiedad = $estadosDocumentos['vehiculo_Tarjeta Propiedad'] ?? null;
+                $tarjetaPropiedad = $estadosDocumentos['vehiculo_TARJETA PROPIEDAD'] ?? null;
                 $tieneTarjeta = $tarjetaPropiedad && ($tarjetaPropiedad['estado'] ?? 'SIN_REGISTRO') !== 'SIN_REGISTRO';
                 @endphp
                 <div class="col-6 col-md-3 mb-3">
@@ -387,6 +387,131 @@ $sinPadding = true;
                     @endif
                 </div>
             </div>
+
+            {{-- Observaciones --}}
+            @if($vehiculo->observaciones || ($vehiculo->conductor && $vehiculo->conductor->observaciones))
+            <div class="mt-4">
+                <h6 class="text-muted mb-3"><i class="fas fa-sticky-note me-1"></i>Observaciones</h6>
+                @if($vehiculo->observaciones)
+                <div class="alert alert-light border mb-2">
+                    <small class="fw-bold text-muted d-block mb-1"><i class="fas fa-car me-1"></i>Vehículo:</small>
+                    {{ $vehiculo->observaciones }}
+                </div>
+                @endif
+                @if($vehiculo->conductor && $vehiculo->conductor->observaciones)
+                <div class="alert alert-light border mb-0">
+                    <small class="fw-bold text-muted d-block mb-1"><i class="fas fa-user me-1"></i>Conductor:</small>
+                    {{ $vehiculo->conductor->observaciones }}
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Detalle de Documentos del Vehículo --}}
+            @php
+            $docsActivos = $vehiculo->documentos->where('activo', 1);
+            @endphp
+            @if($docsActivos->isNotEmpty())
+            <div class="mt-4">
+                <h6 class="text-muted mb-3"><i class="fas fa-folder-open me-1"></i>Documentos del Vehículo</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Número</th>
+                                <th>Entidad</th>
+                                <th>Emisión</th>
+                                <th>Vencimiento</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($docsActivos->sortBy('tipo_documento') as $doc)
+                            @php
+                            $claseBadge = match($doc->estado) {
+                                'VIGENTE' => 'success',
+                                'POR_VENCER' => 'warning',
+                                'VENCIDO' => 'danger',
+                                default => 'secondary'
+                            };
+                            @endphp
+                            <tr>
+                                <td class="fw-medium">{{ str_replace('_', ' ', $doc->tipo_documento) }}</td>
+                                <td>{{ $doc->numero_documento ?? '-' }}</td>
+                                <td>{{ $doc->entidad_emisora ?? '-' }}</td>
+                                <td>{{ $doc->fecha_emision ? \Carbon\Carbon::parse($doc->fecha_emision)->format('d/m/Y') : '-' }}</td>
+                                <td>
+                                    @if($doc->fecha_vencimiento)
+                                    {{ \Carbon\Carbon::parse($doc->fecha_vencimiento)->format('d/m/Y') }}
+                                    @else
+                                    <span class="text-muted">Sin vencimiento</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{ $claseBadge }}">{{ $doc->estado }}</span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+
+            {{-- Documentos del Conductor --}}
+            @if($vehiculo->conductor)
+            @php
+            $docsConductor = $vehiculo->conductor->documentosConductor->where('activo', 1);
+            @endphp
+            @if($docsConductor->isNotEmpty())
+            <div class="mt-4">
+                <h6 class="text-muted mb-3"><i class="fas fa-id-card me-1"></i>Documentos del Conductor</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Número</th>
+                                <th>Categoría</th>
+                                <th>Emisión</th>
+                                <th>Vencimiento</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($docsConductor->sortBy('tipo_documento') as $docC)
+                            @php
+                            $claseBadgeC = match($docC->estado) {
+                                'VIGENTE' => 'success',
+                                'POR_VENCER' => 'warning',
+                                'VENCIDO' => 'danger',
+                                default => 'secondary'
+                            };
+                            @endphp
+                            <tr>
+                                <td class="fw-medium">{{ str_replace('_', ' ', $docC->tipo_documento) }}</td>
+                                <td>{{ $docC->numero_documento ?? '-' }}</td>
+                                <td>{{ $docC->categoria_licencia ?? '-' }}</td>
+                                <td>{{ $docC->fecha_emision ? \Carbon\Carbon::parse($docC->fecha_emision)->format('d/m/Y') : '-' }}</td>
+                                <td>
+                                    @if($docC->fecha_vencimiento)
+                                    {{ \Carbon\Carbon::parse($docC->fecha_vencimiento)->format('d/m/Y') }}
+                                    @else
+                                    <span class="text-muted">Sin vencimiento</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{ $claseBadgeC }}">{{ $docC->estado }}</span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+            @endif
 
         </div>
     </div>
