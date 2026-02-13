@@ -119,7 +119,7 @@ class DocumentStatusServiceTest extends TestCase
         // Otro documento por vencer
         DocumentoVehiculo::create([
             'id_vehiculo' => $vehiculo->id_vehiculo,
-            'tipo_documento' => 'Tecnomecanica',
+            'tipo_documento' => 'TECNOMECANICA',
             'numero_documento' => 'TM-PV',
             'fecha_vencimiento' => Carbon::now()->addDays(10),
             'activo' => true,

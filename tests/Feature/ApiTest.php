@@ -51,8 +51,8 @@ class ApiTest extends TestCase
         $response->assertRedirect();
 
         $this->assertDatabaseHas('propietarios', [
-            'nombre' => 'María',
-            'apellido' => 'García',
+            'nombre' => 'MARÍA',
+            'apellido' => 'GARCÍA',
             'identificacion' => '1234567890',
         ]);
     }
@@ -103,8 +103,8 @@ class ApiTest extends TestCase
         $response->assertRedirect();
 
         $this->assertDatabaseHas('conductores', [
-            'nombre' => 'Pedro',
-            'apellido' => 'Martínez',
+            'nombre' => 'PEDRO',
+            'apellido' => 'MARTÍNEZ',
             'identificacion' => '11223344',
         ]);
     }

@@ -42,8 +42,8 @@ class VehiculoConductorTest extends TestCase
 
         $this->assertDatabaseHas('propietarios', [
             'id_propietario' => $propietario->id_propietario,
-            'nombre' => 'Juan',
-            'apellido' => 'Pérez',
+            'nombre' => 'JUAN',
+            'apellido' => 'PÉREZ',
         ]);
     }
 
@@ -62,8 +62,8 @@ class VehiculoConductorTest extends TestCase
 
         $this->assertDatabaseHas('conductores', [
             'id_conductor' => $conductor->id_conductor,
-            'nombre' => 'Carlos',
-            'apellido' => 'Gómez',
+            'nombre' => 'CARLOS',
+            'apellido' => 'GÓMEZ',
             'activo' => true,
         ]);
     }
@@ -90,7 +90,7 @@ class VehiculoConductorTest extends TestCase
         $this->assertDatabaseHas('vehiculos', [
             'id_vehiculo' => $vehiculo->id_vehiculo,
             'placa' => 'ABC123',
-            'marca' => 'Toyota',
+            'marca' => 'TOYOTA',
         ]);
 
         // Verificar relaciones
@@ -99,7 +99,7 @@ class VehiculoConductorTest extends TestCase
 
         // Verificar que se pueden cargar las relaciones
         $vehiculo->load(['propietario', 'conductor']);
-        $this->assertEquals('Toyota', $vehiculo->marca);
+        $this->assertEquals('TOYOTA', $vehiculo->marca);
         $this->assertNotNull($vehiculo->propietario);
         $this->assertNotNull($vehiculo->conductor);
     }
@@ -142,7 +142,7 @@ class VehiculoConductorTest extends TestCase
 
         $documento = DocumentoConductor::create([
             'id_conductor' => $conductor->id_conductor,
-            'tipo_documento' => 'Licencia Conducción',
+            'tipo_documento' => 'LICENCIA CONDUCCION',
             'categoria_licencia' => 'B1',
             'numero_documento' => 'LIC-2024-001',
             'fecha_emision' => Carbon::now()->subYears(2),
@@ -155,7 +155,7 @@ class VehiculoConductorTest extends TestCase
 
         $this->assertDatabaseHas('documentos_conductor', [
             'id_doc_conductor' => $documento->id_doc_conductor,
-            'tipo_documento' => 'Licencia Conducción',
+            'tipo_documento' => 'LICENCIA CONDUCCION',
             'categoria_licencia' => 'B1',
         ]);
     }
@@ -244,7 +244,7 @@ class VehiculoConductorTest extends TestCase
 
         $tecno = DocumentoVehiculo::create([
             'id_vehiculo' => $vehiculo->id_vehiculo,
-            'tipo_documento' => 'Tecnomecanica',
+            'tipo_documento' => 'TECNOMECANICA',
             'numero_documento' => 'TM-XYZ789',
             'fecha_vencimiento' => Carbon::now()->addMonths(10),
             'estado' => 'VIGENTE',
@@ -255,7 +255,7 @@ class VehiculoConductorTest extends TestCase
         // Crear documentos del conductor
         $licencia = DocumentoConductor::create([
             'id_conductor' => $conductor->id_conductor,
-            'tipo_documento' => 'Licencia Conducción',
+            'tipo_documento' => 'LICENCIA CONDUCCION',
             'categoria_licencia' => 'C1',
             'numero_documento' => 'LIC-PM-001',
             'fecha_vencimiento' => Carbon::now()->addYears(5),

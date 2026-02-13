@@ -46,7 +46,7 @@ class VehiculoCreationTest extends TestCase
 
         $this->assertDatabaseHas('vehiculos', [
             'placa' => 'ABC123',
-            'marca' => 'Toyota',
+            'marca' => 'TOYOTA',
             'id_propietario' => $propietario->id_propietario,
             'estado' => 'ACTIVO',
         ]);
