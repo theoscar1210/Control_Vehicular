@@ -22,6 +22,15 @@ $sinPadding = true;
             </nav>
             <h2 class="mb-0"><i class="fas fa-id-card me-2" style="color: #5B8238;"></i>Reporte General de Conductores</h2>
         </div>
+
+        <div>
+            <a href="{{ route('reportes.centro') }}" class="btn btn-universal">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+
+
+
         <div class="btn-group">
             <button type="button" class="btn btn-success" onclick="exportarReporte('excel')">
                 <i class="fas fa-file-excel me-1"></i> Excel
@@ -151,7 +160,7 @@ $sinPadding = true;
                     <tbody>
                         @forelse($conductores as $conductor)
                         @php
-                            $licencia = $conductor->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->first();
+                        $licencia = $conductor->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->first();
                         @endphp
                         <tr>
                             <td class="px-4">

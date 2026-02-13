@@ -24,6 +24,13 @@ $sinPadding = true;
             <h2 class="mb-0"><i class="fas fa-history me-2" style="color: #5B8238;"></i>Reporte Histórico</h2>
             <small class="text-muted">Cronología de documentos para auditoría y trazabilidad</small>
         </div>
+
+        <div>
+            <a href="{{ route('reportes.centro') }}" class="btn btn-universal">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+
         <div class="btn-group">
             <button type="button" class="btn btn-success" onclick="exportarReporte('excel')">
                 <i class="fas fa-file-excel me-1"></i> Excel

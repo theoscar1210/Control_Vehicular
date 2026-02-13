@@ -23,6 +23,12 @@ $sinPadding = true;
             </nav>
             <h2 class="mb-0">Ficha del Conductor</h2>
         </div>
+
+        <div>
+            <a href="{{ route('reportes.conductores') }}" class="btn btn-universal">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+        </div>
+
         <div class="btn-group">
             <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
                 <i class="fas fa-print me-1"></i> Imprimir
