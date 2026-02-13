@@ -9,10 +9,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\UppercaseFields;
 
 class Vehiculo extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'placa', 'marca', 'modelo', 'color', 'tipo', 'estado', 'clasificacion', 'observaciones',
+    ];
+
+    public const TIPOS = ['CARRO', 'MOTO', 'CAMION', 'OTRO'];
+    public const ESTADOS_VEHICULO = ['ACTIVO', 'INACTIVO'];
 
     /**
      * Configuración de auditoría de cambios
@@ -106,8 +114,8 @@ class Vehiculo extends Model
         $fechaMatricula = Carbon::parse($this->fecha_matricula)->startOfDay();
 
         return match ($this->tipo) {
-            'Carro' => $fechaMatricula->copy()->addYears(5),
-            'Moto' => $fechaMatricula->copy()->addYears(2),
+            'CARRO' => $fechaMatricula->copy()->addYears(5),
+            'MOTO' => $fechaMatricula->copy()->addYears(2),
             default => $fechaMatricula->copy()->addYears(5), // Por defecto 5 años
         };
     }
@@ -160,7 +168,7 @@ class Vehiculo extends Model
     public function getAnosPrimeraRevisionAttribute(): int
     {
         return match ($this->tipo) {
-            'Moto' => 2,
+            'MOTO' => 2,
             default => 5,
         };
     }
@@ -291,7 +299,7 @@ class Vehiculo extends Model
     public function getEstadoTecnoAttribute()
     {
         $tecno = $this->documentosVehiculo()
-            ->where('tipo_documento', 'Tecnomecanica')
+            ->where('tipo_documento', 'TECNOMECANICA')
             ->where('activo', 1)
             ->first();
 
@@ -358,6 +366,16 @@ class Vehiculo extends Model
     public function getClasificacionLabelAttribute(): string
     {
         return ucfirst(strtolower($this->clasificacion ?? 'N/A'));
+    }
+
+    public function getTipoLabelAttribute(): string
+    {
+        return ucfirst(strtolower($this->tipo ?? ''));
+    }
+
+    public function getEstadoLabelAttribute(): string
+    {
+        return ucfirst(strtolower($this->estado ?? ''));
     }
 
     /**

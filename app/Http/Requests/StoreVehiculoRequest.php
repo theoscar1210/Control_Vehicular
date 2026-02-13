@@ -23,7 +23,7 @@ class StoreVehiculoRequest extends FormRequest
             'marca' => 'required|string|max:50',
             'modelo' => 'required|string|max:50',
             'color' => 'required|string|max:30',
-            'tipo' => 'required|in:Carro,Moto',
+            'tipo' => 'required|in:CARRO,MOTO',
             'id_propietario' => 'required|exists:propietarios,id_propietario',
             'clasificacion' => 'nullable|in:EMPLEADO,EXTERNO,CONTRATISTA',
             'observaciones' => 'nullable|string|max:1000',

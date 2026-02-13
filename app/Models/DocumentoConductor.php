@@ -9,10 +9,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\UppercaseFields;
 
 class DocumentoConductor extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'tipo_documento', 'numero_documento', 'estado', 'entidad_emisora', 'categoria_licencia', 'categorias_adicionales',
+    ];
 
     protected static function booted(): void
     {
@@ -40,7 +45,7 @@ class DocumentoConductor extends Model
     protected $keyType = 'int';
 
     /** Constantes para tipos y estados */
-    public const TIPOS = ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro'];
+    public const TIPOS = ['LICENCIA CONDUCCION', 'EPS', 'ARL', 'CERTIFICADO MEDICO', 'OTRO'];
     public const ESTADOS = ['VIGENTE', 'POR_VENCER', 'VENCIDO', 'REEMPLAZADO'];
 
     /**
@@ -405,5 +410,10 @@ class DocumentoConductor extends Model
     public function debeMonitorearCategoria(string $categoria): bool
     {
         return in_array($categoria, $this->getCategoriasAMonitorear());
+    }
+
+    public function getTipoDocumentoLabelAttribute(): string
+    {
+        return ucwords(strtolower($this->tipo_documento ?? ''));
     }
 }

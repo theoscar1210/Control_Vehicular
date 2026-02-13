@@ -9,13 +9,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\UppercaseFields;
 
 /**
  * Modelo para gestionar documentos de vehículos (SOAT, Tecnomecánica, etc.)
  */
 class DocumentoVehiculo extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'tipo_documento', 'numero_documento', 'estado',
+    ];
 
     protected static function booted(): void
     {
@@ -43,10 +48,10 @@ class DocumentoVehiculo extends Model
 
     public const TIPOS = [
         'SOAT',
-        'Tecnomecanica',
-        'Tarjeta Propiedad',
-        'Póliza',
-        'Otro'
+        'TECNOMECANICA',
+        'TARJETA PROPIEDAD',
+        'POLIZA',
+        'OTRO'
     ];
 
     public const ESTADOS = [
@@ -220,10 +225,15 @@ class DocumentoVehiculo extends Model
     {
         return match ($this->tipo_documento) {
             'SOAT' => 'fa-shield-halved',
-            'Tecnomecanica' => 'fa-screwdriver-wrench',
-            'Tarjeta Propiedad' => 'fa-id-card',
-            'Póliza' => 'fa-file-contract',
+            'TECNOMECANICA' => 'fa-screwdriver-wrench',
+            'TARJETA PROPIEDAD' => 'fa-id-card',
+            'POLIZA' => 'fa-file-contract',
             default => 'fa-file',
         };
+    }
+
+    public function getTipoDocumentoLabelAttribute(): string
+    {
+        return ucwords(strtolower($this->tipo_documento ?? ''));
     }
 }

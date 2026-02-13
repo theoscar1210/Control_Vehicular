@@ -21,8 +21,8 @@ class DocumentoVehiculoService
     /** Tipos de documentos que requieren fecha de vencimiento */
     private const DOCUMENTOS_CON_VENCIMIENTO = [
         'SOAT',
-        'Tecnomecanica',
-        'Poliza_Seguro',
+        'TECNOMECANICA',
+        'POLIZA',
     ];
 
     private AlertaService $alertaService;
@@ -46,7 +46,7 @@ class DocumentoVehiculoService
             $tipo = $datos['tipo_documento'];
 
             // Actualizar fecha de matricula si es Tarjeta de Propiedad
-            if ($tipo === 'Tarjeta Propiedad' && !empty($datos['fecha_matricula'])) {
+            if ($tipo === 'TARJETA PROPIEDAD' && !empty($datos['fecha_matricula'])) {
                 $vehiculo->update([
                     'fecha_matricula' => Carbon::parse($datos['fecha_matricula'])->startOfDay()
                 ]);
@@ -184,7 +184,7 @@ class DocumentoVehiculoService
             return ['fecha_vencimiento' => $fechaVencimiento, 'estado' => $estado];
         }
 
-        if ($tipo === 'Tecnomecanica') {
+        if ($tipo === 'TECNOMECANICA') {
             $fechaVencimiento = $vehiculo->calcularVencimientoTecnomecanica($fechaEmision);
         } else {
             $fechaVencimiento = $fechaEmision->copy()->addYear();

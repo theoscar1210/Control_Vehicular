@@ -31,7 +31,7 @@ class StoreConductorRequest extends FormRequest
             'observaciones' => 'nullable|string|max:1000',
             'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
 
-            'documento_tipo' => 'nullable|string|in:Licencia Conducción,Certificado Médico,ARL,EPS,Otro',
+            'documento_tipo' => 'nullable|string|in:LICENCIA CONDUCCION,CERTIFICADO MEDICO,ARL,EPS,OTRO',
             'documento_numero' => 'nullable|string|max:50',
             'documento_fecha_emision' => 'nullable|date',
             'documento_fecha_vencimiento' => 'nullable|date|after_or_equal:documento_fecha_emision',

@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\UppercaseFields;
 
 class Propietario extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'nombre', 'apellido', 'tipo_doc', 'identificacion',
+    ];
 
     protected $table = 'propietarios';
     protected $primaryKey = 'id_propietario';

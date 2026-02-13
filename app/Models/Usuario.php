@@ -8,10 +8,15 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
+use App\Traits\UppercaseFields;
 
 class Usuario extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'nombre', 'apellido',
+    ];
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';

@@ -87,10 +87,10 @@ $sinPadding = true;
                         <label class="form-label fw-semibold"><i class="fas fa-truck me-1"></i> Tipo</label>
                         <select name="tipo" class="form-select">
                             <option value="">Todos los tipos</option>
-                            <option value="Carro" {{ request('tipo') == 'Carro' ? 'selected' : '' }}>Carro</option>
-                            <option value="Moto" {{ request('tipo') == 'Moto' ? 'selected' : '' }}>Moto</option>
-                            <option value="Camión" {{ request('tipo') == 'Camión' ? 'selected' : '' }}>Camión</option>
-                            <option value="Otro" {{ request('tipo') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                            <option value="CARRO" {{ request('tipo') == 'CARRO' ? 'selected' : '' }}>Carro</option>
+                            <option value="MOTO" {{ request('tipo') == 'MOTO' ? 'selected' : '' }}>Moto</option>
+                            <option value="CAMION" {{ request('tipo') == 'CAMION' ? 'selected' : '' }}>Camion</option>
+                            <option value="OTRO" {{ request('tipo') == 'OTRO' ? 'selected' : '' }}>Otro</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -176,8 +176,8 @@ $sinPadding = true;
                                 @endif
                             </td>
                             <td>
-                                <span class="badge {{ $vehiculo->tipo == 'Carro' ? 'bg-primary' : ($vehiculo->tipo == 'Moto' ? 'bg-info' : 'bg-secondary') }}">
-                                    <i class="fas fa-{{ $vehiculo->tipo == 'Carro' ? 'car' : ($vehiculo->tipo == 'Moto' ? 'motorcycle' : 'truck') }} me-1"></i>
+                                <span class="badge {{ $vehiculo->tipo == 'CARRO' ? 'bg-primary' : ($vehiculo->tipo == 'MOTO' ? 'bg-info' : 'bg-secondary') }}">
+                                    <i class="fas fa-{{ $vehiculo->tipo == 'CARRO' ? 'car' : ($vehiculo->tipo == 'MOTO' ? 'motorcycle' : 'truck') }} me-1"></i>
                                     {{ $vehiculo->tipo }}
                                 </span>
                             </td>

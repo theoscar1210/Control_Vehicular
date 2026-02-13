@@ -61,7 +61,7 @@ class DocumentStatusService
         $hoy = Carbon::today();
         $estados = [];
 
-        $tiposVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza'];
+        $tiposVehiculo = ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA'];
         foreach ($tiposVehiculo as $tipo) {
             $doc = $vehiculo->documentos
                 ->where('tipo_documento', $tipo)
@@ -93,7 +93,7 @@ class DocumentStatusService
         }
 
         if ($vehiculo->conductor) {
-            $tiposConductor = ['Licencia Conducción'];
+            $tiposConductor = ['LICENCIA CONDUCCION'];
             foreach ($tiposConductor as $tipo) {
                 $doc = $vehiculo->conductor->documentosConductor
                     ->where('tipo_documento', $tipo)

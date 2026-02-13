@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\UppercaseFields;
 
 class Alerta extends Model
 {
-    use HasFactory;
+    use HasFactory, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'tipo_vencimiento',
+    ];
 
     protected $table = 'alertas';
     protected $primaryKey = 'id_alerta';

@@ -8,8 +8,8 @@ class StoreDocumentoVehiculoRequest extends FormRequest
 {
     private array $documentosConVencimiento = [
         'SOAT',
-        'Tecnomecanica',
-        'Poliza_Seguro'
+        'TECNOMECANICA',
+        'POLIZA'
     ];
 
     /**
@@ -27,7 +27,7 @@ class StoreDocumentoVehiculoRequest extends FormRequest
      * 
      * Las reglas de validación son las siguientes:
      * 
-     * - tipo_documento: required, in:SOAT,Tecnomecanica,Tarjeta Propiedad,Poliza_Seguro
+     * - tipo_documento: required, in:SOAT,TECNOMECANICA,TARJETA PROPIEDAD,POLIZA
      * - numero_documento: required, string, max:50
      * - entidad_emisora: nullable, string, max:100
      * - nota: nullable, string, max:255
@@ -35,7 +35,7 @@ class StoreDocumentoVehiculoRequest extends FormRequest
      * Si el tipo de documento es alguno de los que necesitan vencimiento,
      * se agrega la regla de fecha_emision como required|date.
      * 
-     * Si el tipo de documento es Tarjeta Propiedad, se agrega la regla de
+     * Si el tipo de documento es TARJETA PROPIEDAD, se agrega la regla de
      * fecha_matricula como required|date|before_or_equal:today.
      * 
      * @return array Las reglas de validación.
@@ -43,7 +43,7 @@ class StoreDocumentoVehiculoRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'tipo_documento' => 'required|in:SOAT,Tecnomecanica,Tarjeta Propiedad,Poliza_Seguro',
+            'tipo_documento' => 'required|in:SOAT,TECNOMECANICA,TARJETA PROPIEDAD,POLIZA',
             'numero_documento' => 'required|string|max:50',
             'entidad_emisora' => 'nullable|string|max:100',
             'nota' => 'nullable|string|max:255',
@@ -55,7 +55,7 @@ class StoreDocumentoVehiculoRequest extends FormRequest
             $rules['fecha_emision'] = 'nullable|date';
         }
 
-        if ($this->tipo_documento === 'Tarjeta Propiedad') {
+        if ($this->tipo_documento === 'TARJETA PROPIEDAD') {
             $rules['fecha_matricula'] = 'required|date|before_or_equal:today';
         }
 

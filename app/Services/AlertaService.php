@@ -71,7 +71,7 @@ class AlertaService
      */
     public function evaluarDocumentoConductor(DocumentoConductor $documento): int
     {
-        if ($documento->tipo_documento === 'Licencia Conducción' && !empty($documento->fechas_por_categoria)) {
+        if ($documento->tipo_documento === 'LICENCIA CONDUCCION' && !empty($documento->fechas_por_categoria)) {
             return $this->evaluarLicenciaPorCategoria($documento);
         }
 

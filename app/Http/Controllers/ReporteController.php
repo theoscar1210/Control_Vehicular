@@ -59,7 +59,7 @@ class ReporteController extends Controller
 
         $query = Vehiculo::with(['propietario', 'conductor', 'documentos' => function($q) {
             $q->where('activo', 1);
-        }])->where('estado', 'Activo');
+        }])->where('estado', 'ACTIVO');
 
         $estadoFiltro = $request->input('estado_docs');
 
@@ -240,8 +240,8 @@ class ReporteController extends Controller
 
         $lineaTiempo = $this->generarLineaTiempo($documentosVehiculos, $documentosConductores);
 
-        $tiposDocumentoVehiculo = ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'];
-        $tiposDocumentoConductor = ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro'];
+        $tiposDocumentoVehiculo = ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA', 'OTRO'];
+        $tiposDocumentoConductor = ['LICENCIA CONDUCCION', 'EPS', 'ARL', 'CERTIFICADO MEDICO', 'OTRO'];
 
         return view('reportes.alertas', compact(
             'documentosVehiculos',
@@ -263,7 +263,7 @@ class ReporteController extends Controller
         $navbarEspecial = true;
 
         $query = Propietario::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+            $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }, 'conductor']);
         }]);
@@ -318,7 +318,7 @@ class ReporteController extends Controller
         $navbarEspecial = true;
 
         $query = Conductor::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+            $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }, 'propietario']);
         }, 'documentosConductor' => function($q) {
@@ -401,12 +401,12 @@ class ReporteController extends Controller
 
         $conductor = Conductor::with([
             'vehiculos' => function($q) {
-                $q->where('estado', 'Activo');
+                $q->where('estado', 'ACTIVO');
             },
             'documentosConductor',
         ])->findOrFail($id);
 
-        $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();
+        $licencia = $conductor->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->where('activo', 1)->first();
         $estadoGeneral = $this->calcularEstadoDocumentosConductor($conductor);
         $historialDocumentos = $conductor->documentosConductor()->orderByDesc('fecha_registro')->get();
 
@@ -420,12 +420,12 @@ class ReporteController extends Controller
     {
         $conductor = Conductor::with([
             'vehiculos' => function($q) {
-                $q->where('estado', 'Activo');
+                $q->where('estado', 'ACTIVO');
             },
             'documentosConductor',
         ])->findOrFail($id);
 
-        $licencia = $conductor->documentosConductor->where('tipo_documento', 'Licencia Conducción')->where('activo', 1)->first();
+        $licencia = $conductor->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->where('activo', 1)->first();
         $estadoGeneral = $this->calcularEstadoDocumentosConductor($conductor);
         $historialDocumentos = $conductor->documentosConductor()->orderByDesc('fecha_registro')->get();
 
@@ -542,8 +542,8 @@ class ReporteController extends Controller
         $cronologia = $this->generarCronologia($historialVehiculos, $historialConductores);
 
         $tiposDocumento = [
-            'vehiculo' => ['SOAT', 'Tecnomecanica', 'Tarjeta Propiedad', 'Póliza', 'Otro'],
-            'conductor' => ['Licencia Conducción', 'EPS', 'ARL', 'Certificado Médico', 'Otro']
+            'vehiculo' => ['SOAT', 'TECNOMECANICA', 'TARJETA PROPIEDAD', 'POLIZA', 'OTRO'],
+            'conductor' => ['LICENCIA CONDUCCION', 'EPS', 'ARL', 'CERTIFICADO MEDICO', 'OTRO']
         ];
 
         return view('reportes.historico', compact(
@@ -606,7 +606,7 @@ class ReporteController extends Controller
     {
         $query = Vehiculo::with(['propietario', 'conductor', 'documentos' => function($q) {
             $q->where('activo', 1);
-        }])->where('estado', 'Activo');
+        }])->where('estado', 'ACTIVO');
 
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -714,7 +714,7 @@ class ReporteController extends Controller
     private function exportPropietariosPdf(Request $request)
     {
         $query = Propietario::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+            $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }]);
         }]);
@@ -747,7 +747,7 @@ class ReporteController extends Controller
     private function exportConductoresPdf(Request $request)
     {
         $query = Conductor::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+            $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }]);
         }, 'documentosConductor' => function($q) {
@@ -787,7 +787,7 @@ class ReporteController extends Controller
     private function exportConductoresExcel(Request $request)
     {
         $query = Conductor::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo');
+            $q->where('estado', 'ACTIVO');
         }, 'documentosConductor' => function($q) {
             $q->where('activo', 1);
         }])->where('activo', 1);
@@ -830,7 +830,7 @@ class ReporteController extends Controller
             ]), ';');
 
             foreach ($conductores as $c) {
-                $licencia = $c->documentosConductor->where('tipo_documento', 'Licencia Conducción')->first();
+                $licencia = $c->documentosConductor->where('tipo_documento', 'LICENCIA CONDUCCION')->first();
                 $placas = $c->vehiculos->pluck('placa')->implode(' | ');
 
                 fputcsv($file, array_map($limpiar, [
@@ -913,7 +913,7 @@ class ReporteController extends Controller
     {
         $query = Vehiculo::with(['propietario', 'conductor', 'documentos' => function($q) {
             $q->where('activo', 1);
-        }])->where('estado', 'Activo');
+        }])->where('estado', 'ACTIVO');
 
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
@@ -1114,7 +1114,7 @@ class ReporteController extends Controller
     private function exportPropietariosExcel(Request $request)
     {
         $query = Propietario::with(['vehiculos' => function($q) {
-            $q->where('estado', 'Activo')->with(['documentos' => function($q2) {
+            $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }, 'conductor']);
         }]);

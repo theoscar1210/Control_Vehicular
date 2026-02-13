@@ -120,7 +120,7 @@ $vehiculoId = request()->query('vehiculo');
 
             $tieneTecno = $vehiculo->documentos()
             ->activos()
-            ->where('tipo_documento', 'Tecnomecanica')
+            ->where('tipo_documento', 'TECNOMECANICA')
             ->exists();
 
             // Si el vehículo está exento de tecnomecánica (nuevo), solo requiere SOAT
@@ -379,8 +379,8 @@ $vehiculoId = request()->query('vehiculo');
                                 <select name="tipo" class="form-select @error('tipo') is-invalid @enderror"
                                     {{ $propietario ? '' : 'disabled' }}>
                                     <option value="">Seleccionar</option>
-                                    <option value="Carro" {{ old('tipo') == 'Carro' ? 'selected' : '' }}>Carro</option>
-                                    <option value="Moto" {{ old('tipo') == 'Moto' ? 'selected' : '' }}>Moto</option>
+                                    <option value="CARRO" {{ old('tipo') == 'CARRO' ? 'selected' : '' }}>Carro</option>
+                                    <option value="MOTO" {{ old('tipo') == 'MOTO' ? 'selected' : '' }}>Moto</option>
                                 </select>
                                 @error('tipo')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -492,7 +492,7 @@ $vehiculoId = request()->query('vehiculo');
 
                         {{-- Identificación --}}
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
-                        <input type="hidden" name="tipo_documento" value="Tarjeta Propiedad">
+                        <input type="hidden" name="tipo_documento" value="TARJETA PROPIEDAD">
 
                         <div class="row g-3">
 
@@ -685,10 +685,10 @@ $vehiculoId = request()->query('vehiculo');
                     @php
                     $vehiculoActual = \App\Models\Vehiculo::find($vehiculoId);
                     $fechaMatricula = $vehiculoActual?->fecha_matricula;
-                    $tipoVehiculo = $vehiculoActual?->tipo ?? 'Carro';
+                    $tipoVehiculo = $vehiculoActual?->tipo ?? 'CARRO';
                     $requiereTecno = $vehiculoActual?->requiereTecnomecanica() ?? true;
                     $fechaPrimeraRevision = $vehiculoActual?->fechaPrimeraTecnomecanica();
-                    $anosPrimeraRevision = $tipoVehiculo === 'Moto' ? 2 : 5;
+                    $anosPrimeraRevision = $tipoVehiculo === 'MOTO' ? 2 : 5;
                     @endphp
 
                     {{-- VEHÍCULO NUEVO: Exención por tiempo - BLOQUEAR FORMULARIO --}}
@@ -706,7 +706,7 @@ $vehiculoId = request()->query('vehiculo');
                                     Vehículo "Nuevo" (Exención por tiempo)
                                 </h6>
                                 <p class="mb-0 small">
-                                    Este {{ $tipoVehiculo === 'Moto' ? 'motocicleta' : 'vehículo' }} no requiere Tecnomecánica hasta el
+                                    Este {{ $tipoVehiculo === 'MOTO' ? 'motocicleta' : 'vehículo' }} no requiere Tecnomecánica hasta el
                                     <strong>{{ $fechaPrimeraRevision->format('d/m/Y') }}</strong>
                                     ({{ $anosPrimeraRevision }} años desde la matrícula).
                                 </p>
@@ -747,7 +747,7 @@ $vehiculoId = request()->query('vehiculo');
                     <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
-                        <input type="hidden" name="tipo_documento" value="Tecnomecanica">
+                        <input type="hidden" name="tipo_documento" value="TECNOMECANICA">
                         {{-- Datos para JavaScript --}}
                         <input type="hidden" id="vehiculo_fecha_matricula" value="{{ $fechaMatricula?->format('Y-m-d') ?? '' }}">
                         <input type="hidden" id="vehiculo_tipo" value="{{ $tipoVehiculo }}">
@@ -769,7 +769,7 @@ $vehiculoId = request()->query('vehiculo');
                                 <label class="form-label">Centro de Revisión</label>
                                 <input type="text" name="entidad_emisora"
                                     class="form-control @error('entidad_emisora') is-invalid @enderror"
-                                    value="{{ old('tipo_documento') == 'Tecnomecanica' ? old('entidad_emisora') : '' }}"
+                                    value="{{ old('tipo_documento') == 'TECNOMECANICA' ? old('entidad_emisora') : '' }}"
                                     placeholder="Ej: CDA Fontibón">
                                 @error('entidad_emisora')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -780,7 +780,7 @@ $vehiculoId = request()->query('vehiculo');
                                 <label class="form-label">Fecha Expedicíon <span class="text-danger">*</span></label>
                                 <input type="date" name="fecha_emision" id="fecha_emision_tecno"
                                     class="form-control @error('fecha_emision') is-invalid @enderror"
-                                    value="{{ old('tipo_documento') == 'Tecnomecanica' ? old('fecha_emision') : '' }}" required>
+                                    value="{{ old('tipo_documento') == 'TECNOMECANICA' ? old('fecha_emision') : '' }}" required>
                                 @error('fecha_emision')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

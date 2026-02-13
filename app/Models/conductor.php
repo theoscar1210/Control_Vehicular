@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Traits\UppercaseFields;
 
 class Conductor extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, UppercaseFields;
+
+    protected array $uppercaseFields = [
+        'nombre', 'apellido', 'tipo_doc', 'identificacion', 'telefono', 'telefono_emergencia', 'clasificacion', 'observaciones',
+    ];
 
     protected $table = 'conductores';
     protected $primaryKey = 'id_conductor';

@@ -112,7 +112,7 @@ class VehiculoController extends Controller
                 'id_propietario' => $validated['id_propietario'],
                 'clasificacion'  => $validated['clasificacion'] ?? 'EMPLEADO',
                 'observaciones'  => $validated['observaciones'] ?? null,
-                'estado'         => 'Activo',
+                'estado'         => 'ACTIVO',
                 'creado_por'     => auth()->id() ?? null,
                 'fecha_registro' => now(),
             ]);
@@ -142,7 +142,7 @@ class VehiculoController extends Controller
 
         // Obtener Tarjeta de Propiedad si existe
         $tarjetaPropiedad = $vehiculo->documentosVehiculo()
-            ->where('tipo_documento', 'Tarjeta Propiedad')
+            ->where('tipo_documento', 'TARJETA PROPIEDAD')
             ->where('activo', 1)
             ->first();
 
@@ -163,7 +163,7 @@ class VehiculoController extends Controller
             'modelo'          => 'required|string|max:50',
             'color'           => 'required|string|max:30',
             'tipo'            => 'required|string|max:50',
-            'estado'          => 'required|in:Activo,Inactivo',
+            'estado'          => 'required|in:ACTIVO,INACTIVO',
             'id_conductor'    => 'nullable|exists:conductores,id_conductor',
             'fecha_matricula' => 'nullable|date',
 
@@ -208,7 +208,7 @@ class VehiculoController extends Controller
                 // 3. ACTUALIZAR O CREAR TARJETA DE PROPIEDAD
                 if ($request->filled('tarjeta_numero')) {
                     $tarjetaExistente = DocumentoVehiculo::where('id_vehiculo', $vehiculo->id_vehiculo)
-                        ->where('tipo_documento', 'Tarjeta Propiedad')
+                        ->where('tipo_documento', 'TARJETA PROPIEDAD')
                         ->where('activo', 1)
                         ->first();
 
@@ -223,7 +223,7 @@ class VehiculoController extends Controller
                         // Crear nueva tarjeta
                         DocumentoVehiculo::create([
                             'id_vehiculo'       => $vehiculo->id_vehiculo,
-                            'tipo_documento'    => 'Tarjeta Propiedad',
+                            'tipo_documento'    => 'TARJETA PROPIEDAD',
                             'numero_documento'  => $validated['tarjeta_numero'],
                             'entidad_emisora'   => $validated['tarjeta_entidad'] ?? null,
                             'fecha_emision'     => $validated['tarjeta_fecha_emision'] ?? null,
