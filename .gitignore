@@ -23,5 +23,9 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-google-drive-credentials.json
+
+# Google Drive credentials (NEVER commit)
+google-drive-credentials*.json
+
+# Plan files
 PLAN.md
