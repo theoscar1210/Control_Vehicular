@@ -286,7 +286,6 @@
                         <div class="border rounded-3 p-3 bg-light">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-paperclip me-1"></i>Adjuntar Documento
-                                <span class="text-muted fw-normal">(opcional)</span>
                             </label>
                             <input type="file" name="archivo" class="form-control rounded-3 border-success-subtle"
                                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">

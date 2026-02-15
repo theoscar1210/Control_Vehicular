@@ -578,7 +578,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-12">
                                 <label class="form-label">
                                     <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
-                                    <span class="text-muted fw-normal">(opcional)</span>
+                                    <span class="text-muted fw-normal">(Obligatorio)</span>
                                 </label>
                                 <input type="file" name="archivo" class="form-control"
                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
@@ -679,7 +679,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-12">
                                 <label class="form-label">
                                     <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
-                                    <span class="text-muted fw-normal">(opcional)</span>
+                                    <span class="text-muted fw-normal">(Obligatorio)</span>
                                 </label>
                                 <input type="file" name="archivo" class="form-control"
                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
@@ -841,7 +841,7 @@ $vehiculoId = request()->query('vehiculo');
                             <div class="col-12">
                                 <label class="form-label">
                                     <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
-                                    <span class="text-muted fw-normal">(opcional)</span>
+                                    <span class="text-muted fw-normal">(Obligatorio)</span>
                                 </label>
                                 <input type="file" name="archivo" class="form-control"
                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
