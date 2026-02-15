@@ -26,8 +26,14 @@ Schedule::command('alertas:enviar-semanales')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/alertas-semanales.log'));
 
-// Purgar registros eliminados hace más de 6 meses (diariamente a las 2:00 AM)
-Schedule::command('registros:purgar')
+// Backup diario de base de datos (2:00 AM)
+Schedule::command('backup:database')
     ->dailyAt('02:00')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/backup.log'));
+
+// Purgar registros eliminados hace más de 6 meses (diariamente a las 2:30 AM)
+Schedule::command('registros:purgar')
+    ->dailyAt('02:30')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/purgar-registros.log'));

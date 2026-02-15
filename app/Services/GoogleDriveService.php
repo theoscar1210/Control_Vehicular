@@ -149,6 +149,36 @@ class GoogleDriveService
     }
 
     /**
+     * Sube un archivo desde una ruta local a Google Drive.
+     */
+    public function uploadFromPath(string $localPath, string $driveFileName, string $folderId): array
+    {
+        $service = $this->getService();
+
+        $driveFile = new DriveFile([
+            'name' => $driveFileName,
+            'parents' => [$folderId],
+        ]);
+
+        $uploaded = $service->files->create($driveFile, [
+            'data' => file_get_contents($localPath),
+            'mimeType' => mime_content_type($localPath) ?: 'application/octet-stream',
+            'uploadType' => 'multipart',
+            'fields' => 'id, webViewLink',
+        ]);
+
+        $service->permissions->create($uploaded->getId(), new \Google\Service\Drive\Permission([
+            'type' => 'anyone',
+            'role' => 'reader',
+        ]));
+
+        return [
+            'file_id' => $uploaded->getId(),
+            'url' => $uploaded->getWebViewLink(),
+        ];
+    }
+
+    /**
      * Elimina un archivo de Google Drive.
      */
     public function deleteFile(string $fileId): bool
