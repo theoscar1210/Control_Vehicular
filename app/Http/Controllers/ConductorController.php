@@ -6,9 +6,11 @@ use App\Models\Conductor;
 use App\Models\Vehiculo;
 use App\Models\DocumentoConductor;
 use App\Models\Alerta;
+use App\Services\GoogleDriveService;
 use App\Traits\SanitizesSearchInput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreConductorRequest;
@@ -216,9 +218,44 @@ class ConductorController extends Controller
             // Generar alertas si el documento está vencido o próximo a vencer
             $documento->load('conductor');
             Alerta::generarAlertasDocumentoConductor($documento);
+
+            // Subir archivo a Google Drive si se adjuntó (solo SST/ADMIN + EMPLEADO)
+            if ($request->hasFile('archivo')
+                && in_array(Auth::user()->rol, ['ADMIN', 'SST'])
+                && ($validated['clasificacion'] ?? 'EMPLEADO') === 'EMPLEADO'
+            ) {
+                $request->validate(['archivo' => 'file|max:10240']);
+                $this->subirArchivoConductorADrive($documento, $request->file('archivo'), $conductor->identificacion);
+            }
         }
 
         return redirect()->route('conductores.index')->with('success', 'Conductor creado correctamente.');
+    }
+
+    /**
+     * Sube un archivo de conductor a Google Drive.
+     */
+    private function subirArchivoConductorADrive(DocumentoConductor $documento, $archivo, string $identificacion): void
+    {
+        $driveService = app(GoogleDriveService::class);
+
+        if (!$driveService->isConfigured()) {
+            Log::warning('Google Drive no configurado, se omite la subida del archivo.');
+            return;
+        }
+
+        try {
+            $result = $driveService->upload($archivo, 'conductor', $identificacion, $documento->tipo_documento);
+            $documento->update([
+                'ruta_archivo' => $result['url'],
+                'google_drive_file_id' => $result['file_id'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al subir archivo a Google Drive', [
+                'documento_id' => $documento->id_doc_conductor,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

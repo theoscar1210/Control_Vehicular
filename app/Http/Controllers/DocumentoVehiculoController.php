@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentoVehiculo;
 use App\Models\Vehiculo;
 use App\Services\DocumentoVehiculoService;
+use App\Services\GoogleDriveService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreDocumentoVehiculoRequest;
@@ -31,6 +32,12 @@ class DocumentoVehiculoController extends Controller
         try {
             $nuevoDocumento = $this->documentoService->crearDocumento($vehiculo, $validated);
 
+            // Subir archivo a Google Drive si se adjuntó
+            if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
+                $request->validate(['archivo' => 'file|max:10240']);
+                $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
+            }
+
             if (\Route::has('vehiculos.create')) {
                 return redirect()
                     ->route('vehiculos.create', ['vehiculo' => $vehiculo->id_vehiculo])
@@ -51,6 +58,32 @@ class DocumentoVehiculoController extends Controller
             return back()
                 ->withInput()
                 ->with('error', 'Error al guardar el documento: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Sube un archivo a Google Drive y actualiza el documento.
+     */
+    private function subirArchivoADrive(DocumentoVehiculo $documento, $archivo, string $placa): void
+    {
+        $driveService = app(GoogleDriveService::class);
+
+        if (!$driveService->isConfigured()) {
+            Log::warning('Google Drive no configurado, se omite la subida del archivo.');
+            return;
+        }
+
+        try {
+            $result = $driveService->upload($archivo, 'vehiculo', $placa, $documento->tipo_documento);
+            $documento->update([
+                'ruta_archivo' => $result['url'],
+                'google_drive_file_id' => $result['file_id'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al subir archivo a Google Drive', [
+                'documento_id' => $documento->id_doc_vehiculo,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 

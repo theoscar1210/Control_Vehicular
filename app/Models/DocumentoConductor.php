@@ -111,6 +111,7 @@ class DocumentoConductor extends Model
         'estado',
         'activo',
         'ruta_archivo',
+        'google_drive_file_id',
         'creado_por',
         'version',
         'reemplazado_por',

@@ -74,7 +74,8 @@ class DocumentoVehiculo extends Model
         'nota',
         'creado_por',
         'fecha_registro',
-
+        'ruta_archivo',
+        'google_drive_file_id',
     ];
 
     protected $casts = [

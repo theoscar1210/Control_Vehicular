@@ -485,6 +485,7 @@ $vehiculoId = request()->query('vehiculo');
                     @else
                     <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}"
                         method="POST"
+                        enctype="multipart/form-data"
                         class="form-con-loader"
                         id="form-licencia">
 
@@ -572,6 +573,22 @@ $vehiculoId = request()->query('vehiculo');
 
                         </div>
 
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        <div class="row g-3 mt-1">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
+                                    <span class="text-muted fw-normal">(opcional)</span>
+                                </label>
+                                <input type="file" name="archivo" class="form-control"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                                <small class="text-muted">
+                                    <i class="fa-solid fa-cloud-arrow-up me-1"></i>Se almacenará en Google Drive. Máx. 10MB.
+                                </small>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="mt-4">
                             <button type="submit"
                                 class="btn btn-universal"
@@ -602,7 +619,7 @@ $vehiculoId = request()->query('vehiculo');
                         Registra primero el vehículo para agregar documentos.
                     </div>
                     @else
-                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-soat">
+                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" enctype="multipart/form-data" class="form-con-loader" id="form-soat">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
                         <input type="hidden" name="tipo_documento" value="SOAT">
@@ -657,11 +674,26 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
                         </div>
 
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        <div class="row g-3 mt-1">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
+                                    <span class="text-muted fw-normal">(opcional)</span>
+                                </label>
+                                <input type="file" name="archivo" class="form-control"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                                <small class="text-muted">
+                                    <i class="fa-solid fa-cloud-arrow-up me-1"></i>Se almacenará en Google Drive. Máx. 10MB.
+                                </small>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="mt-4">
                             <button type="submit" class="btn btn-universal" data-loading-text="Guardando...">
                                 <i class="fa-solid fa-save me-2"></i>Guardar SOAT
                             </button>
-
                         </div>
                     </form>
                     @endif
@@ -744,7 +776,7 @@ $vehiculoId = request()->query('vehiculo');
                     </div>
                     @endif
 
-                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" class="form-con-loader" id="form-tecno">
+                    <form action="{{ route('vehiculos.documentos.store', $vehiculoId) }}" method="POST" enctype="multipart/form-data" class="form-con-loader" id="form-tecno">
                         @csrf
                         <input type="hidden" name="id_vehiculo" value="{{ $vehiculoId }}">
                         <input type="hidden" name="tipo_documento" value="TECNOMECANICA">
@@ -804,11 +836,26 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
                         </div>
 
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        <div class="row g-3 mt-1">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-paperclip me-1"></i>Adjuntar Documento
+                                    <span class="text-muted fw-normal">(opcional)</span>
+                                </label>
+                                <input type="file" name="archivo" class="form-control"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                                <small class="text-muted">
+                                    <i class="fa-solid fa-cloud-arrow-up me-1"></i>Se almacenará en Google Drive. Máx. 10MB.
+                                </small>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="mt-4">
                             <button type="submit" class="btn btn-universal" data-loading-text="Guardando...">
                                 <i class="fa-solid fa-save me-2"></i>Guardar Tecnomecánica
                             </button>
-
                         </div>
                     </form>
                     @endif {{-- Fin de @else (vehículo que requiere tecnomecánica) --}}
