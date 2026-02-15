@@ -38,6 +38,12 @@ class GoogleDriveService
         $client->setAuthConfig($fullPath);
         $client->addScope(Drive::DRIVE);
 
+        // Domain-Wide Delegation: impersonar usuario con quota de almacenamiento
+        $impersonateEmail = config('google.drive.impersonate_email');
+        if ($impersonateEmail) {
+            $client->setSubject($impersonateEmail);
+        }
+
         $this->service = new Drive($client);
 
         return $this->service;
