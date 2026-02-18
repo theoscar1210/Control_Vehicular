@@ -117,6 +117,11 @@ class DocumentoVehiculoController extends Controller
                 $validated
             );
 
+            if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
+                $request->validate(['archivo' => 'file|max:10240']);
+                $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
+            }
+
             if (\Route::has('vehiculos.documentos.historial.completo')) {
                 return redirect()
                     ->route('vehiculos.documentos.historial.completo', $vehiculo->id_vehiculo)

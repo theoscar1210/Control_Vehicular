@@ -13,7 +13,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <form action="{{ route('conductores.documentos.renovar-categoria', $conductor->id_conductor) }}" method="POST">
+            <form action="{{ route('conductores.documentos.renovar-categoria', $conductor->id_conductor) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="documento_id" value="{{ $doc->id_doc_conductor }}">
                 <input type="hidden" name="categoria" value="{{ $categoria }}">
@@ -84,6 +84,17 @@
                         <strong>Trazabilidad:</strong> Se creará una nueva versión del documento para mantener el historial de refrendaciones.
                         La versión anterior quedará registrada para auditorías.
                     </div>
+
+                    @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && $conductor->clasificacion === 'EMPLEADO')
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Adjuntar documento <span class="text-muted small">(Opcional)</span>
+                        </label>
+                        <input type="file" class="form-control" name="archivo"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                        <small class="text-muted">Máx. 10MB — PDF, imágenes, Word, Excel</small>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="modal-footer">

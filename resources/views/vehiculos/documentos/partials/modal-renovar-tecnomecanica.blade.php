@@ -11,7 +11,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="POST" action="{{ route('vehiculos.documentos.update', [$vehiculo->id_vehiculo, $doc->id_doc_vehiculo]) }}">
+            <form method="POST" action="{{ route('vehiculos.documentos.update', [$vehiculo->id_vehiculo, $doc->id_doc_vehiculo]) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -98,6 +98,17 @@
                     </div>
 
 
+
+                    @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Adjuntar documento <span class="text-muted small fw-normal">(Opcional)</span>
+                        </label>
+                        <input type="file" class="form-control" name="archivo"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                        <small class="text-muted">Máx. 10MB — PDF, imágenes, Word, Excel</small>
+                    </div>
+                    @endif
 
                 </div>
 

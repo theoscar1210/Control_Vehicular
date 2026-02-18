@@ -14,7 +14,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <form action="{{ route('conductores.documentos.renovar', $conductor->id_conductor) }}" method="POST">
+            <form action="{{ route('conductores.documentos.renovar', $conductor->id_conductor) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="documento_id" value="{{ $doc->id_doc_conductor }}">
 
@@ -110,6 +110,16 @@
                             La vigencia de la licencia depende de la edad del conductor
                         </small>
                     </div>
+                    @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Adjuntar documento <span class="text-muted small">(Opcional)</span>
+                        </label>
+                        <input type="file" class="form-control" name="archivo"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                        <small class="text-muted">Máx. 10MB — PDF, imágenes, Word, Excel</small>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="modal-footer">

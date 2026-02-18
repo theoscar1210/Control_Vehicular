@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Conductor;
 use App\Models\DocumentoConductor;
 use App\Models\Alerta;
+use App\Services\GoogleDriveService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DocumentoConductorController extends Controller
@@ -103,6 +105,11 @@ class DocumentoConductorController extends Controller
         $newDoc->load('conductor');
         Alerta::generarAlertasDocumentoConductor($newDoc);
 
+        if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
+            $request->validate(['archivo' => 'file|max:10240']);
+            $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
+        }
+
         return redirect()->route('conductores.documentos.historial', $conductor->id_conductor)
             ->with('success', 'Licencia renovada correctamente. Versión ' . $newVersion);
     }
@@ -197,8 +204,41 @@ class DocumentoConductorController extends Controller
         $newDoc->load('conductor');
         Alerta::generarAlertasDocumentoConductor($newDoc);
 
+        if ($request->hasFile('archivo')
+            && in_array(auth()->user()->rol, ['ADMIN', 'SST'])
+            && $conductor->clasificacion === 'EMPLEADO') {
+            $request->validate(['archivo' => 'file|max:10240']);
+            $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
+        }
+
         return redirect()->route('conductores.documentos.historial', $conductor->id_conductor)
             ->with('success', 'Categoría ' . $data['categoria'] . ' refrendada correctamente. Versión ' . $newVersion);
+    }
+
+    /**
+     * Sube un archivo a Google Drive y actualiza el documento del conductor.
+     */
+    private function subirArchivoConductorADrive(DocumentoConductor $documento, $archivo, string $identificacion): void
+    {
+        $driveService = app(GoogleDriveService::class);
+
+        if (!$driveService->isConfigured()) {
+            Log::warning('Google Drive no configurado, se omite la subida del archivo.');
+            return;
+        }
+
+        try {
+            $result = $driveService->upload($archivo, 'conductor', $identificacion, $documento->tipo_documento);
+            $documento->update([
+                'ruta_archivo' => $result['url'],
+                'google_drive_file_id' => $result['file_id'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al subir archivo a Google Drive', [
+                'documento_id' => $documento->id_doc_conductor,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
