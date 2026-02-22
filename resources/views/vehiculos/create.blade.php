@@ -573,7 +573,7 @@ $vehiculoId = request()->query('vehiculo');
 
                         </div>
 
-                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo))
                         <div class="row g-3 mt-1">
                             <div class="col-12">
                                 <label class="form-label">
@@ -674,7 +674,7 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
                         </div>
 
-                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo))
                         <div class="row g-3 mt-1">
                             <div class="col-12">
                                 <label class="form-label">
@@ -836,7 +836,7 @@ $vehiculoId = request()->query('vehiculo');
                             </div>
                         </div>
 
-                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo) && $vehiculo->clasificacion === 'EMPLEADO')
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']) && isset($vehiculo))
                         <div class="row g-3 mt-1">
                             <div class="col-12">
                                 <label class="form-label">

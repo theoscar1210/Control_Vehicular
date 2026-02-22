@@ -368,10 +368,13 @@ Haga clic en **"Crear Vehículo"**
 2. **Apellido:** Apellido del conductor
 3. **Tipo de Documento:** CC (Cédula) o CE (Cédula de Extranjería)
 4. **Identificación:** Número del documento
-5. **Teléfono:** Número de contacto principal
-6. **Teléfono Emergencia:** Número de un familiar o contacto de emergencia
-7. **Activo:** Deje marcado si el conductor está trabajando actualmente
-8. **Asignar a Vehículo:** Opcional - puede buscar y seleccionar un vehículo
+5. **Clasificación:** Seleccione **EMPLEADO** (personal de planta del club) o **EXTERNO** (contratistas, proveedores, visitantes frecuentes)
+6. **Teléfono:** Número de contacto principal
+7. **Teléfono Emergencia:** Número de un familiar o contacto de emergencia
+8. **Activo:** Deje marcado si el conductor está trabajando actualmente
+9. **Asignar a Vehículo:** Opcional - puede buscar y seleccionar un vehículo
+
+> **¿Por qué es importante la Clasificación?** Solo los conductores **EMPLEADO** permiten adjuntar el archivo digital de la licencia al refrendar una categoría, ya que son personal bajo responsabilidad directa del Club.
 
 ### Paso 3: Registrar la licencia de conducción
 
@@ -542,7 +545,8 @@ Se abrirá una ventana emergente (modal) con el formulario de renovación:
 1. **Número de Póliza:** Ingrese el número del nuevo SOAT
 2. **Entidad Emisora:** Nombre de la aseguradora
 3. **Fecha de Compra:** Fecha en que adquirió el nuevo documento
-4. **Nota:** Opcional, para agregar comentarios
+4. **Adjuntar documento:** Opcional — los usuarios ADMIN y SST pueden adjuntar el archivo digital (PDF, imagen, Word o Excel, máx. 10MB). El archivo se guarda automáticamente en Google Drive.
+5. **Nota:** Opcional, para agregar comentarios
 
 ### Paso 4: Guardar la renovación
 
@@ -560,8 +564,8 @@ Haga clic en **"Guardar Renovación"**
 
 ### ¿De dónde vienen las alertas?
 
-El sistema revisa **automáticamente todos los días a las 8:00 AM** el estado de los documentos y genera alertas cuando:
-- Un documento **vencerá en los próximos 15 días**
+El sistema revisa **automáticamente todos los días a las 3:00 AM** el estado de los documentos y genera alertas cuando:
+- Un documento **vencerá en los próximos 20 días**
 - Un documento **ya está vencido**
 
 ### Tipos de alertas
@@ -605,7 +609,7 @@ El sistema revisa **automáticamente todos los días a las 8:00 AM** el estado d
 
 ### Correos automáticos
 
-El sistema envía un **resumen semanal por correo** todos los **lunes a las 1:00 AM** con:
+El sistema envía un **resumen semanal por correo** todos los **lunes a las 4:00 AM** a los usuarios SST con:
 - Lista de documentos vencidos
 - Lista de documentos por vencer
 - Enlace directo al sistema

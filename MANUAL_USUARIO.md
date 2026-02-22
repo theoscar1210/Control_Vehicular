@@ -261,8 +261,11 @@ La tabla muestra:
 | Apellido | Apellidos del conductor | Sí |
 | Tipo de documento | CC (Cédula) o CE (Cédula Extranjería) | Sí |
 | Número de identificación | Número del documento | Sí |
+| Clasificación | **EMPLEADO** (personal de planta) o **EXTERNO** (contratistas, visitantes) | Sí |
 | Teléfono | Número de contacto | No |
 | Teléfono de emergencia | Contacto en caso de emergencia | No |
+
+> **Nota:** La clasificación es importante. Solo los conductores marcados como **EMPLEADO** permiten adjuntar documentos físicos a Google Drive al refrendar categorías de licencia.
 
 3. Haga clic en **"Guardar"**
 
@@ -328,20 +331,25 @@ Un conductor puede tener múltiples categorías registradas.
 | Entidad emisora | Aseguradora o entidad que expidió el documento |
 | Fecha de emisión | Fecha en que se expidió |
 | Fecha de vencimiento | Fecha en que vence (no aplica para Tarjeta de Propiedad) |
+| Adjuntar documento | Archivo PDF, imagen o Word del documento físico (opcional) |
 | Observaciones | Notas adicionales (opcional) |
 
 4. Haga clic en **"Guardar"**
+
+> **Adjuntar archivo:** Los usuarios ADMIN y SST pueden adjuntar el archivo digital del documento (PDF, imagen, Word o Excel, máx. 10MB). El archivo se almacena en Google Drive automáticamente y queda vinculado al registro.
 
 ### 7.4 Renovar un documento
 
 Cuando un documento vence y se obtiene uno nuevo:
 
-1. Vaya al vehículo o conductor correspondiente
-2. Agregue el nuevo documento con la información actualizada
-3. El sistema automáticamente:
+1. En el historial de documentos del vehículo o conductor, haga clic en **"Renovar"** sobre el documento vencido
+2. Se abrirá un formulario con los datos del nuevo documento
+3. Complete la información actualizada y, opcionalmente, adjunte el nuevo archivo digital
+4. El sistema automáticamente:
    - Marca el documento anterior como **"Reemplazado"**
    - Incrementa el número de versión
    - Mantiene el historial completo
+   - Resuelve las alertas relacionadas con el documento anterior
 
 ### 7.5 Ver historial de documentos
 
@@ -498,9 +506,9 @@ En la pantalla de portería también se muestran las alertas recientes de docume
 
 ### 10.1 ¿Cómo funcionan las alertas?
 
-El sistema revisa automáticamente **todos los días a las 8:00 AM** el estado de los documentos y genera alertas cuando:
+El sistema revisa automáticamente **todos los días a las 3:00 AM** el estado de los documentos y genera alertas cuando:
 
-- Un documento **vencerá en los próximos 15 días**
+- Un documento **vencerá en los próximos 20 días**
 - Un documento **ya está vencido**
 
 ### 10.2 ¿Dónde ver las alertas?
@@ -512,7 +520,7 @@ Las alertas aparecen en:
 
 ### 10.3 Notificaciones por correo electrónico
 
-El sistema envía automáticamente un **resumen semanal por correo** (los lunes a las 1:00 AM) a todos los usuarios ADMIN y SST que tengan correo configurado.
+El sistema envía automáticamente un **resumen semanal por correo** (los lunes a las 4:00 AM) a todos los usuarios SST que tengan correo configurado.
 
 El correo incluye:
 - Cantidad total de alertas pendientes
@@ -665,7 +673,7 @@ Contacte al administrador si necesita acceso adicional.
 
 ### ¿Cada cuánto se envían los correos de alerta?
 
-Los correos se envían automáticamente **todos los lunes** a las 1:00 AM a los usuarios ADMIN y SST.
+Los correos se envían automáticamente **todos los lunes** a las 4:00 AM a los usuarios SST.
 
 ### ¿Qué pasa si elimino un vehículo por error?
 
