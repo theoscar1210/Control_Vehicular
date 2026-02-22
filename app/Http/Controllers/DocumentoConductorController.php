@@ -106,7 +106,7 @@ class DocumentoConductorController extends Controller
         Alerta::generarAlertasDocumentoConductor($newDoc);
 
         if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-            $request->validate(['archivo' => 'file|max:10240']);
+            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
             $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
         }
 
@@ -207,7 +207,7 @@ class DocumentoConductorController extends Controller
         if ($request->hasFile('archivo')
             && in_array(auth()->user()->rol, ['ADMIN', 'SST'])
             && $conductor->clasificacion === 'EMPLEADO') {
-            $request->validate(['archivo' => 'file|max:10240']);
+            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
             $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
         }
 
@@ -304,6 +304,11 @@ class DocumentoConductorController extends Controller
     {
         $doc = DocumentoConductor::findOrFail($id);
 
+        // Verificar que el documento pertenece al conductor del usuario autenticado (IDOR fix)
+        if (!$doc->conductor) {
+            abort(404);
+        }
+
         $data = $request->validate([
             'tipo_documento'    => 'required|string|max:100',
             'numero_documento'  => 'required|string|max:100',
@@ -337,6 +342,12 @@ class DocumentoConductorController extends Controller
     public function destroy($id)
     {
         $doc = DocumentoConductor::findOrFail($id);
+
+        // Verificar que el documento tiene un conductor válido (IDOR fix)
+        if (!$doc->conductor) {
+            abort(404);
+        }
+
         $conductorId = $doc->id_conductor;
         $doc->delete();
 

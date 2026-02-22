@@ -31,11 +31,24 @@ class SecurityHeaders
         // Controlar qué información de referrer se envía
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Forzar HTTPS (descomentar en producción con SSL)
-        // $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        // Forzar HTTPS en producción (el navegador recordará usar HTTPS por 1 año)
+        if (!app()->isLocal()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
 
         // Política de permisos (restringir APIs del navegador)
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+        // Content Security Policy — previene ejecución de scripts no autorizados
+        $response->headers->set('Content-Security-Policy',
+            "default-src 'self'; " .
+            "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; " .
+            "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com; " .
+            "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com; " .
+            "img-src 'self' data:; " .
+            "connect-src 'self'; " .
+            "frame-ancestors 'self';"
+        );
 
         return $response;
     }

@@ -50,8 +50,9 @@ class AuthController extends Controller
         if ($usuario && !$usuario->activo) {
             RateLimiter::hit($throttleKey, self::DECAY_SECONDS);
 
+            // Mensaje genérico para no revelar si el usuario existe (anti-enumeración)
             return back()->withErrors([
-                'usuario' => 'Tu cuenta está desactivada. Contacta al administrador.',
+                'usuario' => 'Credenciales inválidas.',
             ])->withInput($request->only('usuario'));
         }
 

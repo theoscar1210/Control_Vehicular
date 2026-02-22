@@ -34,7 +34,7 @@ class DocumentoVehiculoController extends Controller
 
             // Subir archivo a Google Drive si se adjuntó
             if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-                $request->validate(['archivo' => 'file|max:10240']);
+                $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
                 $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
             }
 
@@ -57,7 +57,7 @@ class DocumentoVehiculoController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Error al guardar el documento: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al guardar el documento. Por favor intenta de nuevo.');
         }
     }
 
@@ -118,7 +118,7 @@ class DocumentoVehiculoController extends Controller
             );
 
             if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-                $request->validate(['archivo' => 'file|max:10240']);
+                $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
                 $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
             }
 
@@ -143,7 +143,7 @@ class DocumentoVehiculoController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Error al renovar el documento: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al renovar el documento. Por favor intenta de nuevo.');
         }
     }
 

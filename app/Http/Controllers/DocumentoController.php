@@ -135,7 +135,7 @@ class DocumentoController extends Controller
             'entidad_emisora' => 'nullable|string|max:100',
             'fecha_emision' => 'nullable|date',
             'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_emision',
-            'ruta_archivo' => 'nullable|string',
+            'ruta_archivo' => 'nullable|url|max:2048',
             'nota' => 'nullable|string|max:255',
         ]);
 

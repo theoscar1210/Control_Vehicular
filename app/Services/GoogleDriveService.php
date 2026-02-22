@@ -136,11 +136,8 @@ class GoogleDriveService
             'fields' => 'id, webViewLink',
         ]);
 
-        // Hacer el archivo accesible con enlace
-        $service->permissions->create($uploaded->getId(), new \Google\Service\Drive\Permission([
-            'type' => 'anyone',
-            'role' => 'reader',
-        ]));
+        // Acceso restringido — solo usuarios con acceso a la carpeta pueden ver el archivo
+        // (no se hace público con 'anyone: reader' para proteger documentos sensibles)
 
         return [
             'file_id' => $uploaded->getId(),
@@ -167,10 +164,7 @@ class GoogleDriveService
             'fields' => 'id, webViewLink',
         ]);
 
-        $service->permissions->create($uploaded->getId(), new \Google\Service\Drive\Permission([
-            'type' => 'anyone',
-            'role' => 'reader',
-        ]));
+        // Acceso restringido — solo usuarios con acceso a la carpeta pueden ver el archivo
 
         return [
             'file_id' => $uploaded->getId(),

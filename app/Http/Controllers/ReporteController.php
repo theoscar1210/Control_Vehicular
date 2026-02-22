@@ -63,7 +63,7 @@ class ReporteController extends Controller
 
         $estadoFiltro = $request->input('estado_docs');
 
-        if ($request->filled('tipo')) {
+        if ($request->filled('tipo') && in_array($request->tipo, ['CARRO', 'MOTO', 'CAMION', 'OTRO'])) {
             $query->where('tipo', $request->tipo);
         }
 
@@ -608,7 +608,7 @@ class ReporteController extends Controller
             $q->where('activo', 1);
         }])->where('estado', 'ACTIVO');
 
-        if ($request->filled('tipo')) {
+        if ($request->filled('tipo') && in_array($request->tipo, ['CARRO', 'MOTO', 'CAMION', 'OTRO'])) {
             $query->where('tipo', $request->tipo);
         }
 
@@ -915,7 +915,7 @@ class ReporteController extends Controller
             $q->where('activo', 1);
         }])->where('estado', 'ACTIVO');
 
-        if ($request->filled('tipo')) {
+        if ($request->filled('tipo') && in_array($request->tipo, ['CARRO', 'MOTO', 'CAMION', 'OTRO'])) {
             $query->where('tipo', $request->tipo);
         }
 

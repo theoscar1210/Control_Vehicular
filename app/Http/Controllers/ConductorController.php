@@ -224,7 +224,7 @@ class ConductorController extends Controller
                 && in_array(Auth::user()->rol, ['ADMIN', 'SST'])
                 && ($validated['clasificacion'] ?? 'EMPLEADO') === 'EMPLEADO'
             ) {
-                $request->validate(['archivo' => 'file|max:10240']);
+                $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
                 $this->subirArchivoConductorADrive($documento, $request->file('archivo'), $conductor->identificacion);
             }
         }

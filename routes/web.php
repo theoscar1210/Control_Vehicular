@@ -165,9 +165,6 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::get('/export/pdf', [DocumentoController::class, 'exportPdf'])->name('.export.pdf');
         });
 
-        Route::get('/documentos_conductor/{documento}/download', [DocumentoController::class, 'download'])
-            ->name('documentos_conductor.download');
-
         /*
         |--------------------------------------------------------------------------
         | CENTRO DE REPORTES

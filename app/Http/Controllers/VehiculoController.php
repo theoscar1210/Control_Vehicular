@@ -129,7 +129,7 @@ class VehiculoController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Error al crear el vehículo: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al crear el vehículo. Por favor intenta de nuevo.');
         }
     }
 
@@ -249,7 +249,7 @@ class VehiculoController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Error al actualizar el vehículo: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al actualizar el vehículo. Por favor intenta de nuevo.');
         }
     }
 
