@@ -19,7 +19,7 @@ class GoogleDriveService
     }
 
     /**
-     * Inicializa el cliente de Google Drive con Service Account.
+     * Inicializa el cliente de Google Drive con OAuth 2.0.
      */
     protected function getService(): Drive
     {
@@ -27,22 +27,11 @@ class GoogleDriveService
             return $this->service;
         }
 
-        $credentialsPath = config('google.drive.credentials_path');
-        $fullPath = base_path($credentialsPath);
-
-        if (!file_exists($fullPath)) {
-            throw new \RuntimeException("Archivo de credenciales de Google Drive no encontrado: {$credentialsPath}");
-        }
-
         $client = new Client();
-        $client->setAuthConfig($fullPath);
+        $client->setClientId(config('google.drive.client_id'));
+        $client->setClientSecret(config('google.drive.client_secret'));
         $client->addScope(Drive::DRIVE);
-
-        // Domain-Wide Delegation: impersonar usuario con quota de almacenamiento
-        $impersonateEmail = config('google.drive.impersonate_email');
-        if ($impersonateEmail) {
-            $client->setSubject($impersonateEmail);
-        }
+        $client->fetchAccessTokenWithRefreshToken(config('google.drive.refresh_token'));
 
         $this->service = new Drive($client);
 
@@ -54,11 +43,10 @@ class GoogleDriveService
      */
     public function isConfigured(): bool
     {
-        $credentialsPath = config('google.drive.credentials_path');
-
         return $this->rootFolderId
-            && $credentialsPath
-            && file_exists(base_path($credentialsPath));
+            && config('google.drive.client_id')
+            && config('google.drive.client_secret')
+            && config('google.drive.refresh_token');
     }
 
     /**
