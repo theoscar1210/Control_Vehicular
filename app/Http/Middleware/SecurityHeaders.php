@@ -39,10 +39,13 @@ class SecurityHeaders
         // Política de permisos (restringir APIs del navegador)
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
-        // Content Security Policy — sin 'unsafe-inline' tras migrar todos los scripts a archivos externos
+        // Content Security Policy
+        // script-src: solo archivos externos (sin 'unsafe-inline' → bloquea <script> inyectados)
+        // script-src-attr: permite onclick/onchange inline existentes en las vistas (menos riesgo que <script>)
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; " .
             "script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com code.jquery.com; " .
+            "script-src-attr 'unsafe-inline'; " .
             "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com; " .
             "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com; " .
             "img-src 'self' data:; " .
