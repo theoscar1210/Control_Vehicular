@@ -32,10 +32,10 @@ $sinPadding = true;
 
 
             <div class="btn-group">
-                <button type="button" class="btn btn-success" onclick="exportarReporte('excel')">
+                <button type="button" class="btn btn-success" data-export-format="excel">
                     <i class="fas fa-file-excel me-1"></i> Excel
                 </button>
-                <button type="button" class="btn btn-danger" onclick="exportarReporte('pdf')">
+                <button type="button" class="btn btn-danger" data-export-format="pdf">
                     <i class="fas fa-file-pdf me-1"></i> PDF
                 </button>
             </div>
@@ -256,21 +256,10 @@ $sinPadding = true;
     </div>
 </div>
 
-<script>
-    function exportarReporte(formato) {
-        const form = document.getElementById('filtrosForm');
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData).toString();
-
-        let url = formato === 'excel' ?
-            '{{ route("reportes.export.excel", ["tipo" => "conductores"]) }}' :
-            '{{ route("reportes.export.pdf", ["tipo" => "conductores"]) }}';
-
-        if (params) {
-            url += '?' + params;
-        }
-
-        window.open(url, '_blank');
-    }
-</script>
+<div id="export-config"
+     data-url-excel="{{ route('reportes.export.excel', ['tipo' => 'conductores']) }}"
+     data-url-pdf="{{ route('reportes.export.pdf', ['tipo' => 'conductores']) }}"
+     data-use-form="true"
+     style="display:none;"></div>
+<script src="{{ asset('js/reportes.js') }}"></script>
 @endsection

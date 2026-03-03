@@ -283,21 +283,5 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoDocSelect = document.getElementById('documento_tipo_edit');
-        const seccionCategoria = document.getElementById('seccion_categoria_edit');
-
-        function toggleCategoriaLicencia() {
-            if (tipoDocSelect.value === 'LICENCIA CONDUCCION') {
-                seccionCategoria.style.display = 'block';
-            } else {
-                seccionCategoria.style.display = 'none';
-            }
-        }
-
-        tipoDocSelect.addEventListener('change', toggleCategoriaLicencia);
-        toggleCategoriaLicencia(); // Initial check
-    });
-</script>
+<script src="{{ asset('js/conductor-edit.js') }}"></script>
 @endsection

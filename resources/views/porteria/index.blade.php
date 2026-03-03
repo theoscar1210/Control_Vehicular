@@ -718,32 +718,5 @@ $sinPadding = true;
     </footer>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoBusqueda = document.getElementById('tipoBusqueda');
-        const inputBusqueda = document.querySelector('input[name="busqueda"]');
-        const labelBusqueda = document.getElementById('labelBusqueda');
-
-        const placeholders = {
-            'todo': 'Placa, nombre, cédula...',
-            'placa': 'Ej: ABC123',
-            'conductor': 'Nombre o apellido del conductor',
-            'propietario': 'Nombre o apellido del propietario',
-            'documento': 'Número de cédula o documento'
-        };
-
-        const labels = {
-            'todo': 'Término de búsqueda:',
-            'placa': 'Placa del vehículo:',
-            'conductor': 'Nombre del conductor:',
-            'propietario': 'Nombre del propietario:',
-            'documento': 'Número de documento:'
-        };
-
-        tipoBusqueda.addEventListener('change', function() {
-            inputBusqueda.placeholder = placeholders[this.value] || placeholders['todo'];
-            labelBusqueda.textContent = labels[this.value] || labels['todo'];
-        });
-    });
-</script>
+<script src="{{ asset('js/porteria.js') }}"></script>
 @endsection

@@ -26,7 +26,12 @@
 
 </head>
 
-<body>
+<body
+    @auth
+    data-session-lifetime="{{ config('session.lifetime') }}"
+    data-login-url="{{ route('login') }}"
+    @endauth
+>
 
     {{-- Navbar Especial --}}
     @if(isset($navbarEspecial) && $navbarEspecial === true)
@@ -282,133 +287,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        // Toggle Sidebar
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const body = document.body;
-
-            const isOpen = sidebar.classList.toggle('open');
-            overlay.classList.toggle('active', isOpen);
-            body.classList.toggle('sidebar-open', isOpen);
-        }
-
-        // Cerrar Sidebar
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const body = document.body;
-
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            body.classList.remove('sidebar-open');
-        }
-
-        // Inicialización cuando el DOM está listo
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
-            const toggleBtn = document.querySelector('.btn-toggle-menu');
-
-            // Cerrar sidebar al hacer click en un enlace (solo en móvil/tablet)
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    // No cerrar si es un collapse toggle
-                    if (this.getAttribute('data-bs-toggle') === 'collapse') {
-                        return;
-                    }
-                    if (window.innerWidth <= 991) {
-                        closeSidebar();
-                    }
-                });
-            });
-
-            // Cerrar sidebar con tecla Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
-                    closeSidebar();
-                }
-            });
-
-            // Cerrar sidebar al hacer resize si pasa a desktop
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(function() {
-                    if (window.innerWidth > 991 && sidebar) {
-                        closeSidebar();
-                    }
-                }, 100);
-            });
-
-            // Marcar enlace activo
-            const currentPath = window.location.pathname;
-            sidebarLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href === currentPath || (href && currentPath.startsWith(href) && href !== '/')) {
-                    link.classList.add('active');
-                    // Abrir el collapse parent si existe
-                    const parentCollapse = link.closest('.collapse');
-                    if (parentCollapse) {
-                        parentCollapse.classList.add('show');
-                    }
-                }
-            });
-
-            // Alertas
-            window.markAlertRead = function(id) {
-                fetch('/alertas/' + id + '/read', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                }).then(r => r.json()).then(json => {
-                    if (json.ok) {
-                        fetch('/alertas/unread-count')
-                            .then(r => r.json())
-                            .then(d => {
-                                const badge = document.querySelector('.badge.bg-danger');
-                                if (badge) badge.innerText = d.unread;
-                            });
-                        const alertRow = document.getElementById('alert-row-' + id);
-                        if (alertRow) alertRow.classList.add('text-muted');
-                    }
-                });
-            };
-        });
-    </script>
-
-    @auth
-    <script>
-        // Auto-logout por inactividad (sincronizado con session.lifetime)
-        (function() {
-            const SESSION_LIFETIME_MS = {{ config('session.lifetime') }} * 60 * 1000;
-            const WARNING_BEFORE_MS = 60 * 1000; // Avisar 1 minuto antes
-            let inactivityTimer, warningTimer;
-
-            function resetTimers() {
-                clearTimeout(inactivityTimer);
-                clearTimeout(warningTimer);
-
-                warningTimer = setTimeout(function() {
-                    alert('Tu sesion se cerrara en 1 minuto por inactividad.');
-                }, SESSION_LIFETIME_MS - WARNING_BEFORE_MS);
-
-                inactivityTimer = setTimeout(function() {
-                    window.location.href = '{{ route("login") }}';
-                }, SESSION_LIFETIME_MS);
-            }
-
-            ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(evt) {
-                document.addEventListener(evt, resetTimers, { passive: true });
-            });
-
-            resetTimers();
-        })();
-    </script>
-    @endauth
+    <script src="{{ asset('js/app-layout.js') }}"></script>
 
 </body>
 

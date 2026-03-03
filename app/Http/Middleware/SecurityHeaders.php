@@ -39,20 +39,18 @@ class SecurityHeaders
         // Política de permisos (restringir APIs del navegador)
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
-        // Content Security Policy — previene ejecución de scripts no autorizados
-        // Nota: 'unsafe-inline' es necesario mientras haya scripts inline en Blade.
-        // Migrar a nonces en el futuro para eliminar 'unsafe-inline'.
+        // Content Security Policy — sin 'unsafe-inline' tras migrar todos los scripts a archivos externos
         $response->headers->set('Content-Security-Policy',
             "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; " .
+            "script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com code.jquery.com; " .
             "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com; " .
             "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com; " .
             "img-src 'self' data:; " .
             "connect-src 'self'; " .
             "frame-ancestors 'self'; " .
-            "object-src 'none'; " .          // Bloquea plugins (Flash, Java, ActiveX)
-            "base-uri 'self'; " .            // Previene inyección de etiqueta <base>
-            "form-action 'self';"            // Formularios solo envían a mismo origen
+            "object-src 'none'; " .
+            "base-uri 'self'; " .
+            "form-action 'self';"
         );
 
         return $response;

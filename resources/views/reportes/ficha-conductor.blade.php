@@ -43,7 +43,9 @@ $sinPadding = true;
                 <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
                     <i class="fas fa-print me-1"></i> Imprimir
                 </button>
-                <button type="button" class="btn btn-danger" onclick="exportarPDF()">
+                <button type="button" class="btn btn-danger"
+                        data-export-format="pdf"
+                        data-pdf-url="{{ route('reportes.ficha.conductor.pdf', $conductor->id_conductor) }}">
                     <i class="fas fa-file-pdf me-1"></i> PDF
                 </button>
             </div>
@@ -360,9 +362,5 @@ $sinPadding = true;
 </div>
 </div>
 
-<script>
-    function exportarPDF() {
-        window.open('{{ route("reportes.ficha.conductor.pdf", $conductor->id_conductor) }}', '_blank');
-    }
-</script>
+<script src="{{ asset('js/ficha-export.js') }}"></script>
 @endsection

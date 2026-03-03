@@ -62,8 +62,8 @@
         @method('PATCH')
     </form>
 
-    {{-- Tarjeta contenedora --}}
-    <div class="card shadow-sm border-0">
+    {{-- Tarjeta contenedora — data-base-url requerido por usuarios.js --}}
+    <div id="usuarios-table-container" data-base-url="{{ url('usuarios') }}" class="card shadow-sm border-0">
         <div class="card-body p-0">
 
             {{-- Tabla responsive --}}
@@ -167,103 +167,7 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const radios = document.querySelectorAll('.radio-usuario');
-    const btnEditar = document.getElementById('btnEditar');
-    const btnEliminar = document.getElementById('btnEliminar');
-    const btnToggleActivo = document.getElementById('btnToggleActivo');
-    const btnToggleTexto = document.getElementById('btnToggleTexto');
-    const seleccionInfo = document.getElementById('seleccionInfo');
-    const formEliminar = document.getElementById('formEliminar');
-    const formToggleActivo = document.getElementById('formToggleActivo');
-    const modalEliminar = new bootstrap.Modal(document.getElementById('modalEliminar'));
-    const nombreUsuarioEliminar = document.getElementById('nombreUsuarioEliminar');
-    const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
-
-    let usuarioSeleccionado = null;
-    let nombreSeleccionado = '';
-    let usuarioActivo = false;
-
-    // Seleccionar fila completa al hacer clic
-    document.querySelectorAll('.fila-usuario').forEach(function(fila) {
-        fila.style.cursor = 'pointer';
-        fila.addEventListener('click', function(e) {
-            if (e.target.type !== 'radio') {
-                const radio = this.querySelector('.radio-usuario');
-                radio.checked = true;
-                radio.dispatchEvent(new Event('change'));
-            }
-        });
-    });
-
-    // Manejar cambio en radio buttons
-    radios.forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            if (this.checked) {
-                usuarioSeleccionado = this.value;
-                const fila = this.closest('.fila-usuario');
-                nombreSeleccionado = fila.dataset.nombre;
-                usuarioActivo = fila.dataset.activo === '1';
-
-                // Habilitar botones
-                btnEditar.disabled = false;
-                btnEliminar.disabled = false;
-                btnToggleActivo.disabled = false;
-
-                // Actualizar texto del botón toggle
-                if (usuarioActivo) {
-                    btnToggleTexto.textContent = 'Desactivar';
-                    btnToggleActivo.classList.remove('btn-success');
-                    btnToggleActivo.classList.add('btn-secondary');
-                } else {
-                    btnToggleTexto.textContent = 'Activar';
-                    btnToggleActivo.classList.remove('btn-secondary');
-                    btnToggleActivo.classList.add('btn-success');
-                }
-
-                // Mostrar info de selección
-                seleccionInfo.innerHTML = '<i class="fas fa-user-check text-success me-1"></i>Seleccionado: <strong>' + nombreSeleccionado + '</strong>';
-
-                // Resaltar fila seleccionada
-                document.querySelectorAll('.fila-usuario').forEach(f => f.classList.remove('table-active'));
-                fila.classList.add('table-active');
-            }
-        });
-    });
-
-    // Botón Editar
-    btnEditar.addEventListener('click', function() {
-        if (usuarioSeleccionado) {
-            window.location.href = '{{ url("usuarios") }}/' + usuarioSeleccionado + '/edit';
-        }
-    });
-
-    // Botón Toggle Activo
-    btnToggleActivo.addEventListener('click', function() {
-        if (usuarioSeleccionado) {
-            formToggleActivo.action = '{{ url("usuarios") }}/' + usuarioSeleccionado + '/toggle-activo';
-            formToggleActivo.submit();
-        }
-    });
-
-    // Botón Eliminar - mostrar modal
-    btnEliminar.addEventListener('click', function() {
-        if (usuarioSeleccionado) {
-            nombreUsuarioEliminar.textContent = nombreSeleccionado;
-            modalEliminar.show();
-        }
-    });
-
-    // Confirmar eliminación
-    btnConfirmarEliminar.addEventListener('click', function() {
-        if (usuarioSeleccionado) {
-            formEliminar.action = '{{ url("usuarios") }}/' + usuarioSeleccionado;
-            formEliminar.submit();
-        }
-    });
-});
-</script>
+<script src="{{ asset('js/usuarios.js') }}"></script>
 
 <style>
 .fila-usuario:hover {
