@@ -22,7 +22,7 @@ Schedule::command('check:document-expirations')
 
 // Enviar alertas semanales (lunes a las 4:00 AM)
 Schedule::command('alertas:enviar-semanales')
-    ->weeklyOn(1, '04:00')
+    ->weeklyOn(1, '04:00') // 1= Lunes a las 4:00 AM
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/alertas-semanales.log'));
 

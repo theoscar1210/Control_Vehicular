@@ -50,6 +50,13 @@ class PorteriaController extends Controller
 
         if ($busqueda) {
             $busqueda = strtoupper(trim($busqueda));
+
+            // Mínimo 2 caracteres para evitar consultas masivas tipo "%a%"
+            if (mb_strlen($busqueda) < 2) {
+                return redirect()->route('porteria.index')
+                    ->with('error', 'La búsqueda debe tener al menos 2 caracteres.');
+            }
+
             $resultado = $this->realizarBusqueda($busqueda, $tipoBusqueda);
 
             $vehiculos = $resultado['vehiculos'];
@@ -92,10 +99,11 @@ class PorteriaController extends Controller
 
         switch ($tipo) {
             case 'placa':
-                // Búsqueda por placa (parcial o completa)
+                // Búsqueda por placa (parcial o completa) — máx 50 resultados para evitar DoS
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->where('placa', 'LIKE', "%{$busqueda}%")
                     ->where('estado', 'ACTIVO')
+                    ->limit(50)
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -104,7 +112,7 @@ class PorteriaController extends Controller
                 break;
 
             case 'conductor':
-                // Búsqueda por nombre/apellido de conductor
+                // Búsqueda por nombre/apellido de conductor — máx 50 resultados
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->whereHas('conductor', function ($q) use ($busqueda) {
                         $q->where('activo', 1)
@@ -115,6 +123,7 @@ class PorteriaController extends Controller
                           });
                     })
                     ->where('estado', 'ACTIVO')
+                    ->limit(50)
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -123,7 +132,7 @@ class PorteriaController extends Controller
                 break;
 
             case 'propietario':
-                // Búsqueda por nombre/apellido de propietario
+                // Búsqueda por nombre/apellido de propietario — máx 50 resultados
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->whereHas('propietario', function ($q) use ($busqueda) {
                         $q->where('nombre', 'LIKE', "%{$busqueda}%")
@@ -131,6 +140,7 @@ class PorteriaController extends Controller
                           ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                     })
                     ->where('estado', 'ACTIVO')
+                    ->limit(50)
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -139,7 +149,7 @@ class PorteriaController extends Controller
                 break;
 
             case 'documento':
-                // Búsqueda por número de documento de identidad (conductor o propietario)
+                // Búsqueda por número de documento de identidad — máx 50 resultados
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->where('estado', 'ACTIVO')
                     ->where(function ($q) use ($busqueda) {
@@ -150,6 +160,7 @@ class PorteriaController extends Controller
                             $q2->where('identificacion', 'LIKE', "%{$busqueda}%");
                         });
                     })
+                    ->limit(50)
                     ->get();
 
                 if ($vehiculos->isEmpty()) {
@@ -159,7 +170,7 @@ class PorteriaController extends Controller
 
             case 'todo':
             default:
-                // Búsqueda global (placa, conductor, propietario, documento)
+                // Búsqueda global (placa, conductor, propietario, documento) — máx 50 resultados
                 $vehiculos = Vehiculo::with(['conductor.documentosConductor', 'propietario', 'documentos'])
                     ->where('estado', 'ACTIVO')
                     ->where(function ($q) use ($busqueda) {
@@ -181,6 +192,7 @@ class PorteriaController extends Controller
                                ->orWhere('identificacion', 'LIKE', "%{$busqueda}%");
                         });
                     })
+                    ->limit(50)
                     ->get();
 
                 if ($vehiculos->isEmpty()) {

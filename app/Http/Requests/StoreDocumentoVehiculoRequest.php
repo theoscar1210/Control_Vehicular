@@ -59,6 +59,17 @@ class StoreDocumentoVehiculoRequest extends FormRequest
             $rules['fecha_matricula'] = 'required|date|before_or_equal:today';
         }
 
+        // Validar archivo: solo formatos seguros, sin tipos ejecutables ni documentos con macros
+        $rules['archivo'] = 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png';
+
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'archivo.mimes' => 'Solo se permiten archivos PDF, JPG o PNG.',
+            'archivo.max'   => 'El archivo no puede superar los 10 MB.',
+        ];
     }
 }

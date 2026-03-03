@@ -19,10 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
-            'nocache' => \App\Http\Middleware\NoCacheHeaders::class,
-            'ability' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
-            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+            'auth'     => \App\Http\Middleware\Authenticate::class,
+            'role'     => \App\Http\Middleware\CheckRole::class,
+            'nocache'  => \App\Http\Middleware\NoCacheHeaders::class,
+            'ability'  => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'abilities'=> \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

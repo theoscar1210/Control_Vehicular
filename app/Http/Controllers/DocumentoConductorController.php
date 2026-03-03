@@ -105,8 +105,9 @@ class DocumentoConductorController extends Controller
         $newDoc->load('conductor');
         Alerta::generarAlertasDocumentoConductor($newDoc);
 
-        if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
+        // Validar y subir archivo antes de redirigir (tipos seguros únicamente)
+        if ($request->hasFile('archivo')) {
+            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png']);
             $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
         }
 
@@ -204,10 +205,9 @@ class DocumentoConductorController extends Controller
         $newDoc->load('conductor');
         Alerta::generarAlertasDocumentoConductor($newDoc);
 
-        if ($request->hasFile('archivo')
-            && in_array(auth()->user()->rol, ['ADMIN', 'SST'])
-            && $conductor->clasificacion === 'EMPLEADO') {
-            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
+        // Validar y subir archivo (tipos seguros únicamente)
+        if ($request->hasFile('archivo') && $conductor->clasificacion === 'EMPLEADO') {
+            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png']);
             $this->subirArchivoConductorADrive($newDoc, $request->file('archivo'), $conductor->identificacion);
         }
 

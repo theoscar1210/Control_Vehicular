@@ -32,9 +32,8 @@ class DocumentoVehiculoController extends Controller
         try {
             $nuevoDocumento = $this->documentoService->crearDocumento($vehiculo, $validated);
 
-            // Subir archivo a Google Drive si se adjuntó
-            if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-                $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
+            // Subir archivo a Google Drive si se adjuntó (ya validado en StoreDocumentoVehiculoRequest)
+            if ($request->hasFile('archivo')) {
                 $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
             }
 
@@ -52,7 +51,7 @@ class DocumentoVehiculoController extends Controller
                 'vehiculo' => $idVehiculo,
                 'tipo_documento' => $validated['tipo_documento'] ?? null,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
             ]);
 
             return back()
@@ -110,6 +109,11 @@ class DocumentoVehiculoController extends Controller
             'nota'             => 'nullable|string|max:255',
         ]);
 
+        // Validar archivo antes de cualquier operación si viene en la petición
+        if ($request->hasFile('archivo')) {
+            $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png']);
+        }
+
         try {
             $nuevoDocumento = $this->documentoService->renovarDocumento(
                 $vehiculo,
@@ -117,8 +121,7 @@ class DocumentoVehiculoController extends Controller
                 $validated
             );
 
-            if ($request->hasFile('archivo') && in_array(auth()->user()->rol, ['ADMIN', 'SST'])) {
-                $request->validate(['archivo' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx']);
+            if ($request->hasFile('archivo')) {
                 $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
             }
 

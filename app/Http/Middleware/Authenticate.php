@@ -2,19 +2,17 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class Authenticate
+class Authenticate extends Middleware
 {
     /**
-     * Gestionar una solicitud entrante.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * Redirige al usuario no autenticado a la ruta de login.
+     * Retorna null para peticiones JSON (API) para devolver 401 en lugar de redirect.
      */
-    public function handle(Request $request, Closure $next): Response
+    protected function redirectTo(Request $request): ?string
     {
-        return $next($request);
+        return $request->expectsJson() ? null : route('login');
     }
 }

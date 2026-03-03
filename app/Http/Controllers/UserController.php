@@ -78,6 +78,13 @@ class UserController extends Controller
     public function destroy($id)
     {
         $usuario = Usuario::findOrFail($id);
+
+        // Prevenir que el administrador elimine su propia cuenta (lock-out)
+        if ($usuario->id_usuario === auth()->id()) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'No puedes eliminar tu propia cuenta de administrador.');
+        }
+
         $usuario->delete();
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado.');
     }
