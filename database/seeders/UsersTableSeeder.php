@@ -23,56 +23,5 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-        // Usuario SST
-        Usuario::firstOrCreate(
-            ['usuario' => 'sst'],
-            [
-                'nombre' => 'Carolina',
-                'apellido' => 'Mejía Torres',
-                'email' => 'sst@controlvehicular.com',
-                'password' => Hash::make('password'),
-                'rol' => 'SST',
-                'activo' => true,
-            ]
-        );
-
-        // Usuario Portería 1
-        Usuario::firstOrCreate(
-            ['usuario' => 'porteria'],
-            [
-                'nombre' => 'Jorge',
-                'apellido' => 'Castañeda',
-                'email' => 'porteria@controlvehicular.com',
-                'password' => Hash::make('password'),
-                'rol' => 'PORTERIA',
-                'activo' => true,
-            ]
-        );
-
-        // Usuario Portería 2
-        Usuario::firstOrCreate(
-            ['usuario' => 'porteria2'],
-            [
-                'nombre' => 'Martha',
-                'apellido' => 'Velásquez',
-                'email' => 'porteria2@controlvehicular.com',
-                'password' => Hash::make('password'),
-                'rol' => 'PORTERIA',
-                'activo' => true,
-            ]
-        );
-
-        // Otro administrador
-        Usuario::firstOrCreate(
-            ['usuario' => 'rgomez'],
-            [
-                'nombre' => 'Roberto',
-                'apellido' => 'Gómez Pérez',
-                'email' => 'rgomez@controlvehicular.com',
-                'password' => Hash::make('password'),
-                'rol' => 'ADMIN',
-                'activo' => true,
-            ]
-        );
     }
 }
