@@ -169,8 +169,8 @@ elementos comunes
     .login-container {
         padding: 0.75rem;
         min-height: 100vh;
-        align-items: flex-start;
-        padding-top: 2rem;
+        align-items: center;
+        justify-content: center;
     }
 
     .login-card {
@@ -229,7 +229,8 @@ elementos comunes
 @media (max-width: 400px) {
     .login-container {
         padding: 0.5rem;
-        padding-top: 1.5rem;
+        align-items: center;
+        justify-content: center;
     }
 
     .login-card {
