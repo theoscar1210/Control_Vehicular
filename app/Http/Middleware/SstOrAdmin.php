@@ -19,10 +19,10 @@ class SstOrAdmin
         $user = Auth::user();
 
 
-        // si mas adelante se usa auth mantener esto seguro
+        // si más adelante se usa auth, mantener esto seguro
 
         if (!$user || !in_array($user->rol, ['SST', 'ADMIN'])) {
-            //SI NO HAY ESTA SESION ACTIVA O ROL NO PERMITIDO REDIRIGIR AL LOGUIN O DASHBOARD
+            // Si no hay sesión activa o el rol no está permitido, redirigir al login o al dashboard
             return redirect()->route('login')->withErrors(['auth' => 'Acceso denegado. Requiere rol SST o ADMIN']);
         }
         return $next($request);

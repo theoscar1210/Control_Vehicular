@@ -31,7 +31,7 @@ class CheckDocumentExpirations extends Command
         $totalRevisados = $resultadoVehiculos['revisados'] + $resultadoConductores['revisados'];
         $totalCreadas = $resultadoVehiculos['creadas'] + $resultadoConductores['creadas'];
 
-        $this->info("Check completed - documents checked: {$totalRevisados}, alerts created: {$totalCreadas}");
+        $this->info("Verificación completada - documentos revisados: {$totalRevisados}, alertas creadas: {$totalCreadas}");
         return 0;
     }
 }

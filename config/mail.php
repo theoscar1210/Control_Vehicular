@@ -7,10 +7,10 @@ return [
     | Default Mailer
     |--------------------------------------------------------------------------
     |
-    | This option controls the default mailer that is used to send all email
-    | messages unless another mailer is explicitly specified when sending
-    | the message. All additional mailers can be configured within the
-    | "mailers" array. Examples of each type of mailer are provided.
+    | Esta opción controla el mailer predeterminado que se usa para enviar todos los correos
+    | electrónicos, a menos que se especifique otro de forma explícita al enviar
+    | el mensaje. Los mailers adicionales se pueden configurar en el
+    | array "mailers". Se proporcionan ejemplos de cada tipo.
     |
     */
 
@@ -21,15 +21,15 @@ return [
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |
-    | Here you may configure all of the mailers used by your application plus
-    | their respective settings. Several examples have been configured for
-    | you and you are free to add your own as your application requires.
+    | Aquí puede configurar todos los mailers utilizados por su aplicación junto
+    | con sus respectivos ajustes. Se han configurado varios ejemplos para
+    | usted y puede añadir los suyos según lo requiera la aplicación.
     |
-    | Laravel supports a variety of mail "transport" drivers that can be used
-    | when delivering an email. You may specify which one you're using for
-    | your mailers below. You may also add additional mailers if needed.
+    | Laravel admite una variedad de controladores de "transporte" de correo que pueden usarse
+    | al entregar un correo electrónico. Puede especificar cuál está usando para
+    | sus mailers a continuación. También puede agregar mailers adicionales si es necesario.
     |
-    | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
+    | Compatible: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
     |            "postmark", "resend", "log", "array",
     |            "failover", "roundrobin"
     |
@@ -104,9 +104,9 @@ return [
     | Global "From" Address
     |--------------------------------------------------------------------------
     |
-    | You may wish for all emails sent by your application to be sent from
-    | the same address. Here you may specify a name and address that is
-    | used globally for all emails that are sent by your application.
+    | Es posible que desee que todos los correos enviados por su aplicación se envíen desde
+    | la misma dirección. Aquí puede especificar un nombre y una dirección que se usa
+    | globalmente para todos los correos electrónicos enviados por su aplicación.
     |
     */
 

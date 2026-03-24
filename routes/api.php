@@ -28,7 +28,7 @@ use App\Http\Controllers\Api\AlertaController;
 // RUTAS PÚBLICAS (sin autenticación)
 // ============================================================================
 
-// Health check
+// Verificación de disponibilidad del servicio
 Route::get('/ping', function () {
     return response()->json([
         'status' => 'ok',

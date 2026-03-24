@@ -125,7 +125,7 @@ class DocumentoController extends Controller
         ]);
     }
 
-    // renovar documento de conductor
+    // Renovar documento de conductor
     public function renewDocumentoConductor(Request $request)
     {
         $data = $request->validate([

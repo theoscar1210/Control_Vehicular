@@ -9,7 +9,7 @@ use App\Models\Conductor;
 class ConductorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar listado de conductores con sus documentos y vehículos.
      */
     public function index()
     {
@@ -38,7 +38,7 @@ class ConductorController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un conductor específico con sus relaciones.
      */
     public function show(Conductor $conductor)
     {

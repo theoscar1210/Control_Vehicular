@@ -32,7 +32,7 @@ class EnsureRoleExists
             return redirect()->route('login')->withErrors(['rol' => 'Rol Invalido, Contacta al administador']);
         }
 
-        //rol valido
+        // rol válido
 
         return $next($request);
     }

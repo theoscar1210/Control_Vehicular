@@ -12,7 +12,7 @@ class StoreVehiculoRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Obtener las reglas de validación que aplican a la solicitud.
      *
      * @return array
      */

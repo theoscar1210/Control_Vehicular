@@ -15,7 +15,7 @@ class UpdateConductorRequest extends FormRequest
     /**
      * Reglas de validación para actualizar un conductor.
      *
-     * @return array Validation rules.
+     * @return array Reglas de validación.
      */
     public function rules(): array
     {

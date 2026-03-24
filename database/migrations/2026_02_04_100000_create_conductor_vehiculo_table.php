@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecutar las migraciones.
      * Tabla pivote para relación muchos a muchos entre conductores y vehículos.
      * Un vehículo puede tener varios conductores asignados.
      * Un conductor puede manejar varios vehículos.
@@ -42,7 +42,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Revertir las migraciones.
      */
     public function down(): void
     {

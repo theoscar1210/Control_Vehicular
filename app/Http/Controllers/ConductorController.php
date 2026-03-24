@@ -387,7 +387,7 @@ class ConductorController extends Controller
                             ? 'VENCIDO'
                             : 'VIGENTE',
                     ];
-                    // Add category if document is a license
+                    // Agregar categoría si el documento es una licencia
                     if (($validated['documento_tipo'] ?? $doc->tipo_documento) === 'LICENCIA CONDUCCION' && !empty($validated['categoria_licencia'])) {
                         $updateData['categoria_licencia'] = $validated['categoria_licencia'];
                     }
@@ -422,7 +422,7 @@ class ConductorController extends Controller
                     'fecha_registro' => now(),
                     'version' => $newVersion,
                 ];
-                // Add category if document is a license
+                // Agregar categoría si el documento es una licencia
                 if ($tipo === 'LICENCIA CONDUCCION' && !empty($validated['categoria_licencia'])) {
                     $newDocData['categoria_licencia'] = $validated['categoria_licencia'];
                 }
