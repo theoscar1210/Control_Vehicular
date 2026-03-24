@@ -49,7 +49,7 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com; " .
             "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com; " .
             "img-src 'self' data:; " .
-            "connect-src 'self'; " .
+            "connect-src 'self' cdn.jsdelivr.net; " .
             "frame-ancestors 'self'; " .
             "object-src 'none'; " .
             "base-uri 'self'; " .
