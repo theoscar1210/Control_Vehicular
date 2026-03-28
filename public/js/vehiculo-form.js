@@ -104,7 +104,16 @@ document.addEventListener('DOMContentLoaded', function () {
      * --------------------------------------------------------------------- */
     var propietarioSection = document.getElementById('propietario-section');
     if (propietarioSection && propietarioSection.dataset.aviso === '1') {
+        var enviandoFormulario = false;
+
+        document.querySelectorAll('form').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                enviandoFormulario = true;
+            });
+        });
+
         window.addEventListener('beforeunload', function (e) {
+            if (enviandoFormulario) return;
             e.preventDefault();
             e.returnValue = 'Has creado un propietario pero no un vehículo. ¿Deseas salir?';
             return e.returnValue;
