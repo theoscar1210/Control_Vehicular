@@ -242,6 +242,29 @@ class DocumentoConductorController extends Controller
     }
 
     /**
+     * ============================================
+     * ADJUNTAR ARCHIVO A DOCUMENTO EXISTENTE SIN ARCHIVO
+     * ============================================
+     */
+    public function adjuntarArchivo(Request $request, $idConductor, $idDocumento)
+    {
+        $conductor = Conductor::findOrFail($idConductor);
+        $documento = DocumentoConductor::where('id_doc_conductor', $idDocumento)
+            ->where('id_conductor', $conductor->id_conductor)
+            ->firstOrFail();
+
+        if ($documento->google_drive_file_id) {
+            return back()->with('error', 'Este documento ya tiene un archivo adjunto en Google Drive.');
+        }
+
+        $request->validate(['archivo' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png']);
+
+        $this->subirArchivoConductorADrive($documento, $request->file('archivo'), $conductor->identificacion);
+
+        return back()->with('success', 'Archivo adjuntado correctamente en Google Drive.');
+    }
+
+    /**
      * Mostrar formulario para crear documento de un conductor.
      * Route-model binding inyecta el Conductor.
      */

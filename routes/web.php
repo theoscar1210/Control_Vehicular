@@ -111,6 +111,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
                 Route::post('/', [DocumentoVehiculoController::class, 'store'])->name('store');
                 Route::get('/{documento}/edit', [DocumentoVehiculoController::class, 'edit'])->name('edit');
                 Route::put('/{documento}', [DocumentoVehiculoController::class, 'update'])->name('update');
+                Route::post('/{documento}/adjuntar', [DocumentoVehiculoController::class, 'adjuntarArchivo'])->name('adjuntar');
                 Route::get('/historial', [DocumentoVehiculoController::class, 'historialCompleto'])->name('historial.completo');
                 Route::get('/{tipo}/historial', [DocumentoVehiculoController::class, 'historial'])->name('historial');
             });
@@ -143,6 +144,7 @@ Route::middleware(['auth', 'nocache'])->group(function () {
                 Route::get('/historial', [DocumentoConductorController::class, 'historial'])->name('historial');
                 Route::post('/renovar', [DocumentoConductorController::class, 'renovar'])->name('renovar');
                 Route::post('/renovar-categoria', [DocumentoConductorController::class, 'renovarCategoria'])->name('renovar-categoria');
+                Route::post('/{documento}/adjuntar', [DocumentoConductorController::class, 'adjuntarArchivo'])->name('adjuntar');
             });
         });
 

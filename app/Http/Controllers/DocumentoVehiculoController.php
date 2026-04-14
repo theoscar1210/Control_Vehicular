@@ -152,6 +152,29 @@ class DocumentoVehiculoController extends Controller
 
     /**
      * ============================================
+     * ADJUNTAR ARCHIVO A DOCUMENTO EXISTENTE SIN ARCHIVO
+     * ============================================
+     */
+    public function adjuntarArchivo(Request $request, $idVehiculo, $idDocumento)
+    {
+        $vehiculo = Vehiculo::findOrFail($idVehiculo);
+        $documento = DocumentoVehiculo::where('id_doc_vehiculo', $idDocumento)
+            ->where('id_vehiculo', $vehiculo->id_vehiculo)
+            ->firstOrFail();
+
+        if ($documento->google_drive_file_id) {
+            return back()->with('error', 'Este documento ya tiene un archivo adjunto en Google Drive.');
+        }
+
+        $request->validate(['archivo' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png']);
+
+        $this->subirArchivoADrive($documento, $request->file('archivo'), $vehiculo->placa);
+
+        return back()->with('success', 'Archivo adjuntado correctamente en Google Drive.');
+    }
+
+    /**
+     * ============================================
      * FORMULARIO DE EDICIÓN/RENOVACIÓN
      * ============================================
      */
