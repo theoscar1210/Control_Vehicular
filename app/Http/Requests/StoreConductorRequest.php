@@ -8,13 +8,11 @@ use Illuminate\Validation\Rule;
 class StoreConductorRequest extends FormRequest
 {
     /**
-     * Determina si el usuario está autorizado para realizar esta solicitud.
-     *
-     * @return bool
+     * Solo usuarios autenticados con rol ADMIN o SST pueden registrar conductores.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check() && in_array(auth()->user()->rol, ['ADMIN', 'SST']);
     }
 
     public function rules(): array

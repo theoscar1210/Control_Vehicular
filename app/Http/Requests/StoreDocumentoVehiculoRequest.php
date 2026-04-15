@@ -13,13 +13,11 @@ class StoreDocumentoVehiculoRequest extends FormRequest
     ];
 
     /**
-     * Determinar si el usuario está autorizado para realizar esta solicitud.
-     *
-     * @return bool true si el usuario está autorizado, false en caso contrario.
+     * Solo usuarios autenticados con rol ADMIN o SST pueden registrar documentos de vehículo.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check() && in_array(auth()->user()->rol, ['ADMIN', 'SST']);
     }
 
     /**

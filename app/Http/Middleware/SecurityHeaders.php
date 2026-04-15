@@ -25,15 +25,16 @@ class SecurityHeaders
         // Prevenir clickjacking (página no puede ser embebida en iframe)
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
-        // Habilitar filtro XSS del navegador
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
+        // Nota: X-XSS-Protection está deprecado en navegadores modernos — se omite.
+        // La protección XSS la provee el CSP definido más abajo.
 
         // Controlar qué información de referrer se envía
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Forzar HTTPS en producción (el navegador recordará usar HTTPS por 1 año)
+        // preload: permite enviar el dominio a la lista HSTS Preload de Chrome/Firefox
         if (!app()->isLocal()) {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
         // Política de permisos (restringir APIs del navegador)

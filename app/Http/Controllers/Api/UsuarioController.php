@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class UsuarioController extends Controller
@@ -31,7 +32,7 @@ class UsuarioController extends Controller
             'activo' => 'nullable|boolean',
         ]);
 
-        $data['password'] = bcrypt($data['password']);
+        $data['password'] = Hash::make($data['password']);
         $user = Usuario::create($data + ['activo' => $data['activo'] ?? 1]);
 
         return response()->json($user, 201);
@@ -55,7 +56,7 @@ class UsuarioController extends Controller
         ]);
 
         if (!empty($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
+            $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
         }

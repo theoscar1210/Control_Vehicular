@@ -30,7 +30,8 @@ class GoogleDriveService
         $client = new Client();
         $client->setClientId(config('google.drive.client_id'));
         $client->setClientSecret(config('google.drive.client_secret'));
-        $client->addScope(Drive::DRIVE);
+        // DRIVE_FILE limita el scope a archivos creados por esta app (menor superficie si el token es comprometido)
+        $client->addScope(Drive::DRIVE_FILE);
         $client->fetchAccessTokenWithRefreshToken(config('google.drive.refresh_token'));
 
         $this->service = new Drive($client);
@@ -108,7 +109,13 @@ class GoogleDriveService
         $entityFolderId = $this->findOrCreateFolder(strtoupper($identifier), $typeFolderId);
 
         // Nombre descriptivo: SOAT_2026-02-15.pdf
-        $extension = $file->getClientOriginalExtension();
+        // Extensión derivada del MIME type real (no del nombre del cliente) para evitar spoofing
+        $mimeToExt = [
+            'application/pdf' => 'pdf',
+            'image/jpeg'      => 'jpg',
+            'image/png'       => 'png',
+        ];
+        $extension = $mimeToExt[$file->getMimeType()] ?? 'bin';
         $fileName = strtoupper($documentType) . '_' . now()->format('Y-m-d') . '.' . $extension;
 
         // Subir archivo

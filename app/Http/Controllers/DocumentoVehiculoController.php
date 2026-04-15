@@ -141,7 +141,7 @@ class DocumentoVehiculoController extends Controller
                 'documento' => $idDocumento,
                 'vehiculo' => $idVehiculo,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => app()->isLocal() ? $e->getTraceAsString() : null,
             ]);
 
             return back()
