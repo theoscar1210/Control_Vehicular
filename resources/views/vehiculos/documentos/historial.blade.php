@@ -178,6 +178,26 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                             <span class="badge bg-info">
                                 <i class="fa-solid fa-info-circle me-1"></i> Documento Permanente
                             </span>
+
+                            @if(!$doc->google_drive_file_id && in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                            <form action="{{ route('vehiculos.documentos.adjuntar', [$vehiculo->id_vehiculo, $doc->id_doc_vehiculo]) }}"
+                                method="POST" enctype="multipart/form-data" class="mt-2">
+                                @csrf
+                                <div class="input-group input-group-sm">
+                                    <input type="file" name="archivo" class="form-control form-control-sm"
+                                        accept=".pdf,.jpg,.jpeg,.png" required>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa-solid fa-paperclip"></i> Adjuntar
+                                    </button>
+                                </div>
+                            </form>
+                            @elseif($doc->google_drive_file_id)
+                            <div class="mt-2">
+                                <a href="{{ $doc->ruta_archivo }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="fa-brands fa-google-drive me-1"></i> Ver en Drive
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
