@@ -186,6 +186,9 @@ class DocumentoVehiculoService
 
         if ($tipo === 'TECNOMECANICA') {
             $fechaVencimiento = $vehiculo->calcularVencimientoTecnomecanica($fechaEmision);
+        } elseif ($tipo === 'SOAT') {
+            // El SOAT cubre 365 días desde emisión; el último día de cobertura es emisión + 1 año - 1 día
+            $fechaVencimiento = $fechaEmision->copy()->addYear()->subDay();
         } else {
             $fechaVencimiento = $fechaEmision->copy()->addYear();
         }

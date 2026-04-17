@@ -102,8 +102,6 @@ class DocumentoVehiculo extends Model
         $vence = Carbon::parse($this->fecha_vencimiento)->startOfDay();
         $dias = $hoy->diffInDays($vence, false);
 
-
-        // Estado basado en días: POR_VENCER si <= 20 días, VIGENTE si > 20 días
         return match (true) {
             $dias < 0 => 'VENCIDO',
             $dias <= 20 => 'POR_VENCER',
