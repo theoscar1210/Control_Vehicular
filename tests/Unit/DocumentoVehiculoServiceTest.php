@@ -43,9 +43,9 @@ class DocumentoVehiculoServiceTest extends TestCase
         $this->assertEquals(1, $doc->version);
         $this->assertEquals(1, $doc->activo);
 
-        // Vencimiento a 1 anio
+        // SOAT vence el día anterior al aniversario (addYear - 1 día)
         $this->assertEquals(
-            Carbon::today()->addYear()->format('Y-m-d'),
+            Carbon::today()->addYear()->subDay()->format('Y-m-d'),
             Carbon::parse($doc->fecha_vencimiento)->format('Y-m-d')
         );
     }
