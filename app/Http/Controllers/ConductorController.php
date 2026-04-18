@@ -104,22 +104,27 @@ class ConductorController extends Controller
             'creado_por' => Auth::id(),
         ]);
 
-        // Asignar vehículo (si se seleccionó) usando tabla pivote
-        if (!empty($validated['id_vehiculo'])) {
-            $vehiculo = Vehiculo::find($validated['id_vehiculo']);
-            if ($vehiculo) {
-                // Mantener compatibilidad con campo legacy
-                $vehiculo->id_conductor = $conductor->id_conductor;
-                $vehiculo->save();
+        // Asignar vehículos (si se seleccionaron) usando tabla pivote
+        if (!empty($validated['vehiculos_ids'])) {
+            $esPrimero = true;
+            foreach ($validated['vehiculos_ids'] as $idVehiculo) {
+                $vehiculo = Vehiculo::find($idVehiculo);
+                if (!$vehiculo) continue;
 
-                // Usar tabla pivote para relación muchos a muchos
+                // Mantener compatibilidad legacy con el primer vehículo
+                if ($esPrimero) {
+                    $vehiculo->id_conductor = $conductor->id_conductor;
+                    $vehiculo->save();
+                }
+
                 $conductor->vehiculosAsignados()->syncWithoutDetaching([
-                    $validated['id_vehiculo'] => [
-                        'es_principal' => true,
+                    $idVehiculo => [
+                        'es_principal' => $esPrimero,
                         'fecha_asignacion' => now(),
                         'activo' => true,
                     ]
                 ]);
+                $esPrimero = false;
             }
         }
 
@@ -294,63 +299,65 @@ class ConductorController extends Controller
                 'activo' => $request->has('activo') ? boolval($request->input('activo')) : $conductor->activo,
             ]);
 
-            // 2) Manejo del vehículo asignado (usando tabla pivote)
-            if (array_key_exists('id_vehiculo', $validated)) {
-                $newVehiculoId = $validated['id_vehiculo'] ?: null;
+            // 2) Manejo de vehículos asignados (usando tabla pivote)
+            if (array_key_exists('vehiculos_ids', $validated)) {
+                $nuevosIds = array_filter((array) ($validated['vehiculos_ids'] ?? []));
 
-                // Desactivar asignación anterior si cambió de vehículo
-                if ($newVehiculoId) {
-                    // Desmarcar otros vehículos como principal para este conductor
+                // Desactivar vehículos que ya no están en la nueva lista
+                $asignacionesActivas = DB::table('conductor_vehiculo')
+                    ->where('id_conductor', $conductor->id_conductor)
+                    ->where('activo', true)
+                    ->pluck('id_vehiculo')
+                    ->toArray();
+
+                $desasignar = array_diff($asignacionesActivas, $nuevosIds);
+                if (!empty($desasignar)) {
                     DB::table('conductor_vehiculo')
                         ->where('id_conductor', $conductor->id_conductor)
-                        ->where('id_vehiculo', '!=', $newVehiculoId)
-                        ->where('es_principal', true)
-                        ->update(['es_principal' => false]);
+                        ->whereIn('id_vehiculo', $desasignar)
+                        ->update(['activo' => false, 'fecha_desasignacion' => now()]);
 
-                    // Asignar nuevo vehículo en tabla pivote
-                    $existeRelacion = DB::table('conductor_vehiculo')
+                    Vehiculo::whereIn('id_vehiculo', $desasignar)
                         ->where('id_conductor', $conductor->id_conductor)
-                        ->where('id_vehiculo', $newVehiculoId)
+                        ->update(['id_conductor' => null]);
+                }
+
+                // Asignar o reactivar nuevos vehículos
+                $esPrimero = true;
+                foreach ($nuevosIds as $idVehiculo) {
+                    $existe = DB::table('conductor_vehiculo')
+                        ->where('id_conductor', $conductor->id_conductor)
+                        ->where('id_vehiculo', $idVehiculo)
                         ->first();
 
-                    if ($existeRelacion) {
-                        // Actualizar relación existente
+                    if ($existe) {
                         DB::table('conductor_vehiculo')
                             ->where('id_conductor', $conductor->id_conductor)
-                            ->where('id_vehiculo', $newVehiculoId)
-                            ->update([
-                                'es_principal' => true,
-                                'activo' => true,
-                                'fecha_desasignacion' => null,
-                            ]);
+                            ->where('id_vehiculo', $idVehiculo)
+                            ->update(['activo' => true, 'es_principal' => $esPrimero, 'fecha_desasignacion' => null]);
                     } else {
-                        // Crear nueva relación
                         DB::table('conductor_vehiculo')->insert([
                             'id_conductor' => $conductor->id_conductor,
-                            'id_vehiculo' => $newVehiculoId,
-                            'es_principal' => true,
+                            'id_vehiculo' => $idVehiculo,
+                            'es_principal' => $esPrimero,
                             'fecha_asignacion' => now(),
                             'activo' => true,
                         ]);
                     }
 
-                    // Mantener compatibilidad con campo legacy id_conductor en vehiculos
-                    $veh = Vehiculo::find($newVehiculoId);
-                    if ($veh) {
-                        $veh->id_conductor = $conductor->id_conductor;
-                        $veh->save();
+                    // Compatibilidad legacy con el primer vehículo
+                    if ($esPrimero) {
+                        $veh = Vehiculo::find($idVehiculo);
+                        if ($veh) {
+                            $veh->id_conductor = $conductor->id_conductor;
+                            $veh->save();
+                        }
                     }
-                } else {
-                    // Desasignar todos los vehículos del conductor
-                    DB::table('conductor_vehiculo')
-                        ->where('id_conductor', $conductor->id_conductor)
-                        ->where('activo', true)
-                        ->update([
-                            'activo' => false,
-                            'fecha_desasignacion' => now(),
-                        ]);
+                    $esPrimero = false;
+                }
 
-                    // Limpiar campo legacy
+                // Si no hay vehículos, limpiar todo
+                if (empty($nuevosIds)) {
                     Vehiculo::where('id_conductor', $conductor->id_conductor)
                         ->update(['id_conductor' => null]);
                 }

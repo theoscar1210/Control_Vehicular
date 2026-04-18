@@ -1,5 +1,4 @@
 @extends('layouts.app')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
@@ -136,10 +135,9 @@
                 <div class="row g-3">
                     <div class="col-12">
                         <label class="form-label fw-semibold">
-                            Seleccionar Vehículo <span class="text-muted fw-normal">(opcional)</span>
+                            Vehículos Asignados <span class="text-muted fw-normal">(opcional — puede seleccionar varios)</span>
                         </label>
-                        <select name="id_vehiculo" id="select-vehiculo" class="form-select rounded-3 border-success-subtle">
-                            <option value="">--- Sin asignar ---</option>
+                        <select name="vehiculos_ids[]" id="select-vehiculos" class="form-select rounded-3 border-success-subtle" multiple>
                             @foreach($vehiculos as $veh)
                             <option value="{{ $veh->id_vehiculo }}"
                                 data-placa="{{ $veh->placa }}"
@@ -147,8 +145,8 @@
                                 data-modelo="{{ $veh->modelo ?? '' }}"
                                 data-color="{{ $veh->color ?? '' }}"
                                 data-propietario="{{ $veh->propietario->nombre ?? '' }} {{ $veh->propietario->apellido ?? '' }}"
-                                {{ old('id_vehiculo') == $veh->id_vehiculo ? 'selected' : '' }}>
-                                {{ $veh->placa }} - {{ $veh->marca }} {{ $veh->modelo ?? '' }}
+                                {{ in_array($veh->id_vehiculo, old('vehiculos_ids', [])) ? 'selected' : '' }}>
+                                {{ $veh->placa }} — {{ $veh->marca }} {{ $veh->modelo ?? '' }}
                                 @if($veh->propietario)
                                 ({{ $veh->propietario->nombre }} {{ $veh->propietario->apellido }})
                                 @endif
@@ -156,7 +154,7 @@
                             @endforeach
                         </select>
                         <small class="text-muted">
-                            <i class="bi bi-search me-1"></i>Busca por placa, marca, modelo o propietario
+                            <i class="bi bi-info-circle me-1"></i>El primer vehículo seleccionado será el principal. Puedes seleccionar varios.
                         </small>
                     </div>
                 </div>

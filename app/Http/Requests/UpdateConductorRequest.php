@@ -37,7 +37,8 @@ class UpdateConductorRequest extends FormRequest
             'telefono' => 'nullable|string|max:30',
             'telefono_emergencia' => 'nullable|string|max:30',
             'activo' => 'nullable|boolean',
-            'id_vehiculo' => 'nullable|integer|exists:vehiculos,id_vehiculo',
+            'vehiculos_ids' => 'nullable|array',
+            'vehiculos_ids.*' => 'integer|exists:vehiculos,id_vehiculo',
 
             'documento_action' => ['nullable', Rule::in(['none', 'update_existing', 'create_version'])],
             'documento_id' => 'nullable|integer|exists:documentos_conductor,id_doc_conductor',

@@ -146,16 +146,39 @@ $(document).ready(function () {
         return placa + ' - ' + marca + ' ' + modelo;
     }
 
-    $('#select-vehiculo').select2({
-        theme:    'bootstrap-5',
-        placeholder: '🔍 Buscar vehículo por placa, marca, modelo o propietario...',
-        allowClear: true,
-        width:    '100%',
-        language: {
-            noResults:  function () { return 'No se encontraron vehículos'; },
-            searching:  function () { return 'Buscando...'; }
-        },
-        templateResult:    formatVehiculo,
-        templateSelection: formatVehiculoSelection
-    });
+    // Select2 para selector único (legacy)
+    if ($('#select-vehiculo').length) {
+        $('#select-vehiculo').select2({
+            theme:    'bootstrap-5',
+            placeholder: '🔍 Buscar vehículo por placa, marca, modelo o propietario...',
+            allowClear: true,
+            width:    '100%',
+            language: {
+                noResults:  function () { return 'No se encontraron vehículos'; },
+                searching:  function () { return 'Buscando...'; }
+            },
+            templateResult:    formatVehiculo,
+            templateSelection: formatVehiculoSelection
+        });
+    }
+
+    // Select2 múltiple para asignación de varios vehículos
+    if ($('#select-vehiculos').length) {
+        $('#select-vehiculos').select2({
+            theme:       'bootstrap-5',
+            placeholder: '🔍 Buscar por placa, marca o propietario...',
+            allowClear:  true,
+            width:       '100%',
+            language: {
+                noResults: function () { return 'No se encontraron vehículos'; },
+                searching: function () { return 'Buscando...'; }
+            },
+            templateResult: formatVehiculo,
+            templateSelection: function (vehiculo) {
+                if (!vehiculo.id) return vehiculo.text;
+                var placa = $(vehiculo.element).data('placa') || vehiculo.text;
+                return $('<span><i class="bi bi-car-front-fill me-1" style="color:#5B8238;"></i>' + placa + '</span>');
+            }
+        });
+    }
 });

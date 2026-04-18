@@ -78,17 +78,24 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold">Asignar a Vehículo</label>
-                                <select name="id_vehiculo" class="form-select border-success-subtle">
-                                    <option value="">-- Sin asignar --</option>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-semibold">Vehículos Asignados <span class="text-muted fw-normal">(puede seleccionar varios)</span></label>
+                                @php
+                                    $vehiculosAsignadosIds = old('vehiculos_ids',
+                                        $conductor->vehiculosAsignados->pluck('id_vehiculo')->toArray()
+                                    );
+                                @endphp
+                                <select name="vehiculos_ids[]" class="form-select border-success-subtle" multiple>
                                     @foreach($vehiculos as $v)
                                     <option value="{{ $v->id_vehiculo }}"
-                                        {{ (old('id_vehiculo') == $v->id_vehiculo) || ($v->id_conductor == $conductor->id_conductor) ? 'selected' : '' }}>
+                                        {{ in_array($v->id_vehiculo, $vehiculosAsignadosIds) ? 'selected' : '' }}>
                                         {{ $v->placa }} — {{ $v->marca }} {{ $v->modelo ?? '' }}
                                     </option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>El primer vehículo seleccionado será el principal
+                                </small>
                             </div>
                         </div>
 

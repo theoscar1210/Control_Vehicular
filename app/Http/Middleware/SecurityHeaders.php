@@ -48,7 +48,7 @@ class SecurityHeaders
             "script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com code.jquery.com; " .
             "script-src-attr 'unsafe-inline'; " .
             "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com fonts.googleapis.com; " .
-            "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com; " .
+            "font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com cdn.jsdelivr.net; " .
             "img-src 'self' data:; " .
             "connect-src 'self' cdn.jsdelivr.net; " .
             "frame-ancestors 'self'; " .
