@@ -171,7 +171,7 @@ $sinPadding = true;
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="estado" class="form-label fw-semibold">
                                     Estado <span class="text-danger">*</span>
                                 </label>
@@ -187,7 +187,23 @@ $sinPadding = true;
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="clasificacion" class="form-label fw-semibold">
+                                    <i class="fa-solid fa-tags me-1 text-muted"></i>Clasificación
+                                </label>
+                                <select class="form-select @error('clasificacion') is-invalid @enderror"
+                                    id="clasificacion"
+                                    name="clasificacion">
+                                    <option value="EMPLEADO" {{ old('clasificacion', $vehiculo->clasificacion ?? 'EMPLEADO') == 'EMPLEADO' ? 'selected' : '' }}>Empleado</option>
+                                    <option value="CONTRATISTA" {{ old('clasificacion', $vehiculo->clasificacion) == 'CONTRATISTA' ? 'selected' : '' }}>Contratista</option>
+                                    <option value="EXTERNO" {{ old('clasificacion', $vehiculo->clasificacion) == 'EXTERNO' ? 'selected' : '' }}>Externo</option>
+                                </select>
+                                @error('clasificacion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4 mb-3">
                                 <label for="fecha_matricula" class="form-label fw-semibold">
                                     Fecha de Matrícula
                                     <i class="fa-solid fa-lock text-muted ms-1" title="Campo no editable"></i>

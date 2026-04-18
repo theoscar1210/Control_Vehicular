@@ -164,6 +164,7 @@ class VehiculoController extends Controller
             'color'           => 'required|string|max:30',
             'tipo'            => 'required|string|max:50',
             'estado'          => 'required|in:ACTIVO,INACTIVO',
+            'clasificacion'   => 'nullable|in:EMPLEADO,CONTRATISTA,EXTERNO',
             'id_conductor'    => 'nullable|exists:conductores,id_conductor',
             'fecha_matricula' => 'nullable|date',
 
@@ -201,6 +202,7 @@ class VehiculoController extends Controller
                     'color'           => $validated['color'],
                     'tipo'            => $validated['tipo'],
                     'estado'          => $validated['estado'],
+                    'clasificacion'   => $validated['clasificacion'] ?? 'EMPLEADO',
                     'id_conductor'    => $validated['id_conductor'],
                     'fecha_matricula' => $validated['fecha_matricula'] ?? null,
                 ]);

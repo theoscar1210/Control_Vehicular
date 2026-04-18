@@ -216,23 +216,50 @@ $sinPadding = true;
                                 @endforelse
                             </td>
 
-                            {{-- LICENCIA - Usa accessors del modelo: $licencia->estado y $licencia->clase_badge --}}
+                            {{-- LICENCIA --}}
                             <td class="text-center">
                                 @if($licencia)
+                                @php
+                                    $categoriasMonitorear = $licencia->getCategoriasAMonitorear();
+                                    $fechasPorCat = $licencia->fechas_por_categoria ?? [];
+                                @endphp
                                 <div class="d-flex flex-column align-items-center gap-1">
-                                    <span class="badge bg-{{ $licencia->clase_badge }} px-3 py-2">
-                                        @if($licencia->estado === 'VIGENTE')
-                                        <i class="fa-solid fa-check-circle me-1"></i>
-                                        @elseif($licencia->estado === 'POR_VENCER')
-                                        <i class="fa-solid fa-clock me-1"></i>
-                                        @else
-                                        <i class="fa-solid fa-times-circle me-1"></i>
+                                    @foreach($categoriasMonitorear as $cat)
+                                    @php
+                                        $esPrincipal = ($cat === $licencia->categoria_licencia);
+                                        if ($esPrincipal) {
+                                            $fechaCat = $licencia->fecha_vencimiento;
+                                            $claseCat = $licencia->clase_badge;
+                                            $estadoCat = $licencia->estado;
+                                        } else {
+                                            $fv = $fechasPorCat[$cat]['fecha_vencimiento'] ?? null;
+                                            $fechaCat = $fv ? \Carbon\Carbon::parse($fv) : null;
+                                            if (!$fechaCat) { $claseCat = 'secondary'; $estadoCat = null; }
+                                            else {
+                                                $dias = (int) now()->startOfDay()->diffInDays($fechaCat->copy()->startOfDay(), false);
+                                                if ($dias < 0) { $claseCat = 'danger'; $estadoCat = 'VENCIDO'; }
+                                                elseif ($dias <= 5) { $claseCat = 'danger'; $estadoCat = 'POR_VENCER'; }
+                                                elseif ($dias <= 20) { $claseCat = 'warning'; $estadoCat = 'POR_VENCER'; }
+                                                else { $claseCat = 'success'; $estadoCat = 'VIGENTE'; }
+                                            }
+                                        }
+                                    @endphp
+                                    <div>
+                                        <span class="badge bg-{{ $claseCat }} px-2 py-1">
+                                            @if($estadoCat === 'VIGENTE') <i class="fa-solid fa-check-circle me-1"></i>
+                                            @elseif($estadoCat === 'POR_VENCER') <i class="fa-solid fa-clock me-1"></i>
+                                            @elseif($estadoCat === 'VENCIDO') <i class="fa-solid fa-times-circle me-1"></i>
+                                            @else <i class="fa-solid fa-question-circle me-1"></i>
+                                            @endif
+                                            {{ $cat }}
+                                        </span>
+                                        @if($fechaCat)
+                                        <div class="text-muted" style="font-size: 0.7rem;">
+                                            {{ \Carbon\Carbon::parse($fechaCat)->format('d/m/Y') }}
+                                        </div>
                                         @endif
-                                        {{ $licencia->categoria_licencia ?? 'N/A' }}
-                                    </span>
-                                    <small class="text-muted" style="font-size: 0.75rem;">
-                                        {{ \Carbon\Carbon::parse($licencia->fecha_vencimiento)->format('d/m/Y') }}
-                                    </small>
+                                    </div>
+                                    @endforeach
                                 </div>
                                 @else
                                 <span class="badge bg-secondary">
