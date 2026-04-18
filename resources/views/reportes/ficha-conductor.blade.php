@@ -134,21 +134,20 @@ $sinPadding = true;
                         <h5 class="border-bottom pb-2 mb-3">
                             <i class="fas fa-car me-2" style="color: #5B8238;"></i>Vehiculo(s) Asignado(s)
                         </h5>
-                        @if($conductor->vehiculos->count() > 0)
-                        @foreach($conductor->vehiculos as $vehiculo)
+                        @php $todosVehiculos = $conductor->vehiculosAsignados->merge($conductor->vehiculos)->unique('id_vehiculo'); @endphp
+                        @forelse($todosVehiculos as $vehiculo)
                         <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
                             <div class="placa-badge bg-white border rounded px-3 py-1 me-3">
                                 <strong style="color: #5B8238;">{{ $vehiculo->placa }}</strong>
                             </div>
                             <div>
                                 <div class="fw-medium">{{ $vehiculo->marca }} {{ $vehiculo->modelo }}</div>
-                                <small class="text-muted">{{ $vehiculo->tipo }} - {{ $vehiculo->color }}</small>
+                                <small class="text-muted">{{ $vehiculo->tipo }}{{ $vehiculo->color ? ' - ' . $vehiculo->color : '' }}</small>
                             </div>
                         </div>
-                        @endforeach
-                        @else
+                        @empty
                         <p class="text-muted"><i class="fas fa-info-circle me-1"></i> Sin vehiculo asignado</p>
-                        @endif
+                        @endforelse
                     </div>
                 </div>
             </div>

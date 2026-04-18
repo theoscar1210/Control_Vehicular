@@ -57,7 +57,7 @@ class ReporteController extends Controller
     {
         $navbarEspecial = true;
 
-        $query = Vehiculo::with(['propietario', 'conductor', 'documentos' => function($q) {
+        $query = Vehiculo::with(['propietario', 'conductor', 'conductores', 'documentos' => function($q) {
             $q->where('activo', 1);
         }])->where('estado', 'ACTIVO');
 
@@ -117,6 +117,7 @@ class ReporteController extends Controller
             'conductor.documentosConductor' => function($q) {
                 $q->where('activo', 1);
             },
+            'conductores',
             'documentos' => function($q) {
                 $q->where('activo', 1)->orderBy('tipo_documento');
             }
@@ -142,6 +143,7 @@ class ReporteController extends Controller
             'conductor.documentosConductor' => function($q) {
                 $q->where('activo', 1);
             },
+            'conductores',
             'documentos' => function($q) {
                 $q->where('activo', 1)->orderBy('tipo_documento');
             }
@@ -317,11 +319,11 @@ class ReporteController extends Controller
     {
         $navbarEspecial = true;
 
-        $query = Conductor::with(['vehiculos' => function($q) {
+        $query = Conductor::with(['vehiculosAsignados' => function($q) {
             $q->where('estado', 'ACTIVO')->with(['documentos' => function($q2) {
                 $q2->where('activo', 1);
             }, 'propietario']);
-        }, 'documentosConductor' => function($q) {
+        }, 'vehiculos', 'documentosConductor' => function($q) {
             $q->where('activo', 1);
         }])->where('activo', 1);
 
@@ -350,17 +352,17 @@ class ReporteController extends Controller
             $conductor->estado_documentos = $this->calcularEstadoDocumentosConductor($conductor);
 
             // Calcular estado de cada vehículo asignado
-            $conductor->vehiculos = $conductor->vehiculos->map(function($vehiculo) {
+            $conductor->vehiculosAsignados = $conductor->vehiculosAsignados->map(function($vehiculo) {
                 $vehiculo->estado_general = $this->documentStatusService->calcularEstadoGeneral($vehiculo);
                 return $vehiculo;
             });
 
             // Estadísticas del conductor
             $conductor->stats = [
-                'total_vehiculos' => $conductor->vehiculos->count(),
-                'vehiculos_vigentes' => $conductor->vehiculos->where('estado_general.estado', 'VIGENTE')->count(),
-                'vehiculos_por_vencer' => $conductor->vehiculos->where('estado_general.estado', 'POR_VENCER')->count(),
-                'vehiculos_vencidos' => $conductor->vehiculos->where('estado_general.estado', 'VENCIDO')->count(),
+                'total_vehiculos' => $conductor->vehiculosAsignados->count(),
+                'vehiculos_vigentes' => $conductor->vehiculosAsignados->where('estado_general.estado', 'VIGENTE')->count(),
+                'vehiculos_por_vencer' => $conductor->vehiculosAsignados->where('estado_general.estado', 'POR_VENCER')->count(),
+                'vehiculos_vencidos' => $conductor->vehiculosAsignados->where('estado_general.estado', 'VENCIDO')->count(),
             ];
 
             return $conductor;
@@ -403,6 +405,9 @@ class ReporteController extends Controller
             'vehiculos' => function($q) {
                 $q->where('estado', 'ACTIVO');
             },
+            'vehiculosAsignados' => function($q) {
+                $q->where('estado', 'ACTIVO');
+            },
             'documentosConductor',
         ])->findOrFail($id);
 
@@ -420,6 +425,9 @@ class ReporteController extends Controller
     {
         $conductor = Conductor::with([
             'vehiculos' => function($q) {
+                $q->where('estado', 'ACTIVO');
+            },
+            'vehiculosAsignados' => function($q) {
                 $q->where('estado', 'ACTIVO');
             },
             'documentosConductor',

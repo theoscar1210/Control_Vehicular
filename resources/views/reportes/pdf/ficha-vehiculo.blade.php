@@ -245,25 +245,30 @@
 
     <div class="two-col">
         <div class="section">
-            <div class="section-title">CONDUCTOR ASIGNADO</div>
-            @if($vehiculo->conductor)
-            <table>
+            <div class="section-title">CONDUCTOR(ES) ASIGNADO(S)</div>
+            @php
+                $todosConduct = $vehiculo->conductores->isNotEmpty()
+                    ? $vehiculo->conductores
+                    : ($vehiculo->conductor ? collect([$vehiculo->conductor]) : collect());
+            @endphp
+            @forelse($todosConduct as $c)
+            <table style="margin-bottom: 8px;">
                 <tr>
                     <th>Nombre</th>
-                    <td>{{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}</td>
+                    <td>{{ $c->nombre }} {{ $c->apellido }}{{ (isset($c->pivot) && $c->pivot->es_principal) ? ' (Principal)' : '' }}</td>
                 </tr>
                 <tr>
                     <th>Documento</th>
-                    <td>{{ $vehiculo->conductor->tipo_doc }} {{ $vehiculo->conductor->identificacion }}</td>
+                    <td>{{ $c->tipo_doc }} {{ $c->identificacion }}</td>
                 </tr>
                 <tr>
                     <th>Teléfono</th>
-                    <td>{{ $vehiculo->conductor->telefono ?? 'N/A' }}</td>
+                    <td>{{ $c->telefono ?? 'N/A' }}</td>
                 </tr>
             </table>
-            @else
+            @empty
             <p style="color: #666; padding: 10px;">Sin conductor asignado</p>
-            @endif
+            @endforelse
         </div>
     </div>
 

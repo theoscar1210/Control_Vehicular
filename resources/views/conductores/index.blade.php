@@ -156,8 +156,7 @@ $sinPadding = true;
                     <tbody>
                         @forelse($conductores as $conductor)
                         @php
-                            // Obtener vehículo asignado
-                            $vehiculoAsignado = $conductor->vehiculos->first();
+                            $todosVehiculos = $conductor->vehiculosAsignados->merge($conductor->vehiculos)->unique('id_vehiculo');
 
                             // Obtener licencia activa - usar accessors del modelo para estado y clase
                             $licencia = $conductor->documentosConductor
@@ -202,23 +201,19 @@ $sinPadding = true;
                                 @endif
                             </td>
 
-                            {{-- VEHÍCULO ASIGNADO --}}
+                            {{-- VEHÍCULOS ASIGNADOS --}}
                             <td class="text-center">
-                                @if($vehiculoAsignado)
-                                <a href="{{ route('vehiculos.edit', $vehiculoAsignado->id_vehiculo) }}"
-                                    class="text-decoration-none"
-                                    data-bs-toggle="tooltip"
-                                    title="{{ $vehiculoAsignado->marca }} {{ $vehiculoAsignado->modelo }}">
-                                    <span class="badge bg-success px-3 py-2">
-                                        <i class="fa-solid fa-car me-1"></i>
-                                        {{ $vehiculoAsignado->placa }}
+                                @forelse($todosVehiculos as $v)
+                                <div class="mb-1">
+                                    <span class="badge px-2 py-1" style="background-color:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7;">
+                                        <i class="fa-solid fa-car me-1"></i>{{ $v->placa }}
                                     </span>
-                                </a>
-                                @else
+                                </div>
+                                @empty
                                 <span class="badge bg-secondary">
                                     <i class="fa-solid fa-ban me-1"></i>Sin asignar
                                 </span>
-                                @endif
+                                @endforelse
                             </td>
 
                             {{-- LICENCIA - Usa accessors del modelo: $licencia->estado y $licencia->clase_badge --}}

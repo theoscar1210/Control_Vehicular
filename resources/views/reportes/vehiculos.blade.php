@@ -201,11 +201,22 @@ $sinPadding = true;
                                 @endif
                             </td>
                             <td>
-                                @if($vehiculo->conductor)
-                                {{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}
-                                @else
+                                @php
+                                    $todosConduct = $vehiculo->conductores->isNotEmpty()
+                                        ? $vehiculo->conductores
+                                        : ($vehiculo->conductor ? collect([$vehiculo->conductor]) : collect());
+                                @endphp
+                                @forelse($todosConduct as $c)
+                                <div class="mb-1">
+                                    <i class="fa-solid fa-user me-1 text-muted"></i>
+                                    <span>{{ $c->nombre }} {{ $c->apellido }}</span>
+                                    @if(isset($c->pivot) && $c->pivot->es_principal)
+                                    <span class="badge bg-success-subtle text-success ms-1" style="font-size:0.65rem;">Principal</span>
+                                    @endif
+                                </div>
+                                @empty
                                 <span class="text-muted">Sin conductor</span>
-                                @endif
+                                @endforelse
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-{{ $vehiculo->estado_general['clase'] }} px-3 py-2">

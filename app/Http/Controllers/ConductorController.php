@@ -24,7 +24,7 @@ class ConductorController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Conductor::with(['vehiculos', 'documentosConductor'])
+        $query = Conductor::with(['vehiculosAsignados', 'vehiculos', 'documentosConductor'])
             ->orderBy('nombre');
 
         // Filtro opcional por clasificacion

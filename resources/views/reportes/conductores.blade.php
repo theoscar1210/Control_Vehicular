@@ -223,16 +223,16 @@ $sinPadding = true;
                                 </span>
                             </td>
                             <td class="text-center">
-                                @if($conductor->vehiculos->count() > 0)
-                                <span class="badge bg-primary">
-                                    {{ $conductor->vehiculos->first()->placa }}
-                                </span>
-                                @if($conductor->vehiculos->count() > 1)
-                                <small class="text-muted d-block">+{{ $conductor->vehiculos->count() - 1 }} mas</small>
-                                @endif
-                                @else
-                                <span class="text-muted">Sin vehiculo</span>
-                                @endif
+                                @php $todosVehiculos = $conductor->vehiculosAsignados->merge($conductor->vehiculos)->unique('id_vehiculo'); @endphp
+                                @forelse($todosVehiculos as $v)
+                                <div class="mb-1">
+                                    <span class="badge px-2 py-1" style="background-color:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7;">
+                                        <i class="fa-solid fa-car me-1"></i>{{ $v->placa }}
+                                    </span>
+                                </div>
+                                @empty
+                                <span class="text-muted small">Sin vehículo</span>
+                                @endforelse
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('reportes.ficha.conductor', $conductor->id_conductor) }}"

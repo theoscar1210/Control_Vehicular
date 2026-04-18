@@ -92,30 +92,42 @@ $sinPadding = true;
                     {{-- Información del Conductor --}}
                     <div class="col-md-6 mb-4">
                         <h5 class="border-bottom pb-2 mb-3">
-                            <i class="fas fa-id-card me-2" style="color: #5B8238;"></i>Conductor Asignado
+                            <i class="fas fa-id-card me-2" style="color: #5B8238;"></i>Conductor(es) Asignado(s)
                         </h5>
-                        @if($vehiculo->conductor)
-                        <table class="table table-sm table-borderless">
-                            <tr>
-                                <td class="text-muted" width="40%">Nombre:</td>
-                                <td class="fw-medium">{{ $vehiculo->conductor->nombre }} {{ $vehiculo->conductor->apellido }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted">Documento:</td>
-                                <td>{{ $vehiculo->conductor->tipo_doc }} {{ $vehiculo->conductor->identificacion }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted">Teléfono:</td>
-                                <td>{{ $vehiculo->conductor->telefono ?? 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted">Tel. Emergencia:</td>
-                                <td>{{ $vehiculo->conductor->telefono_emergencia ?? 'N/A' }}</td>
-                            </tr>
-                        </table>
-                        @else
+                        @php
+                            $todosConduct = $vehiculo->conductores->isNotEmpty()
+                                ? $vehiculo->conductores
+                                : ($vehiculo->conductor ? collect([$vehiculo->conductor]) : collect());
+                        @endphp
+                        @forelse($todosConduct as $c)
+                        <div class="mb-3 p-2 bg-light rounded">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr>
+                                    <td class="text-muted" width="40%">Nombre:</td>
+                                    <td class="fw-medium">
+                                        {{ $c->nombre }} {{ $c->apellido }}
+                                        @if(isset($c->pivot) && $c->pivot->es_principal)
+                                        <span class="badge bg-success ms-1" style="font-size:0.65rem;">Principal</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Documento:</td>
+                                    <td>{{ $c->tipo_doc }} {{ $c->identificacion }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Teléfono:</td>
+                                    <td>{{ $c->telefono ?? 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Tel. Emergencia:</td>
+                                    <td>{{ $c->telefono_emergencia ?? 'N/A' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        @empty
                         <p class="text-muted"><i class="fas fa-info-circle me-1"></i> Sin conductor asignado</p>
-                        @endif
+                        @endforelse
                     </div>
                 </div>
             </div>

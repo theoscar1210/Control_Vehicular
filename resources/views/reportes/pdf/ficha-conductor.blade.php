@@ -219,7 +219,8 @@
     {{-- Vehiculo Asignado --}}
     <div class="section">
         <div class="section-title">VEHICULO(S) ASIGNADO(S)</div>
-        @if($conductor->vehiculos->count() > 0)
+        @php $todosVehiculos = $conductor->vehiculosAsignados->merge($conductor->vehiculos)->unique('id_vehiculo'); @endphp
+        @if($todosVehiculos->count() > 0)
         <table class="info-table">
             <tr>
                 <td class="label">Placa</td>
@@ -227,7 +228,7 @@
                 <td class="label">Marca / Modelo</td>
                 <td class="label">Color</td>
             </tr>
-            @foreach($conductor->vehiculos as $vehiculo)
+            @foreach($todosVehiculos as $vehiculo)
             <tr>
                 <td><strong>{{ $vehiculo->placa }}</strong></td>
                 <td>{{ $vehiculo->tipo }}</td>
