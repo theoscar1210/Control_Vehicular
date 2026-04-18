@@ -36,6 +36,7 @@ class UpdateConductorRequest extends FormRequest
             ],
             'telefono' => 'nullable|string|max:30',
             'telefono_emergencia' => 'nullable|string|max:30',
+            'clasificacion' => 'nullable|in:EMPLEADO,CONTRATISTA,EXTERNO',
             'activo' => 'nullable|boolean',
             'vehiculos_ids' => 'nullable|array',
             'vehiculos_ids.*' => 'integer|exists:vehiculos,id_vehiculo',

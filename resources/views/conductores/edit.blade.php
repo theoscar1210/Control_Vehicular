@@ -86,6 +86,16 @@
                         <input type="text" name="telefono_emergencia" value="{{ old('telefono_emergencia', $conductor->telefono_emergencia) }}"
                             class="form-control rounded-3 border-success-subtle">
                     </div>
+                    <div class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold">
+                            <i class="fa-solid fa-tags me-1 text-muted"></i>Clasificación
+                        </label>
+                        <select name="clasificacion" class="form-select rounded-3 border-success-subtle">
+                            <option value="EMPLEADO" {{ old('clasificacion', $conductor->clasificacion ?? 'EMPLEADO') == 'EMPLEADO' ? 'selected' : '' }}>Empleado</option>
+                            <option value="CONTRATISTA" {{ old('clasificacion', $conductor->clasificacion) == 'CONTRATISTA' ? 'selected' : '' }}>Contratista</option>
+                            <option value="EXTERNO" {{ old('clasificacion', $conductor->clasificacion) == 'EXTERNO' ? 'selected' : '' }}>Externo</option>
+                        </select>
+                    </div>
                     <div class="col-sm-6 col-md-4 d-flex align-items-end">
                         <div class="form-check form-switch ps-5">
                             <input class="form-check-input border-success" type="checkbox"

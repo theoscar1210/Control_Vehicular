@@ -296,6 +296,7 @@ class ConductorController extends Controller
                 'identificacion' => $validated['identificacion'],
                 'telefono' => $validated['telefono'] ?? null,
                 'telefono_emergencia' => $validated['telefono_emergencia'] ?? null,
+                'clasificacion' => $validated['clasificacion'] ?? $conductor->clasificacion ?? 'EMPLEADO',
                 'activo' => $request->has('activo') ? boolval($request->input('activo')) : $conductor->activo,
             ]);
 
