@@ -45,7 +45,7 @@ class PorteriaController extends Controller
         $vehiculo = null;
         $vehiculos = collect(); // Para múltiples resultados
         $busqueda = $request->input('busqueda');
-        $tipoBusqueda = $request->input('tipo_busqueda', 'placa');
+        $tipoBusqueda = $request->input('tipo_busqueda', 'todo');
         $mensaje = null;
 
         if ($busqueda) {
