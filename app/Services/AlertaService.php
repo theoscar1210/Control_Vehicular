@@ -44,6 +44,18 @@ class AlertaService
             return null;
         }
 
+        // Si el documento ya venció, cerrar la alerta de PROXIMO_VENCER anterior
+        if ($evaluacion['tipo'] === 'VENCIDO') {
+            Alerta::where('id_doc_vehiculo', $documento->id_doc_vehiculo)
+                ->where('tipo_vencimiento', 'PROXIMO_VENCER')
+                ->where('solucionada', false)
+                ->update([
+                    'solucionada'     => true,
+                    'fecha_solucion'  => now(),
+                    'motivo_solucion' => 'DOCUMENTO_VENCIDO',
+                ]);
+        }
+
         return Alerta::create([
             'tipo_alerta'      => 'VEHICULO',
             'id_doc_vehiculo'  => $documento->id_doc_vehiculo,
@@ -217,6 +229,19 @@ class AlertaService
                 continue;
             }
 
+            // Si venció, cerrar alerta PROXIMO_VENCER de esa categoría
+            if ($evaluacion['tipo'] === 'VENCIDO') {
+                Alerta::where('id_doc_conductor', $documento->id_doc_conductor)
+                    ->where('tipo_vencimiento', 'PROXIMO_VENCER')
+                    ->where('mensaje', 'like', "%{$mensajeBusqueda}%")
+                    ->where('solucionada', false)
+                    ->update([
+                        'solucionada'     => true,
+                        'fecha_solucion'  => now(),
+                        'motivo_solucion' => 'DOCUMENTO_VENCIDO',
+                    ]);
+            }
+
             $nombreConductor = $documento->conductor
                 ? "{$documento->conductor->nombre} {$documento->conductor->apellido}"
                 : 'Conductor desconocido';
@@ -269,6 +294,18 @@ class AlertaService
 
         if ($existe) {
             return 0;
+        }
+
+        // Si el documento ya venció, cerrar la alerta de PROXIMO_VENCER anterior
+        if ($evaluacion['tipo'] === 'VENCIDO') {
+            Alerta::where('id_doc_conductor', $documento->id_doc_conductor)
+                ->where('tipo_vencimiento', 'PROXIMO_VENCER')
+                ->where('solucionada', false)
+                ->update([
+                    'solucionada'     => true,
+                    'fecha_solucion'  => now(),
+                    'motivo_solucion' => 'DOCUMENTO_VENCIDO',
+                ]);
         }
 
         $nombreConductor = $documento->conductor
