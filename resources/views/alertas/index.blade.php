@@ -85,9 +85,10 @@
                                     $placaAlerta = $alerta->documentoVehiculo->vehiculo->placa;
                                     $vehiculoIdAlerta = $alerta->documentoVehiculo->vehiculo->id_vehiculo;
                                     $clasificacionAlerta = $alerta->documentoVehiculo->vehiculo->clasificacion;
-                                    if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                                        $conductorAlerta = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
-                                    }
+                                    $todosConduct = $alerta->documentoVehiculo->vehiculo->conductores->isNotEmpty()
+                                        ? $alerta->documentoVehiculo->vehiculo->conductores
+                                        : ($alerta->documentoVehiculo->vehiculo->conductor ? collect([$alerta->documentoVehiculo->vehiculo->conductor]) : collect());
+                                    $conductorAlerta = $todosConduct->map(fn($c) => $c->nombre . ' ' . $c->apellido)->implode(', ');
                                 }
                             }
 

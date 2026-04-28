@@ -21,6 +21,7 @@ class AlertaController extends Controller
 
         $query = Alerta::with([
                 'documentoVehiculo.vehiculo.conductor',
+                'documentoVehiculo.vehiculo.conductores',
                 'documentoConductor.conductor',
                 'usuariosQueLeyeron' // Cargar relacion para verificar lectura
             ])
