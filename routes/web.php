@@ -13,6 +13,7 @@ use App\Http\Controllers\AlertaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PorteriaController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -249,5 +250,12 @@ Route::middleware(['auth', 'nocache'])->group(function () {
             Route::get('/eliminados', [ConductorController::class, 'trashed'])->name('trashed');
             Route::post('/{id}/restore', [ConductorController::class, 'restore'])->name('restore');
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN - Panel de información del sistema
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/admin/about', [AdminController::class, 'about'])->name('admin.about');
     });
 });

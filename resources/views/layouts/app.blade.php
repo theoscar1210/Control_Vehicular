@@ -292,6 +292,19 @@
     <script src="{{ asset('js/app-layout.js') }}"></script>
     @yield('scripts')
 
+    {{-- Footer versión --}}
+    <footer class="text-center py-2 mt-3" style="font-size:0.75rem; color:#aaa; border-top:1px solid #eee;">
+        <span>Control Vehicular</span>
+        <span class="mx-1">·</span>
+        <span>v1.0.0</span>
+        <span class="mx-1">·</span>
+        <span>Club Campestre Altos del Chicalá</span>
+        @if(auth()->check() && auth()->user()->rol === 'ADMIN')
+        <span class="mx-1">·</span>
+        <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">Ver detalles</a>
+        @endif
+    </footer>
+
 </body>
 
 </html>
