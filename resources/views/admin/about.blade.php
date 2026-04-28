@@ -55,8 +55,10 @@ $sinPadding = true;
                             <td>{{ app()->version() }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Último commit:</td>
-                            <td class="font-monospace" style="font-size:0.8rem;">{{ $lastCommit }}</td>
+                            <td class="text-muted" colspan="2">
+                                Último commit:
+                                <div class="font-monospace mt-1 p-2 bg-light rounded" style="font-size:0.8rem; word-break:break-word; white-space:pre-wrap;">{{ $lastCommit }}</div>
+                            </td>
                         </tr>
                     </table>
                 </div>
