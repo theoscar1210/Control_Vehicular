@@ -266,6 +266,15 @@
         </a>
 
         @endif
+
+        {{-- Footer versión en sidebar --}}
+        <div class="mt-auto pt-3 pb-2 px-2 text-center" style="font-size:0.7rem; color:#aaa; border-top:1px solid rgba(255,255,255,0.1); position:absolute; bottom:0; left:0; right:0;">
+            <span>v1.0.0</span>
+            @if(auth()->check() && auth()->user()->rol === 'ADMIN')
+            <span class="mx-1">·</span>
+            <a href="{{ route('admin.about') }}" style="color:#a5c77a; text-decoration:none;">info</a>
+            @endif
+        </div>
     </div>
 
 
@@ -284,6 +293,12 @@
     <div class="{{ empty($sinPadding) ? 'content p-4' : '' }}">
         @yield('content')
     </div>
+    <footer class="text-center py-2" style="font-size:0.72rem; color:#bbb; border-top:1px solid #eee;">
+        Control Vehicular &middot; v1.0.0
+        @if(auth()->check() && auth()->user()->rol === 'ADMIN')
+        &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
+        @endif
+    </footer>
     @endif
 
     <!-- Bootstrap JS -->
@@ -292,18 +307,6 @@
     <script src="{{ asset('js/app-layout.js') }}"></script>
     @yield('scripts')
 
-    {{-- Footer versión --}}
-    <footer class="text-center py-2 mt-3" style="font-size:0.75rem; color:#aaa; border-top:1px solid #eee;">
-        <span>Control Vehicular</span>
-        <span class="mx-1">·</span>
-        <span>v1.0.0</span>
-        <span class="mx-1">·</span>
-        <span>Club Campestre Altos del Chicalá</span>
-        @if(auth()->check() && auth()->user()->rol === 'ADMIN')
-        <span class="mx-1">·</span>
-        <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">Ver detalles</a>
-        @endif
-    </footer>
 
 </body>
 
