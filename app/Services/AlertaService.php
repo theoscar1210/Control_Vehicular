@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Alerta;
 use App\Models\DocumentoVehiculo;
 use App\Models\DocumentoConductor;
+use App\Models\Vehiculo;
 use Carbon\Carbon;
 
 /**
@@ -132,7 +133,115 @@ class AlertaService
             }
         }
 
-        return ['revisados' => $documentos->count(), 'creadas' => $creadas];
+        $resultadoSinDoc = $this->procesarVehiculosSinTecnomecanica();
+        $creadas += $resultadoSinDoc['creadas'];
+
+        return ['revisados' => $documentos->count() + $resultadoSinDoc['revisados'], 'creadas' => $creadas];
+    }
+
+    /**
+     * Detectar vehiculos que ya superaron su exencion de tecnomecanica pero no tienen
+     * ningun documento TECNOMECANICA registrado, y generar alerta directa al vehiculo.
+     *
+     * @return array ['revisados' => int, 'creadas' => int]
+     */
+    public function procesarVehiculosSinTecnomecanica(): array
+    {
+        $hoy = Carbon::today();
+        $proximo = $hoy->copy()->addDays(self::DIAS_ANTICIPACION);
+        $creadas = 0;
+
+        // Vehículos con fecha_matricula que ya requieren tecnomecánica (pasaron su exención)
+        // o están a menos de DIAS_ANTICIPACION de necesitarla
+        $vehiculos = Vehiculo::whereNotNull('fecha_matricula')
+            ->whereDoesntHave('documentosVehiculo', function ($q) {
+                $q->where('tipo_documento', 'TECNOMECANICA')
+                    ->where('estado', '!=', 'REEMPLAZADO')
+                    ->whereNull('reemplazado_por');
+            })
+            ->get()
+            ->filter(function (Vehiculo $v) use ($hoy, $proximo) {
+                $primera = $v->fechaPrimeraTecnomecanica();
+                return $primera && $primera->lte($proximo);
+            });
+
+        foreach ($vehiculos as $vehiculo) {
+            $alerta = $this->alertarVehiculoSinTecnomecanica($vehiculo);
+            if ($alerta) {
+                $creadas++;
+            }
+        }
+
+        return ['revisados' => $vehiculos->count(), 'creadas' => $creadas];
+    }
+
+    /**
+     * Generar alerta directa a un vehiculo que no tiene documento TECNOMECANICA
+     * y ya superó (o está próximo a superar) su periodo de exención.
+     *
+     * @return Alerta|null
+     */
+    public function alertarVehiculoSinTecnomecanica(Vehiculo $vehiculo): ?Alerta
+    {
+        $hoy = Carbon::today();
+        $primera = $vehiculo->fechaPrimeraTecnomecanica();
+
+        if (!$primera) {
+            return null;
+        }
+
+        $tipo = $primera->lt($hoy) ? 'VENCIDO' : 'PROXIMO_VENCER';
+
+        // Deduplicación: ya existe alerta activa de este tipo para este vehículo
+        if ($this->existeAlertaVehiculoDirecto($vehiculo->id_vehiculo, $tipo)) {
+            return null;
+        }
+
+        // Si acaba de vencer, cerrar la alerta PROXIMO_VENCER anterior
+        if ($tipo === 'VENCIDO') {
+            Alerta::where('id_vehiculo', $vehiculo->id_vehiculo)
+                ->whereNull('id_doc_vehiculo')
+                ->where('tipo_vencimiento', 'PROXIMO_VENCER')
+                ->where('solucionada', false)
+                ->update([
+                    'solucionada'     => true,
+                    'fecha_solucion'  => now(),
+                    'motivo_solucion' => 'DOCUMENTO_VENCIDO',
+                ]);
+        }
+
+        return Alerta::create([
+            'tipo_alerta'      => 'VEHICULO',
+            'id_doc_vehiculo'  => null,
+            'id_vehiculo'      => $vehiculo->id_vehiculo,
+            'id_doc_conductor' => null,
+            'tipo_vencimiento' => $tipo,
+            'mensaje'          => sprintf(
+                'Vehículo %s sin Tecnomecánica registrada (primera revisión: %s)',
+                $vehiculo->placa,
+                $primera->format('d/m/Y')
+            ),
+            'fecha_alerta'     => $hoy,
+            'leida'            => 0,
+            'solucionada'      => false,
+            'visible_para'     => 'TODOS',
+            'creado_por'       => null,
+        ]);
+    }
+
+    /**
+     * Cerrar alertas directas de un vehiculo al registrar un documento TECNOMECANICA.
+     */
+    public function solucionarAlertasDirectasVehiculo(int $idVehiculo): int
+    {
+        return Alerta::where('id_vehiculo', $idVehiculo)
+            ->whereNull('id_doc_vehiculo')
+            ->where('solucionada', false)
+            ->update([
+                'solucionada'     => true,
+                'fecha_solucion'  => now(),
+                'motivo_solucion' => 'DOCUMENTO_RENOVADO',
+            ]);
     }
 
     /**
@@ -191,6 +300,19 @@ class AlertaService
         return Alerta::where('tipo_vencimiento', $tipo)
             ->whereNull('deleted_at')
             ->where('id_doc_vehiculo', $idDocVehiculo)
+            ->where('solucionada', false)
+            ->exists();
+    }
+
+    /**
+     * Verificar si ya existe una alerta directa (sin documento) para un vehiculo.
+     */
+    private function existeAlertaVehiculoDirecto(int $idVehiculo, string $tipo): bool
+    {
+        return Alerta::where('tipo_vencimiento', $tipo)
+            ->whereNull('deleted_at')
+            ->where('id_vehiculo', $idVehiculo)
+            ->whereNull('id_doc_vehiculo')
             ->where('solucionada', false)
             ->exists();
     }

@@ -101,6 +101,18 @@
                                 }
                             }
 
+                            // Alerta directa al vehículo (sin documento registrado)
+                            if (!$alerta->documentoVehiculo && !$alerta->documentoConductor && $alerta->vehiculo) {
+                                $tipoDocumento = 'TECNOMECANICA';
+                                $placaAlerta = $alerta->vehiculo->placa;
+                                $vehiculoIdAlerta = $alerta->vehiculo->id_vehiculo;
+                                $clasificacionAlerta = $alerta->vehiculo->clasificacion;
+                                $todosConduct = $alerta->vehiculo->conductores->isNotEmpty()
+                                    ? $alerta->vehiculo->conductores
+                                    : ($alerta->vehiculo->conductor ? collect([$alerta->vehiculo->conductor]) : collect());
+                                $conductorAlerta = $todosConduct->map(fn($c) => $c->nombre . ' ' . $c->apellido)->implode(', ');
+                            }
+
                             $config = $iconos[$tipoDocumento] ?? ['icon' => 'fas fa-file-alt', 'color' => 'secondary'];
                             $esNoLeida = !$alerta->leidaPorUsuario($userId);
                         @endphp
@@ -170,8 +182,8 @@
                                             @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
                                                 @if($vehiculoIdAlerta)
                                                 <a href="{{ route('vehiculos.documentos.historial.completo', $vehiculoIdAlerta) }}"
-                                                    class="btn btn-sm btn-outline-primary" title="Ir a renovar documento">
-                                                    <i class="fas fa-sync-alt me-1"></i>Renovar
+                                                    class="btn btn-sm btn-outline-primary" title="Ir a registrar Tecnomecánica">
+                                                    <i class="fas fa-sync-alt me-1"></i>Registrar
                                                 </a>
                                                 @elseif($conductorIdAlerta)
                                                 <a href="{{ route('conductores.documentos.historial', $conductorIdAlerta) }}"

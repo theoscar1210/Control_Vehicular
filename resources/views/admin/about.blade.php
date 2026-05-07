@@ -33,14 +33,14 @@ $sinPadding = true;
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-sm-4 text-center">
-                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.0.0</div>
+                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.1.0</div>
                     <small class="text-muted">Versión estable</small>
                 </div>
                 <div class="col-sm-8">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td class="text-muted" width="40%">Lanzamiento:</td>
-                            <td class="fw-medium">Abril 2026</td>
+                            <td class="fw-medium">Mayo 2026</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Entorno:</td>
@@ -76,7 +76,21 @@ $sinPadding = true;
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="badge me-2" style="background-color:#5B8238;">v1.0.0</span>
+                            <span class="badge me-2" style="background-color:#5B8238;">v1.1.0</span>
+                            <strong>Alertas para vehículos sin Tecnomecánica al vencer exención</strong>
+                            <ul class="mt-2 mb-0 small text-muted">
+                                <li>Detección automática (batch diario) de vehículos exentos que superaron su fecha de primera revisión</li>
+                                <li>Genera alerta PROXIMO_VENCER a 15 días antes y VENCIDO al vencer</li>
+                                <li>La alerta se cierra automáticamente al registrar el documento de Tecnomecánica</li>
+                            </ul>
+                        </div>
+                        <small class="text-muted text-nowrap ms-3">May 2026</small>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge me-2" style="background-color:#6c757d;">v1.0.0</span>
                             <strong>Release inicial estable</strong>
                             <ul class="mt-2 mb-0 small text-muted">
                                 <li>Gestión de vehículos, conductores y propietarios</li>

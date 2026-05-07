@@ -42,7 +42,7 @@
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.0.0
+        Control Vehicular &middot; v1.1.0
         @if(auth()->check() && auth()->user()->rol === 'ADMIN')
         &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
         @endif
@@ -100,20 +100,30 @@
                         'TECNOMECANICA' => ['icon' => 'fas fa-tools', 'color' => 'danger'],
                         'TARJETA PROPIEDAD' => ['icon' => 'fas fa-credit-card', 'color' => 'warning']
                         ];
-                        $tipoDocMenu = $alerta->documentoVehiculo?->tipo_documento ?? $alerta->documentoConductor?->tipo_documento;
+                        $tipoDocMenu = $alerta->documentoVehiculo?->tipo_documento
+                            ?? $alerta->documentoConductor?->tipo_documento
+                            ?? (!$alerta->documentoVehiculo && !$alerta->documentoConductor && $alerta->vehiculo ? 'TECNOMECANICA' : null);
                         $configMenu = $iconosMenu[$tipoDocMenu] ?? ['icon' => 'fas fa-exclamation-triangle', 'color' => 'warning'];
 
                         // Obtener placa y conductor
                         $placaMenu = null;
                         $conductorMenu = null;
                         if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
-                        $placaMenu = $alerta->documentoVehiculo->vehiculo->placa;
-                        if ($alerta->documentoVehiculo->vehiculo->conductor) {
-                        $conductorMenu = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
-                        }
+                            $placaMenu = $alerta->documentoVehiculo->vehiculo->placa;
+                            if ($alerta->documentoVehiculo->vehiculo->conductor) {
+                                $conductorMenu = $alerta->documentoVehiculo->vehiculo->conductor->nombre . ' ' . $alerta->documentoVehiculo->vehiculo->conductor->apellido;
+                            }
                         }
                         if ($alerta->documentoConductor && $alerta->documentoConductor->conductor) {
-                        $conductorMenu = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                            $conductorMenu = $alerta->documentoConductor->conductor->nombre . ' ' . $alerta->documentoConductor->conductor->apellido;
+                        }
+                        // Alerta directa al vehículo (sin documento)
+                        if (!$alerta->documentoVehiculo && !$alerta->documentoConductor && $alerta->vehiculo) {
+                            $placaMenu = $alerta->vehiculo->placa;
+                            $conductorDirecto = $alerta->vehiculo->conductores->first() ?? $alerta->vehiculo->conductor;
+                            if ($conductorDirecto) {
+                                $conductorMenu = $conductorDirecto->nombre . ' ' . $conductorDirecto->apellido;
+                            }
                         }
                         @endphp
                         <li>
@@ -285,7 +295,7 @@
     <div class="content con-sidebar">
         @yield('content')
         <footer class="text-center py-2 mt-3" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-            Control Vehicular &middot; v1.0.0
+            Control Vehicular &middot; v1.1.0
             @if(auth()->check() && auth()->user()->rol === 'ADMIN')
             &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
             @endif
@@ -298,7 +308,7 @@
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.0.0
+        Control Vehicular &middot; v1.1.0
     </footer>
     @endif
 

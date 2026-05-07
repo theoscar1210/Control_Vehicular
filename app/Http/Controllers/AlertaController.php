@@ -23,6 +23,8 @@ class AlertaController extends Controller
                 'documentoVehiculo.vehiculo.conductor',
                 'documentoVehiculo.vehiculo.conductores',
                 'documentoConductor.conductor',
+                'vehiculo.conductor',
+                'vehiculo.conductores',
                 'usuariosQueLeyeron' // Cargar relacion para verificar lectura
             ])
             ->whereNull('deleted_at')
@@ -65,11 +67,17 @@ class AlertaController extends Controller
         $alerta->marcarLeidaPara($user->id_usuario);
 
         // Cargar relaciones para obtener IDs correctos
-        $alerta->load(['documentoVehiculo.vehiculo', 'documentoConductor.conductor']);
+        $alerta->load(['documentoVehiculo.vehiculo', 'documentoConductor.conductor', 'vehiculo']);
 
         // Redirigir al vehiculo si es documento de vehiculo
         if ($alerta->documentoVehiculo && $alerta->documentoVehiculo->vehiculo) {
             return redirect()->route('vehiculos.edit', $alerta->documentoVehiculo->vehiculo->id_vehiculo)
+                ->with('success', 'Alerta marcada como leida.');
+        }
+
+        // Redirigir al vehiculo si es alerta directa (sin documento)
+        if ($alerta->vehiculo) {
+            return redirect()->route('vehiculos.edit', $alerta->vehiculo->id_vehiculo)
                 ->with('success', 'Alerta marcada como leida.');
         }
 

@@ -83,6 +83,11 @@ class DocumentoVehiculoService
                 $this->reemplazarDocumento($ultimoDocumento, $nuevoDocumento);
             }
 
+            // Al registrar TECNOMECANICA, cerrar alertas directas (vehículo sin documento)
+            if ($tipo === 'TECNOMECANICA') {
+                $this->alertaService->solucionarAlertasDirectasVehiculo($vehiculo->id_vehiculo);
+            }
+
             // Evaluar y generar alerta si aplica
             $this->alertaService->evaluarDocumentoVehiculo($nuevoDocumento);
 

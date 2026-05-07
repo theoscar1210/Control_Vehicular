@@ -21,6 +21,8 @@ class AlertaComposer
         $alertasMenu = Alerta::with([
                 'documentoVehiculo.vehiculo.conductor',
                 'documentoConductor.conductor',
+                'vehiculo.conductor',
+                'vehiculo.conductores',
                 'usuariosQueLeyeron'
             ])
             ->whereNull('deleted_at')

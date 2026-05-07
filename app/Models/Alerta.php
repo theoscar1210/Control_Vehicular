@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\UppercaseFields;
+use App\Models\Vehiculo;
 
 class Alerta extends Model
 {
@@ -31,6 +32,7 @@ class Alerta extends Model
     protected $fillable = [
         'tipo_alerta',
         'id_doc_vehiculo',
+        'id_vehiculo',
         'id_doc_conductor',
         'tipo_vencimiento',
         'mensaje',
@@ -61,9 +63,15 @@ class Alerta extends Model
     {
         return $this->belongsTo(DocumentoVehiculo::class, 'id_doc_vehiculo');
     }
+
     public function documentoConductor()
     {
         return $this->belongsTo(DocumentoConductor::class, 'id_doc_conductor');
+    }
+
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
     }
 
     public function creador()
@@ -169,6 +177,12 @@ class Alerta extends Model
                         $docQuery->whereNull('reemplazado_por')
                             ->where('estado', '!=', 'REEMPLAZADO');
                     });
+            })
+            // Alertas directas al vehículo (sin documento registrado)
+            ->orWhere(function ($q2) {
+                $q2->whereNull('id_doc_vehiculo')
+                    ->whereNotNull('id_vehiculo')
+                    ->whereNull('id_doc_conductor');
             })
             // Alertas de conductores: documento activo y no reemplazado
             ->orWhere(function ($q2) {
