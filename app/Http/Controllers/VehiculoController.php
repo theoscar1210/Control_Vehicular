@@ -104,17 +104,20 @@ class VehiculoController extends Controller
         try {
             // Crear el vehículo
             $vehiculo = Vehiculo::create([
-                'placa'          => strtoupper($validated['placa']),
-                'marca'          => $validated['marca'],
-                'modelo'         => $validated['modelo'],
-                'color'          => $validated['color'],
-                'tipo'           => $validated['tipo'],
-                'id_propietario' => $validated['id_propietario'],
-                'clasificacion'  => $validated['clasificacion'] ?? 'EMPLEADO',
-                'observaciones'  => $validated['observaciones'] ?? null,
-                'estado'         => 'ACTIVO',
-                'creado_por'     => auth()->id() ?? null,
-                'fecha_registro' => now(),
+                'placa'           => strtoupper($validated['placa']),
+                'marca'           => $validated['marca'],
+                'modelo'          => $validated['modelo'],
+                'color'           => $validated['color'],
+                'tipo'            => $validated['tipo'],
+                'id_propietario'  => $validated['id_propietario'],
+                'clasificacion'   => $validated['clasificacion'] ?? 'EMPLEADO',
+                'observaciones'   => $validated['observaciones'] ?? null,
+                'fecha_matricula' => !empty($validated['fecha_matricula'])
+                    ? \Carbon\Carbon::parse($validated['fecha_matricula'])->startOfDay()
+                    : null,
+                'estado'          => 'ACTIVO',
+                'creado_por'      => auth()->id() ?? null,
+                'fecha_registro'  => now(),
             ]);
 
             // Redirigir con el ID del vehículo para continuar con documentos

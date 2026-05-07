@@ -28,8 +28,9 @@ class StoreVehiculoRequest extends FormRequest
             'color' => 'required|string|max:30',
             'tipo' => 'required|in:CARRO,MOTO',
             'id_propietario' => 'required|exists:propietarios,id_propietario',
-            'clasificacion' => 'nullable|in:EMPLEADO,EXTERNO,CONTRATISTA',
-            'observaciones' => 'nullable|string|max:1000',
+            'clasificacion'   => 'nullable|in:EMPLEADO,EXTERNO,CONTRATISTA',
+            'observaciones'   => 'nullable|string|max:1000',
+            'fecha_matricula' => 'nullable|date|before_or_equal:today',
         ];
     }
 }
