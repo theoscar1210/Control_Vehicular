@@ -17,7 +17,6 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
 @section('title','Documentos del Vehículo')
 
 @section('content')
-<br><br><br>
 <div class="container-fluid py-4">
 
     {{-- ================= ENCABEZADO ================= --}}

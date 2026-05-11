@@ -20,7 +20,6 @@ $licencia = $documentosActivos->where('tipo_documento', 'LICENCIA CONDUCCION')->
 @section('title','Documentos del Conductor')
 
 @section('content')
-<br><br><br>
 <div class="container-fluid py-4 historial-documentos">
 
     {{-- ================= ENCABEZADO ================= --}}

@@ -30,7 +30,6 @@ $vehiculoId = request()->query('vehiculo');
 @endsection
 
 @section('content')
-<br><br><br>
 {{-- Pasar la condición como atributo --}}
 <div id="propietario-section"
     data-aviso="{{ $propietario && !request()->query('vehiculo') ? '1' : '' }}"

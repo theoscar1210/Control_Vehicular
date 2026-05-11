@@ -9,7 +9,6 @@ $sinPadding = true;
 @section('title', 'Acerca del Sistema')
 
 @section('content')
-<br><br><br>
 <div class="container py-4" style="max-width: 800px;">
 
     {{-- Encabezado --}}
@@ -33,7 +32,7 @@ $sinPadding = true;
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-sm-4 text-center">
-                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.1.0</div>
+                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.1.1</div>
                     <small class="text-muted">Versión estable</small>
                 </div>
                 <div class="col-sm-8">
@@ -76,7 +75,24 @@ $sinPadding = true;
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="badge me-2" style="background-color:#5B8238;">v1.1.0</span>
+                            <span class="badge me-2" style="background-color:#5B8238;">v1.1.1</span>
+                            <strong>Correcciones de responsividad mobile</strong>
+                            <ul class="mt-2 mb-0 small text-muted">
+                                <li>Eliminado <code>white-space: nowrap !important</code> global que impedía wrap en tablas en móvil</li>
+                                <li>Corregido selector CSS roto <code>F .btn-outline-primary</code></li>
+                                <li>Acotada regla <code>.btn { width:100% }</code> y <code>display:flex</code> en botones — ya no afecta btn-close ni botones de tabla</li>
+                                <li>Eliminado espaciado <code>&lt;br&gt;&lt;br&gt;&lt;br&gt;</code> en 16 vistas, reemplazado por clase CSS responsiva</li>
+                                <li>Corregido desbordamiento del dropdown de notificaciones en pantallas &lt; 360px</li>
+                                <li>Corregido bug: <code>fecha_matricula</code> no se guardaba al crear vehículo</li>
+                            </ul>
+                        </div>
+                        <small class="text-muted text-nowrap ms-3">May 2026</small>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge me-2" style="background-color:#6c757d;">v1.1.0</span>
                             <strong>Alertas para vehículos sin Tecnomecánica al vencer exención</strong>
                             <ul class="mt-2 mb-0 small text-muted">
                                 <li>Detección automática (batch diario) de vehículos exentos que superaron su fecha de primera revisión</li>

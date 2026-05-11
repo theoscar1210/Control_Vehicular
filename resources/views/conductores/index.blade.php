@@ -9,7 +9,6 @@ $sinPadding = true;
 @section('title', 'Gestión de Conductores')
 
 @section('content')
-<br><br><br>
 
 <div class="container-fluid py-4">
 

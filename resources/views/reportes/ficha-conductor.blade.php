@@ -9,7 +9,6 @@ $sinPadding = true;
 @section('title', 'Ficha Conductor - ' . $conductor->nombre . ' ' . $conductor->apellido)
 
 @section('content')
-<br><br><br>
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">

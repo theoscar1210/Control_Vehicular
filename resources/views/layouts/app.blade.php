@@ -38,11 +38,11 @@
     {{-- Navbar Especial --}}
     @if(isset($navbarEspecial) && $navbarEspecial === true)
     @include('profile.partials.navbar-especial')
-    <div class="{{ empty($sinPadding) ? 'content p-4 mt-5' : '' }}">
+    <div class="{{ empty($sinPadding) ? 'content p-4 mt-5' : 'content-bajo-navbar' }}">
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.1.0
+        Control Vehicular &middot; v1.1.1
         @if(auth()->check() && auth()->user()->rol === 'ADMIN')
         &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
         @endif
@@ -295,7 +295,7 @@
     <div class="content con-sidebar">
         @yield('content')
         <footer class="text-center py-2 mt-3" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-            Control Vehicular &middot; v1.1.0
+            Control Vehicular &middot; v1.1.1
             @if(auth()->check() && auth()->user()->rol === 'ADMIN')
             &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
             @endif
@@ -308,7 +308,7 @@
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.1.0
+        Control Vehicular &middot; v1.1.1
     </footer>
     @endif
 
