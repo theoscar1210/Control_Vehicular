@@ -11,7 +11,7 @@ $sinPadding = true;
 @section('content')
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">

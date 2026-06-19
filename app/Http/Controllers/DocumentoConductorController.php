@@ -305,7 +305,7 @@ class DocumentoConductorController extends Controller
 
         DocumentoConductor::create($data);
 
-        return redirect()->route('conductores.show', $conductor->id_conductor)
+        return redirect()->route('conductores.edit', $conductor->id_conductor)
             ->with('success', 'Documento guardado correctamente.');
     }
 
@@ -355,7 +355,7 @@ class DocumentoConductorController extends Controller
 
         $doc->update($data);
 
-        return redirect()->route('conductores.show', $doc->id_conductor)
+        return redirect()->route('conductores.edit', $doc->id_conductor)
             ->with('success', 'Documento actualizado correctamente.');
     }
 
@@ -374,7 +374,7 @@ class DocumentoConductorController extends Controller
         $conductorId = $doc->id_conductor;
         $doc->delete();
 
-        return redirect()->route('conductores.show', $conductorId)
+        return redirect()->route('conductores.edit', $conductorId)
             ->with('success', 'Documento eliminado correctamente.');
     }
 }

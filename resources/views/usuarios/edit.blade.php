@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-4">
     {{-- Titulo --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <h3 class="titulo-seccion mb-0">
             <i class="fas fa-user-edit me-2 text-success"></i> Editar Usuario
         </h3>
@@ -23,7 +23,7 @@
             <li>{{ $e }}</li>
             @endforeach
         </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
@@ -31,7 +31,7 @@
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
@@ -69,12 +69,12 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Nueva contrasena (opcional)</label>
-                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" minlength="8" placeholder="Dejar vacio para mantener la actual">
-                        <small class="text-muted">Min. 8 caracteres, una mayuscula, una minuscula y un numero.</small>
+                        <label class="form-label">Nueva contraseña (opcional)</label>
+                        <input name="password" type="password" class="form-control rounded-3 border-success-subtle" minlength="8" placeholder="Dejar vacío para mantener la actual">
+                        <small class="text-muted">Mín. 8 caracteres, una mayúscula, una minúscula y un número.</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Confirmar contrasena</label>
+                        <label class="form-label">Confirmar contraseña</label>
                         <input name="password_confirmation" type="password" class="form-control rounded-3 border-success-subtle" minlength="8">
                     </div>
                 </div>

@@ -8,7 +8,7 @@
             </div>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarEspecial" aria-controls="navbarEspecial" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarEspecial" aria-controls="navbarEspecial" aria-expanded="false" aria-label="Alternar navegación">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarEspecial">
@@ -94,7 +94,7 @@
                     </span>
                     @endif
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+                <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: min(350px, 92vw); max-height: 400px; overflow-y: auto;">
                     <li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2" style="background-color: #5B8238;">
                         <span class="text-white fw-bold"><i class="fas fa-bell me-2"></i>Alertas</span>
                         @if($totalAlertasNoLeidasEspecial > 0)

@@ -12,7 +12,7 @@ $sinPadding = true;
 <div class="container py-4" style="max-width: 800px;">
 
     {{-- Encabezado --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <h3 class="fw-bold mb-1">
                 <i class="fas fa-info-circle me-2" style="color:#5B8238;"></i>Acerca del Sistema

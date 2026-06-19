@@ -190,7 +190,7 @@
                                         </button>
                                         @else
                                         <span class="badge bg-success-subtle text-success">
-                                            <i class="fa-solid fa-check"></i> OK
+                                            <i class="fa-solid fa-check"></i> Vigente
                                         </span>
                                         @endif
                                     </td>

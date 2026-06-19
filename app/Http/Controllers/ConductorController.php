@@ -286,6 +286,7 @@ class ConductorController extends Controller
     {
         $validated = $request->validated();
 
+        try {
         // Transacción para consistencia
         DB::transaction(function () use ($validated, $request, $conductor) {
             // 1) Actualizar datos básicos
@@ -455,8 +456,14 @@ class ConductorController extends Controller
                 Alerta::generarAlertasDocumentoConductor($newDoc);
             }
         });
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('conductores.edit', $conductor)
+                ->withInput()
+                ->with('error', 'Ocurrió un error al actualizar el conductor. Por favor intenta de nuevo.');
+        }
 
-        return redirect()->route('conductores.edit', $conductor)->with('success', 'Conductor actualizado correctamente.');
+        return redirect()->route('conductores.index')->with('success', 'Conductor actualizado correctamente.');
     }
 
     /**

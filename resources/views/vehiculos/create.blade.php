@@ -39,7 +39,7 @@ $vehiculoId = request()->query('vehiculo');
 <div class="container mt-4">
 
     <!-- Breadcrumb y botón nuevo -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0 mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('vehiculos.index', ['clasificacion' => $clasificacion ?? 'EMPLEADO']) }}"><i class="fa-solid fa-car"></i> Vehículos</a></li>
@@ -60,7 +60,15 @@ $vehiculoId = request()->query('vehiculo');
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fa-solid fa-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    @endif
+
+    {{-- Mensajes informativos (propietario ya existe, registro recuperado, etc.) --}}
+    @if(session('info'))
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-info me-2"></i>{{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
@@ -68,7 +76,7 @@ $vehiculoId = request()->query('vehiculo');
     @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fa-solid fa-exclamation-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
@@ -81,7 +89,7 @@ $vehiculoId = request()->query('vehiculo');
             <li>{{ $err }}</li>
             @endforeach
         </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 

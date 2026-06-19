@@ -13,7 +13,7 @@ $sinPadding = true;
 @section('content')
 <div class="container-fluid py-4">
     {{-- Encabezado --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
@@ -142,18 +142,30 @@ $sinPadding = true;
                 </div>
                 <div class="col-auto">
                     {{-- Resumen del propietario --}}
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        @if($propietario->stats['total_vehiculos'] === 0)
+                        <span class="badge bg-secondary px-3 py-2">
+                            <i class="fas fa-exclamation-circle me-1"></i>Sin vehículos
+                        </span>
+                        @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                        <a href="{{ route('vehiculos.create', ['propietario' => $propietario->id_propietario]) }}"
+                           class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-plus me-1"></i>Registrar vehículo
+                        </a>
+                        @endif
+                        @else
                         <span class="badge bg-primary px-3 py-2">
                             <i class="fas fa-car me-1"></i>{{ $propietario->stats['total_vehiculos'] }} vehículo(s)
                         </span>
                         @if($propietario->stats['vigentes'] > 0)
-                        <span class="badge bg-success px-2 py-2">{{ $propietario->stats['vigentes'] }} OK</span>
+                        <span class="badge bg-success px-2 py-2">{{ $propietario->stats['vigentes'] }} Al día</span>
                         @endif
                         @if($propietario->stats['por_vencer'] > 0)
                         <span class="badge bg-warning text-dark px-2 py-2">{{ $propietario->stats['por_vencer'] }} Por vencer</span>
                         @endif
                         @if($propietario->stats['vencidos'] > 0)
                         <span class="badge bg-danger px-2 py-2">{{ $propietario->stats['vencidos'] }} Vencidos</span>
+                        @endif
                         @endif
                     </div>
                 </div>
@@ -213,9 +225,20 @@ $sinPadding = true;
                 </table>
             </div>
             @else
-            <div class="text-center py-4 text-muted">
-                <i class="fas fa-car fa-2x mb-2"></i>
-                <p class="mb-0">Este propietario no tiene vehículos registrados</p>
+            <div class="alert alert-warning d-flex align-items-start gap-3 m-3 mb-2">
+                <i class="fas fa-exclamation-triangle fa-lg mt-1 flex-shrink-0"></i>
+                <div>
+                    <strong>Registro incompleto.</strong>
+                    Este propietario no tiene ningún vehículo asociado. Puede que el registro haya sido interrumpido (corte de internet, cierre de pestaña, etc.).
+                    @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                    <div class="mt-2">
+                        <a href="{{ route('vehiculos.create', ['propietario' => $propietario->id_propietario]) }}"
+                           class="btn btn-sm btn-warning">
+                            <i class="fas fa-plus me-1"></i>Continuar registro — agregar vehículo
+                        </a>
+                    </div>
+                    @endif
+                </div>
             </div>
             @endif
         </div>

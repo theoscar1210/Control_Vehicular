@@ -28,6 +28,13 @@
     </div>
     @endif
 
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-x-circle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
     @if($errors->any())
     <div class="alert alert-danger">
         <i class="bi bi-exclamation-triangle me-2"></i><strong>Por favor corrija los siguientes errores:</strong>
@@ -261,17 +268,35 @@
                 @endif
 
                 {{-- Acción sobre documentación --}}
+                @if($documentos->isEmpty())
+                <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <div>
+                        <strong>Sin licencia registrada.</strong>
+                        Complete los campos a continuación para agregar la primera licencia de conducción.
+                    </div>
+                </div>
+                @endif
+
                 <h6 class="fw-semibold text-secondary mb-3">Acción sobre documentación</h6>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Acción</label>
                     <select name="documento_action" class="form-select rounded-3 border-success-subtle">
-                        <option value="none" {{ old('documento_action') == 'none' ? 'selected' : '' }}>No hacer nada</option>
+                        @if($documentos->isNotEmpty())
+                        <option value="none" {{ old('documento_action', 'none') == 'none' ? 'selected' : '' }}>No hacer nada</option>
                         <option value="update_existing" {{ old('documento_action') == 'update_existing' ? 'selected' : '' }}>Actualizar documento existente (solo metadata)</option>
-                        <option value="create_version" {{ old('documento_action') == 'create_version' ? 'selected' : '' }}>Crear nueva versión (sin archivo)</option>
+                        @endif
+                        <option value="create_version" {{ old('documento_action', $documentos->isEmpty() ? 'create_version' : 'none') == 'create_version' ? 'selected' : '' }}>
+                            {{ $documentos->isEmpty() ? 'Agregar primera licencia' : 'Crear nueva versión (sin archivo)' }}
+                        </option>
+                        @if($documentos->isEmpty())
+                        <option value="none" {{ old('documento_action') == 'none' ? 'selected' : '' }}>No agregar licencia ahora</option>
+                        @endif
                     </select>
                 </div>
 
                 <div class="row g-3">
+                    @if($documentos->isNotEmpty())
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Documento existente</label>
                         <select name="documento_id" class="form-select rounded-3 border-success-subtle">
@@ -283,11 +308,12 @@
                             @endforeach
                         </select>
                     </div>
+                    @endif
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Tipo</label>
                         <select name="documento_tipo" id="documento_tipo_edit" class="form-select rounded-3 border-success-subtle">
                             <option value="">-- Seleccionar --</option>
-                            <option value="LICENCIA CONDUCCION" {{ old('documento_tipo') == 'LICENCIA CONDUCCION' ? 'selected' : '' }}>Licencia Conducción</option>
+                            <option value="LICENCIA CONDUCCION" {{ old('documento_tipo', $documentos->isEmpty() ? 'LICENCIA CONDUCCION' : '') == 'LICENCIA CONDUCCION' ? 'selected' : '' }}>Licencia Conducción</option>
                         </select>
                     </div>
                     <div class="col-md-6" id="seccion_categoria_edit" style="display: none;">

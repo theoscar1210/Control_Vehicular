@@ -32,7 +32,7 @@ $licencia = $documentosActivos->where('tipo_documento', 'LICENCIA CONDUCCION')->
         </ol>
     </nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <h3 class="fw-bold">
                 <i class="fa-solid fa-file-lines me-2"></i>

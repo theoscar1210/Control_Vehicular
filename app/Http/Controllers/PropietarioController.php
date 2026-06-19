@@ -59,10 +59,23 @@ class PropietarioController extends Controller
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
             'tipo_doc' => 'required|in:CC,NIT',
-            'identificacion' => 'required|string|max:50|unique:propietarios,identificacion',
+            'identificacion' => 'required|string|max:50',
             'telefono' => 'nullable|string|max:30',
             'email' => 'nullable|email|max:255',
         ]);
+
+        // Si el propietario ya existe (registro previo interrumpido), continuar directamente al paso 2
+        $existente = Propietario::where('identificacion', $data['identificacion'])->first();
+        if ($existente) {
+            $tieneVehiculos = $existente->vehiculos()->count() > 0;
+            $mensaje = $tieneVehiculos
+                ? "El propietario {$existente->nombre} {$existente->apellido} ya existe en el sistema. Selecciona el vehículo que deseas gestionar."
+                : "El propietario {$existente->nombre} {$existente->apellido} ya estaba registrado (posiblemente de un registro interrumpido). Continúa agregando el vehículo.";
+
+            return redirect()
+                ->route('vehiculos.create', ['propietario' => $existente->id_propietario])
+                ->with('info', $mensaje);
+        }
 
         DB::beginTransaction();
         try {
@@ -76,14 +89,13 @@ class PropietarioController extends Controller
 
             DB::commit();
 
-            // Redirigir a la página de creación de vehículo con ?propietario=ID
             return redirect()
                 ->route('vehiculos.create', ['propietario' => $prop->id_propietario])
                 ->with('success', 'Propietario creado correctamente. Ahora puede registrar el vehículo.');
         } catch (\Throwable $e) {
             DB::rollBack();
             \Log::error('Error creando propietario: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['general' => 'Error al crear propietario.']);
+            return back()->withInput()->withErrors(['general' => 'Error al crear propietario. Intenta de nuevo.']);
         }
     }
 }

@@ -37,15 +37,23 @@ class DocumentoVehiculoController extends Controller
                 $this->subirArchivoADrive($nuevoDocumento, $request->file('archivo'), $vehiculo->placa);
             }
 
+            $successMsg = "Documento {$nuevoDocumento->tipo_documento} guardado correctamente.";
+
+            if ($request->input('_from') === 'historial') {
+                return redirect()
+                    ->route('vehiculos.documentos.historial.completo', $vehiculo->id_vehiculo)
+                    ->with('success', $successMsg);
+            }
+
             if (\Route::has('vehiculos.create')) {
                 return redirect()
                     ->route('vehiculos.create', ['vehiculo' => $vehiculo->id_vehiculo])
-                    ->with('success', "Documento {$nuevoDocumento->tipo_documento} guardado correctamente.");
+                    ->with('success', $successMsg);
             }
 
             return redirect()
                 ->route('vehiculos.index')
-                ->with('success', "Documento {$nuevoDocumento->tipo_documento} guardado correctamente.");
+                ->with('success', $successMsg);
         } catch (\Exception $e) {
             Log::error('Error al guardar documento', [
                 'vehiculo' => $idVehiculo,

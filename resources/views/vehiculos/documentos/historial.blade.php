@@ -29,7 +29,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
         </ol>
     </nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <h3 class="fw-bold">
                 <i class="fa-solid fa-file-lines me-2"></i>
@@ -119,17 +119,12 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
         <div class="card-body p-4">
             @php
                 $tieneTecnomecanica = $documentosActivos->where('tipo_documento', 'TECNOMECANICA')->isNotEmpty();
+                $tieneSoat = $documentosActivos->where('tipo_documento', 'SOAT')->isNotEmpty();
                 $requiereTecnoHist = $vehiculo->requiereTecnomecanica();
                 $fechaPrimeraRevHist = $vehiculo->fechaPrimeraTecnomecanica();
                 $esVehiculoNuevoHist = $vehiculo->fecha_matricula && !$requiereTecnoHist;
             @endphp
 
-            @if($documentosActivos->isEmpty() && !$esVehiculoNuevoHist)
-            <div class="text-center py-5">
-                <i class="fa-solid fa-folder-open text-muted" style="font-size: 3rem;"></i>
-                <p class="text-muted mt-3">No hay documentos activos registrados.</p>
-            </div>
-            @else
             <div class="row">
                 @foreach($documentosActivos as $doc)
                 {{-- SOAT --}}
@@ -202,6 +197,45 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                 </div>
                 @endif
                 @endforeach
+
+                {{-- SOAT - Sin registro --}}
+                @if(!$tieneSoat)
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 border-warning" style="border-width: 2px;">
+                        <div class="card-header bg-warning text-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fa-solid fa-shield-halved me-1"></i> SOAT
+                                </h6>
+                                <span class="badge bg-dark text-warning">
+                                    <i class="fa-solid fa-exclamation-triangle me-1"></i> SIN REGISTRO
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <i class="fa-solid fa-shield-halved fa-3x text-warning mb-3" style="opacity: 0.6;"></i>
+                            <h6 class="text-warning fw-bold mb-2">Sin SOAT Registrado</h6>
+                            <p class="small text-muted mb-0">
+                                El vehículo no tiene SOAT activo en el sistema.
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light text-center">
+                            @if(in_array(auth()->user()->rol, ['ADMIN', 'SST']))
+                            <button type="button"
+                                class="btn btn-warning w-100 text-dark"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalAgregarSoat">
+                                <i class="fa-solid fa-plus-circle me-1"></i> Agregar SOAT
+                            </button>
+                            @else
+                            <span class="badge bg-warning text-dark py-2 px-3">
+                                <i class="fa-solid fa-info-circle me-1"></i> Contacta al SST o Admin
+                            </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 {{-- TECNOMECÁNICA - Vehículo Nuevo (Exención por tiempo) --}}
                 @if(!$tieneTecnomecanica && $esVehiculoNuevoHist)
@@ -280,8 +314,37 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                     </div>
                 </div>
                 @endif
+
+                {{-- TECNOMECÁNICA - Sin fecha de matrícula registrada --}}
+                @if(!$tieneTecnomecanica && !$esVehiculoNuevoHist && !$vehiculo->fecha_matricula)
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 border-secondary" style="border-width: 2px;">
+                        <div class="card-header bg-secondary text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fa-solid fa-car-side me-1"></i> Tecnomecánica
+                                </h6>
+                                <span class="badge bg-white text-secondary">
+                                    <i class="fa-solid fa-question me-1"></i> PENDIENTE
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <i class="fa-solid fa-calendar-days fa-3x text-secondary mb-3" style="opacity: 0.5;"></i>
+                            <h6 class="text-secondary fw-bold mb-2">Fecha de Matrícula Requerida</h6>
+                            <p class="small text-muted mb-0">
+                                Registra la fecha de matrícula del vehículo para determinar si requiere Tecnomecánica.
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light text-center">
+                            <a href="{{ route('vehiculos.edit', $vehiculo->id_vehiculo) }}" class="btn btn-secondary w-100">
+                                <i class="fa-solid fa-pen-to-square me-1"></i> Editar Vehículo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
-            @endif
         </div>
     </div>
 
@@ -319,6 +382,7 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                 <form action="{{ route('vehiculos.documentos.store', $vehiculo->id_vehiculo) }}" method="POST">
                     @csrf
                     <input type="hidden" name="tipo_documento" value="TECNOMECANICA">
+                    <input type="hidden" name="_from" value="historial">
 
                     <div class="modal-body">
                         <div class="alert alert-info mb-3">
@@ -352,6 +416,63 @@ $vencidos = $documentosActivos->where('estado','VENCIDO')->count();
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">
                             <i class="fa-solid fa-save me-1"></i> Guardar Tecnomecánica
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ================= MODAL AGREGAR SOAT (Primera vez) ================= --}}
+    @if(!$tieneSoat)
+    <div class="modal fade" id="modalAgregarSoat" tabindex="-1" aria-labelledby="modalAgregarSoatLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-white" style="background-color:#5B8238;">
+                    <h5 class="modal-title" id="modalAgregarSoatLabel">
+                        <i class="fa-solid fa-shield-halved me-2"></i>
+                        Agregar SOAT
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form action="{{ route('vehiculos.documentos.store', $vehiculo->id_vehiculo) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="tipo_documento" value="SOAT">
+                    <input type="hidden" name="_from" value="historial">
+
+                    <div class="modal-body">
+                        <div class="alert alert-info mb-3">
+                            <i class="fa-solid fa-info-circle me-1"></i>
+                            <strong>{{ $vehiculo->placa }}</strong> - {{ $vehiculo->marca }} {{ $vehiculo->modelo }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Número de Póliza <span class="text-danger">*</span></label>
+                            <input type="text" name="numero_documento" class="form-control text-uppercase" required placeholder="Ej: 123456789">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Aseguradora</label>
+                            <input type="text" name="entidad_emisora" class="form-control text-uppercase" placeholder="Ej: SURA, Liberty, Mapfre">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Vigencia <span class="text-danger">*</span></label>
+                            <input type="date" name="fecha_emision" id="soat_fecha_emision_modal" class="form-control" required max="{{ now()->toDateString() }}">
+                            <small class="text-muted">La fecha de vencimiento se calcula automáticamente (+1 año)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nota (Opcional)</label>
+                            <textarea name="nota" class="form-control" rows="2" placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn text-white" style="background-color:#5B8238;">
+                            <i class="fa-solid fa-save me-1"></i> Guardar SOAT
                         </button>
                     </div>
                 </form>

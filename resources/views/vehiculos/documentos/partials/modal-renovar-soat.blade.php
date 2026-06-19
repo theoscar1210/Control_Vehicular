@@ -8,7 +8,7 @@
                     <i class="fa-solid fa-arrow-rotate-right me-2"></i>
                     Renovar SOAT
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <form method="POST" action="{{ route('vehiculos.documentos.update', [$vehiculo->id_vehiculo, $doc->id_doc_vehiculo]) }}" enctype="multipart/form-data">

@@ -6,7 +6,7 @@
 <div class="container mt-4">
 
     {{-- Encabezado --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <h3 class="titulo-seccion mb-0">
             <i class="fas fa-users me-2 text-success"></i>Gestión de Usuarios
         </h3>
@@ -19,7 +19,7 @@
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
@@ -27,14 +27,14 @@
     @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     @endif
 
     {{-- Botones de acción --}}
     <div class="card shadow-sm border-0 mb-3">
         <div class="card-body py-2">
-            <div class="d-flex gap-2 align-items-center">
+            <div class="d-flex gap-2 align-items-center flex-wrap">
                 <span class="text-muted me-2"><i class="fas fa-hand-pointer me-1"></i>Seleccione un usuario:</span>
                 <button type="button" id="btnEditar" class="btn btn-warning btn-sm" disabled>
                     <i class="fas fa-edit me-1"></i>Editar
@@ -68,7 +68,7 @@
 
             {{-- Tabla responsive --}}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="min-width: 600px;">
+                <table class="table table-hover align-middle mb-0">
                     <thead class="table-usuarios">
                         <tr>
                             <th style="width: 40px;" class="text-center">
@@ -196,7 +196,6 @@
     -webkit-overflow-scrolling: touch;
 }
 .table th, .table td {
-    white-space: nowrap;
     padding: 0.5rem 0.75rem;
 }
 </style>
