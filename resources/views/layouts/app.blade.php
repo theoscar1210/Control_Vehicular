@@ -67,6 +67,27 @@
                 </div>
             </a>
 
+            {{-- Buscador global --}}
+            <form id="busqueda-global-form" class="d-flex align-items-center mx-2 mx-lg-3 flex-grow-1 position-relative" style="max-width: 380px;" autocomplete="off">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input
+                        id="busqueda-global-input"
+                        type="text"
+                        class="form-control bg-light border-start-0 ps-0"
+                        placeholder="Buscar placa, conductor, propietario..."
+                        data-ajax-url="{{ route('busqueda.ajax') }}"
+                        data-result-url="{{ route('busqueda.resultados') }}"
+                        style="min-width: 0;">
+                </div>
+                <div id="busqueda-global-dropdown"
+                     class="dropdown-menu shadow-lg w-100 p-0 mt-1"
+                     style="top: 100%; left: 0; min-width: min(360px, 92vw); max-height: 420px; overflow-y: auto;">
+                </div>
+            </form>
+
             {{-- $alertasMenu y $totalAlertasNoLeidas son inyectados por AlertaComposer --}}
             <ul class="navbar-nav ms-auto align-items-center">
                 {{-- Notificaciones con Dropdown --}}
@@ -316,6 +337,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="{{ asset('js/app-layout.js') }}"></script>
+    <script src="{{ asset('js/busqueda-global.js') }}"></script>
     @yield('scripts')
 
 

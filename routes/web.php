@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PorteriaController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BusquedaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +33,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'nocache'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | BÚSQUEDA GLOBAL - Acceso: todos los roles autenticados
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/busqueda', [BusquedaController::class, 'resultados'])->name('busqueda.resultados');
+    Route::get('/busqueda/ajax', [BusquedaController::class, 'ajax'])->name('busqueda.ajax');
 
     /*
     |--------------------------------------------------------------------------
