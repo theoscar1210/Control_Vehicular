@@ -32,14 +32,14 @@ $sinPadding = true;
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-sm-4 text-center">
-                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.1.1</div>
+                    <div class="display-6 fw-bold" style="color:#5B8238;">v1.3.0</div>
                     <small class="text-muted">Versión estable</small>
                 </div>
                 <div class="col-sm-8">
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td class="text-muted" width="40%">Lanzamiento:</td>
-                            <td class="fw-medium">Mayo 2026</td>
+                            <td class="fw-medium">Junio 2026</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Entorno:</td>
@@ -75,7 +75,39 @@ $sinPadding = true;
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="badge me-2" style="background-color:#5B8238;">v1.1.1</span>
+                            <span class="badge me-2" style="background-color:#5B8238;">v1.3.0</span>
+                            <strong>Búsqueda global en navbar</strong>
+                            <ul class="mt-2 mb-0 small text-muted">
+                                <li>Buscador AJAX en tiempo real disponible para todos los roles desde cualquier pantalla</li>
+                                <li>Dropdown con preview agrupado por vehículos, conductores y propietarios (máx. 4 por categoría)</li>
+                                <li>Página de resultados completa con tablas responsivas y acceso por rol</li>
+                                <li>PORTERIA ve portería/ficha; ADMIN/SST ven ficha de detalle</li>
+                            </ul>
+                        </div>
+                        <small class="text-muted text-nowrap ms-3">Jun 2026</small>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge me-2" style="background-color:#6c757d;">v1.2.0</span>
+                            <strong>Responsividad completa y mejoras de flujo</strong>
+                            <ul class="mt-2 mb-0 small text-muted">
+                                <li>15 vistas con encabezados responsivos (<code>flex-column flex-sm-row</code>)</li>
+                                <li>Mensajes de alerta y éxito completamente en español; badge "OK" → "Vigente"</li>
+                                <li>Conductor sin licencia: banner de advertencia y formulario pre-seleccionado</li>
+                                <li>Propietario duplicado (registro interrumpido): detección automática y redirección al paso 2</li>
+                                <li>Reporte propietarios: badge "Sin vehículos" y botón "Continuar registro"</li>
+                                <li>Soporte flash <code>info</code> en todas las vistas del wizard</li>
+                            </ul>
+                        </div>
+                        <small class="text-muted text-nowrap ms-3">Jun 2026</small>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge me-2" style="background-color:#6c757d;">v1.1.1</span>
                             <strong>Correcciones de responsividad mobile</strong>
                             <ul class="mt-2 mb-0 small text-muted">
                                 <li>Eliminado <code>white-space: nowrap !important</code> global que impedía wrap en tablas en móvil</li>
