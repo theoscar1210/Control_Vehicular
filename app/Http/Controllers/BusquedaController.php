@@ -56,15 +56,13 @@ class BusquedaController extends Controller
                 'label' => $v->placa . ' — ' . $v->marca . ($v->modelo ? ' ' . $v->modelo : ''),
                 'sub'   => trim(($v->color ?? '') . ' · ' . ($v->tipo ?? '')),
                 'url'   => $esGestor
-                    ? route('vehiculos.edit', $v->id_vehiculo)
+                    ? route('reportes.ficha', $v->id_vehiculo)
                     : route('porteria.index', ['busqueda' => $v->placa, 'tipo_busqueda' => 'placa']),
             ]),
             'conductores' => $conductores->map(fn($c) => [
                 'label' => $c->nombre . ' ' . $c->apellido,
                 'sub'   => $c->identificacion . ($c->activo ? '' : ' · Inactivo'),
-                'url'   => $esGestor
-                    ? route('conductores.edit', $c->id_conductor)
-                    : route('reportes.ficha.conductor', $c->id_conductor),
+                'url'   => route('reportes.ficha.conductor', $c->id_conductor),
             ]),
             'propietarios' => $propietarios->map(fn($p) => [
                 'label' => $p->nombre . ' ' . $p->apellido,
@@ -110,8 +108,7 @@ class BusquedaController extends Controller
             $propietarios = Propietario::where(function ($query) use ($q) {
                 $query->where('nombre', 'LIKE', "%{$q}%")
                     ->orWhere('apellido', 'LIKE', "%{$q}%")
-                    ->orWhere('identificacion', 'LIKE', "%{$q}%")
-                    ->orWhere('telefono', 'LIKE', "%{$q}%");
+                    ->orWhere('identificacion', 'LIKE', "%{$q}%");
             })->whereNull('deleted_at')->orderBy('nombre')->get();
         }
 

@@ -91,9 +91,9 @@
                                 </td>
                                 <td class="text-end">
                                     @if($esGestor)
-                                    <a href="{{ route('vehiculos.edit', $v->id_vehiculo) }}"
+                                    <a href="{{ route('reportes.ficha', $v->id_vehiculo) }}"
                                        class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-edit me-1"></i>Editar
+                                        <i class="fas fa-eye me-1"></i>Ver ficha
                                     </a>
                                     @else
                                     <a href="{{ route('porteria.index', ['busqueda' => $v->placa, 'tipo_busqueda' => 'placa']) }}"
@@ -149,17 +149,10 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    @if($esGestor)
-                                    <a href="{{ route('conductores.edit', $c->id_conductor) }}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-edit me-1"></i>Editar
-                                    </a>
-                                    @else
                                     <a href="{{ route('reportes.ficha.conductor', $c->id_conductor) }}"
-                                       class="btn btn-sm btn-outline-secondary">
+                                       class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye me-1"></i>Ver ficha
                                     </a>
-                                    @endif
                                 </td>
                             </tr>
                             @endforeach
