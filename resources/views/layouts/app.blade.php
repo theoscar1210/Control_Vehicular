@@ -42,7 +42,7 @@
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.1.1
+        Control Vehicular &middot; v1.3.0
         @if(auth()->check() && auth()->user()->rol === 'ADMIN')
         &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
         @endif
@@ -307,16 +307,11 @@
     </div>
 
 
-    {{-- Topbar - Solo visible en desktop --}}
-    <nav class="topbar d-none d-lg-flex">
-        {{-- Espacio para breadcrumbs u otros elementos si se necesitan --}}
-    </nav>
-
     {{-- Contenido Principal --}}
     <div class="content con-sidebar">
         @yield('content')
         <footer class="text-center py-2 mt-3" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-            Control Vehicular &middot; v1.1.1
+            Control Vehicular &middot; v1.3.0
             @if(auth()->check() && auth()->user()->rol === 'ADMIN')
             &middot; <a href="{{ route('admin.about') }}" style="color:#5B8238; text-decoration:none;">ver detalles</a>
             @endif
@@ -329,7 +324,7 @@
         @yield('content')
     </div>
     <footer class="text-center py-2" style="font-size:0.72rem; color:#888; border-top:1px solid #eee;">
-        Control Vehicular &middot; v1.1.1
+        Control Vehicular &middot; v1.3.0
     </footer>
     @endif
 

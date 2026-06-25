@@ -433,8 +433,7 @@ Sidebar lateral
 }
 
 .content.con-sidebar {
-    margin-top: 120px;
-    /* 70px navbar + 50px topbar */
+    margin-top: 70px;
 }
 
 .btn-toggle-menu {
@@ -533,15 +532,8 @@ body.sidebar-open {
         padding: 1rem;
     }
 
-    .topbar {
-        top: 60px;
-        height: 45px;
-        padding: 0 1rem;
-    }
-
     .content.con-sidebar {
-        margin-top: 105px;
-        /* 60px navbar + 45px topbar */
+        margin-top: 60px;
     }
 
     .text-titulo {
@@ -1130,10 +1122,6 @@ tbody tr {
         margin-left: 260px;
     }
 
-    .topbar {
-        left: 260px;
-    }
-
     /* Tablas más espaciadas */
     .table th,
     .table td {
@@ -1189,10 +1177,6 @@ tbody tr {
         padding: 1.5rem;
     }
 
-    .topbar {
-        left: 220px;
-    }
-
     .sidebar .nav-link {
         padding: 0.75rem 1.25rem;
         font-size: 0.9rem;
@@ -1243,22 +1227,6 @@ tbody tr {
         margin-left: 0;
         margin-top: 65px;
         padding: 1.25rem;
-    }
-
-    /* Topbar ajustado */
-    .topbar {
-        left: 0;
-        top: 65px;
-        height: 48px;
-    }
-
-    .content.con-sidebar {
-        margin-top: 113px; /* 65px navbar + 48px topbar */
-    }
-
-    /* Topbar oculto en tablet */
-    .topbar {
-        display: none !important;
     }
 
     .content.con-sidebar {
