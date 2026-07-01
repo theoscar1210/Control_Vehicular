@@ -572,8 +572,20 @@ $sinPadding = true;
                 }
                 }
 
+                // Alerta directa al vehículo (sin documento registrado, e.g. sin Tecnomecánica)
+                if (!$alerta->documentoVehiculo && !$alerta->documentoConductor && $alerta->vehiculo) {
+                $tipoDocumento = 'TECNOMECANICA';
+                $placaAlerta = $alerta->vehiculo->placa;
+                $vehiculoInfo = $alerta->vehiculo->marca . ' ' . $alerta->vehiculo->modelo;
+                $clasificacionAlerta = $alerta->vehiculo->clasificacion;
+                if ($alerta->vehiculo->conductor) {
+                $conductorAlerta = $alerta->vehiculo->conductor->nombre . ' ' . $alerta->vehiculo->conductor->apellido;
+                $conductorId = $alerta->vehiculo->conductor->id_conductor;
+                }
+                }
+
                 $esVencido = $alerta->tipo_vencimiento === 'VENCIDO';
-                $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null;
+                $esAlertaVehiculo = $alerta->id_doc_vehiculo !== null || $alerta->id_vehiculo !== null;
                 $colorBorde = $esVencido ? 'danger' : 'warning';
                 $colorFondo = $esVencido ? 'rgba(220, 53, 69, 0.08)' : 'rgba(255, 193, 7, 0.08)';
                 @endphp

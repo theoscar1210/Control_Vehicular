@@ -29,7 +29,8 @@ class PorteriaController extends Controller
         // Alertas visibles para el usuario (solo activas = no solucionadas)
         $alertas = Alerta::with([
                 'documentoVehiculo.vehiculo.conductor',
-                'documentoConductor.conductor'
+                'documentoConductor.conductor',
+                'vehiculo.conductor',
             ])
             ->whereNull('deleted_at')
             ->activas() // Solo alertas no solucionadas
