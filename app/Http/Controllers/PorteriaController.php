@@ -38,6 +38,7 @@ class PorteriaController extends Controller
                 $q->where('visible_para', 'TODOS')
                     ->orWhere('visible_para', $user->rol);
             })
+            ->orderByRaw("CASE WHEN tipo_vencimiento = 'VENCIDO' THEN 0 ELSE 1 END")
             ->orderByDesc('fecha_alerta')
             ->paginate(10);
 

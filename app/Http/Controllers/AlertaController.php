@@ -38,7 +38,8 @@ class AlertaController extends Controller
         // NO filtrar por leídas aquí - mostrar todas las alertas activas
         // El filtro de leídas solo aplica en el dashboard
 
-        $query->orderByDesc('fecha_alerta')
+        $query->orderByRaw("CASE WHEN tipo_vencimiento = 'VENCIDO' THEN 0 ELSE 1 END")
+            ->orderByDesc('fecha_alerta')
             ->orderByDesc('fecha_registro');
 
         $perPage = (int) $request->input('per_page', 20);

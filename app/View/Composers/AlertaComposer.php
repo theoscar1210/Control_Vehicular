@@ -32,6 +32,7 @@ class AlertaComposer
                 $q->where('visible_para', 'TODOS')->orWhere('visible_para', $currentUser->rol);
             })
             ->noLeidasPor($currentUser->id_usuario)
+            ->orderByRaw("CASE WHEN tipo_vencimiento = 'VENCIDO' THEN 0 ELSE 1 END")
             ->orderByDesc('fecha_alerta')
             ->take(5)
             ->get();

@@ -182,14 +182,16 @@ class Alerta extends Model
             ->orWhere(function ($q2) {
                 $q2->whereNull('id_doc_vehiculo')
                     ->whereNotNull('id_vehiculo')
-                    ->whereNull('id_doc_conductor');
+                    ->whereNull('id_doc_conductor')
+                    ->whereHas('vehiculo'); // excluye alertas de vehículos soft-deleted
             })
             // Alertas de conductores: documento activo y no reemplazado
             ->orWhere(function ($q2) {
                 $q2->whereNotNull('id_doc_conductor')
                     ->whereHas('documentoConductor', function ($docQuery) {
                         $docQuery->where('activo', 1)
-                            ->whereNull('reemplazado_por');
+                            ->whereNull('reemplazado_por')
+                            ->whereHas('conductor'); // excluye alertas de conductores soft-deleted
                     });
             });
         });
